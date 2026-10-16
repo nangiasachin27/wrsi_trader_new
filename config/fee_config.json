@@ -1,0 +1,11 @@
+{
+  "_note": "Delivery-equity charges, approximate. VERIFY every value against the current Upstox / NSE / SEBI schedule before trusting paper P&L.",
+  "brokerage_flat": 20.0,
+  "brokerage_pct_cap": 2.5,
+  "stt_pct": 0.1,
+  "exchange_txn_pct": 0.00297,
+  "sebi_pct": 0.0001,
+  "stamp_duty_pct_buy": 0.015,
+  "gst_pct": 18.0,
+  "dp_charge_sell": 15.34
+}

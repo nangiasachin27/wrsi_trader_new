@@ -1,0 +1,23 @@
+name: open
+on:
+  schedule:
+    - cron: "50 3 * * 1-5"    # 09:20 IST
+  workflow_dispatch:
+concurrency: {group: trader-state, cancel-in-progress: false}
+permissions: {contents: write}
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - uses: actions/cache@v4
+        with: {path: data_cache, key: "bars-${{ github.run_id }}", restore-keys: "bars-"}
+      - run: python -m trader open
+        env: {UPSTOX_ACCESS_TOKEN: "${{ secrets.UPSTOX_ACCESS_TOKEN }}"}
+      - run: |
+          git config user.name "wrsi-bot"; git config user.email "bot@users.noreply.github.com"
+          git add state
+          git diff --cached --quiet || (git commit -m "open $(date -u +%F)" && git pull --rebase && git push)

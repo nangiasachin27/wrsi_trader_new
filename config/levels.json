@@ -1,0 +1,15 @@
+{
+  "_note": "Support/resistance pivot + clustering params, per timeframe - a 5-bar pivot window means 5 days on daily bars but 5 weeks on weekly ones, so these genuinely differ by timeframe rather than sharing one set of numbers.",
+  "daily": {
+    "pivot_left": 5, "pivot_right": 5, "cluster_pct": 1.5, "min_touches": 2,
+    "lookback_bars": 252, "weekly_rule": "W-FRI", "monthly_rule": "ME"
+  },
+  "weekly": {
+    "pivot_left": 3, "pivot_right": 3, "cluster_pct": 2.5, "min_touches": 2,
+    "lookback_bars": 104, "weekly_rule": "W-FRI", "monthly_rule": "ME"
+  },
+  "monthly": {
+    "pivot_left": 2, "pivot_right": 2, "cluster_pct": 4.0, "min_touches": 2,
+    "lookback_bars": 60, "weekly_rule": "W-FRI", "monthly_rule": "ME"
+  }
+}

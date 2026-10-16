@@ -1,0 +1,11 @@
+{
+  "_note": "Ranks today's qualifying candidates by trailing relative strength vs a market benchmark, instead of each stock's own absolute trend (that's trend_strength, which has tested net-negative as a tiebreaker). mode 'rank' (default) never blocks an entry - it only adds to score for tie-breaking when max_positions is scarce, same contract as trend_strength/sector_regime in rank mode. mode 'filter' hard-blocks anything below min_percentile. Needs config/sector_map.json already populated (reused here as the universe list) and benchmark_symbol's daily history cached - NIFTY500 should already be cached if you've been running market_regime/sector_regime. Disabled by default.",
+  "enabled": true,
+  "mode": "rank",
+  "min_percentile": 0.5,
+  "fail_mode": "allow",
+  "weekly_rule": "W-FRI",
+  "lookback_weeks": 13,
+  "benchmark_symbol": "NIFTY500",
+  "sector_map_path": "config/sector_map.json"
+}

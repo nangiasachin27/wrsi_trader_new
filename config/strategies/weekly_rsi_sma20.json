@@ -1,0 +1,59 @@
+{
+  "enabled": true,
+  "universe": "default",
+  "timeframes": {
+    "weekly_rule": "W-FRI",
+    "monthly_rule": "ME"
+  },
+  "indicators": {
+    "rsi_period": 14,
+    "sma_period": 20
+  },
+  "entry": {
+    "weekly_bar": "completed",
+    "weekly_rsi_threshold": 60,
+    "sustain_weeks": 1,
+    "monthly_rsi_threshold": 60,
+    "monthly_rsi_near_tolerance": 3,
+    "monthly_include_partial": true,
+    "min_weekly_bars": 60,
+    "min_monthly_bars": 48,
+    "require_close_above_sma": true,
+    "min_stop_distance_pct": 1.0,
+    "max_stop_distance_pct": 25.0
+  },
+  "exit": {
+    "buffer_pct": 0.0,
+    "trigger": "wick",
+    "method": "sma20",
+    "supertrend": {
+      "period": 10,
+      "multiplier": 3.0
+    },
+    "fast_trail": {
+      "_note": "Once a position earns this (via 'trigger'), its stop can ratchet up to this faster SMA - but only ever tightens, never loosens below the normal SMA20. Disabled by default: with enabled=false this whole block is a no-op and backtests are unaffected. 'trigger' selects which condition below gates it: 'min_holding_weeks' (a trade that's run long enough has proven the trend, start protecting it faster) or 'min_unrealized_gain_pct' (protect gains once there are real gains to protect) - only the matching threshold field is read.",
+      "enabled": false,
+      "trigger": "min_holding_weeks",
+      "min_holding_weeks": 8,
+      "min_unrealized_gain_pct": 15.0,
+      "sma_period": 10
+    }
+  },
+  "pyramiding": {
+    "enabled": true,
+    "weekly_bar": "completed",
+    "proximity_pct": 3.0,
+    "min_weekly_rsi": 50,
+    "min_weeks_between_adds": 2,
+    "require_close_above_sma": true
+  },
+  "open_checks": {
+    "apply_to": [
+      "ENTRY",
+      "ADD"
+    ],
+    "gap_down_tolerance_pct": 0.0,
+    "skip_if_open_below_sma": true,
+    "max_gap_up_pct": null
+  }
+}

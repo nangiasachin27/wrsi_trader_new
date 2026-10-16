@@ -1,0 +1,7 @@
+{
+  "_note": "Known demergers/spinoffs/splits that distort raw close-price P&L (the residual scrip's price drops to reflect only the retained business, but the shareholder also received shares in a new entity this system doesn't track). Add entries as you discover them via scripts/analyze_trades.py's single-session flags. Trades whose hold window spans a listed date are excluded from win-rate/profit-factor stats and marked CORP_ACTION in the report - not silently dropped.",
+  "events": [
+    {"symbol": "VEDL", "date": "2026-04-30", "type": "demerger", "note": "4-way demerger ex-date"},
+    {"symbol": "HEG", "date": "2026-09-07", "type": "demerger", "note": "HEG Graphite / HEG Advanced Materials split, ex-date"}
+  ]
+}

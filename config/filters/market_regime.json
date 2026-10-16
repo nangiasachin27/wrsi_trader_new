@@ -1,0 +1,10 @@
+{
+  "_note": "Blocks new ENTRY signals (not exits, not existing positions) when the broader market benchmark isn't itself in an uptrend. Disabled by default - run scripts/find_index_instrument.py, add the chosen index's instrument_key to config/universe.json's 'instruments' map (never to a tradeable 'list'), fetch its history with scripts/fetch_history.py --symbols <benchmark_symbol>, then flip enabled to true here.",
+  "enabled": false,
+  "benchmark_symbol": "NIFTY500",
+  "timeframe_rule": "W-FRI",
+  "sma_period": 20,
+  "buffer_pct": 0.0,
+  "fail_mode": "block",
+  "min_bars": 30
+}

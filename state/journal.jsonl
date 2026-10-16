@@ -1,0 +1,110 @@
+{"date": "2026-09-23", "symbol": "ABCAPITAL", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-09-23", "symbol": "ADANIPORTS", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-09-23", "symbol": "CUB", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-09-23", "symbol": "ZYDUSLIFE", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-09-23", "symbol": "TVSMOTOR", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-09-23", "symbol": "JUBLPHARMA", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-09-23", "symbol": "TEGA", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-04-08", "event": "REGIME", "bullish": false, "reason": "benchmark NIFTY500 close 22137.10 <= weekly SMA20 22919.74"}
+{"date": "2026-04-10", "symbol": "TATASTEEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "JINDALSTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NAM-INDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "BHARATFORG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "SHRIRAMFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ZYDUSWELL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "GALLANTT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "MAHABANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NTPC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "TORNTPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "BEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "AXISBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "ADANIPORTS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "SCI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "TATAPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "ENGINERSIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "HINDCOPPER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "HEG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "RADICO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "JPPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "USHAMART", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "GRAPHITE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "TATASTEEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "JINDALSTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NAM-INDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "BHARATFORG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "SHRIRAMFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ZYDUSWELL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "GALLANTT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "MAHABANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NTPC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "TATASTEEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "JINDALSTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NAM-INDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "BHARATFORG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "SHRIRAMFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ZYDUSWELL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "GALLANTT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "MAHABANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NTPC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "JINDALSTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "GLENMARK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NAM-INDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "BHARATFORG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "SHRIRAMFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ZYDUSWELL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "GALLANTT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "MAHABANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NTPC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-18", "symbol": "JUBLPHARMA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-18", "symbol": "TEGA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "BALRAMCHIN", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "CARTRADE", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "CHENNPETRO", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "ETERNAL", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "KOTAKBANK", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 441.00 vs resistance 453.20 (+2.7% below)"}
+{"date": "2026-10-09", "symbol": "MOTILALOFS", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "NYKAA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "PNBHOUSING", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-01", "symbol": "COFORGE", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-01", "symbol": "GESHIP", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-01", "symbol": "KIRLOSENG", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "BALRAMCHIN", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "CARTRADE", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "CHENNPETRO", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "ETERNAL", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "KOTAKBANK", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 441.00 vs resistance 453.20 (+2.7% below)"}
+{"date": "2026-10-09", "symbol": "MOTILALOFS", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "NYKAA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "PNBHOUSING", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-25", "symbol": "CARBORUNIV", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 1278.50 vs resistance 1306.90 (+2.2% below)"}
+{"date": "2026-09-25", "symbol": "GABRIEL", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-25", "symbol": "USHAMART", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 518.80 vs resistance 527.50 (+1.6% below)"}
+{"date": "2026-09-18", "symbol": "JUBLPHARMA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-18", "symbol": "TEGA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-11", "symbol": "ACUTAAS", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-11", "symbol": "APOLLOHOSP", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 8836.00 vs resistance 9050.00 (+2.4% below)"}
+{"date": "2026-09-11", "symbol": "DATAPATTNS", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 4829.20 vs resistance 4955.90 (+2.6% below)"}
+{"date": "2026-09-04", "symbol": "KIRLOSENG", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-04", "symbol": "MAHABANK", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-04", "symbol": "NIACL", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-09-04", "symbol": "USHAMART", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 514.15 vs resistance 527.50 (+2.5% below)"}
+{"date": "2026-10-09", "symbol": "BALRAMCHIN", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "CARTRADE", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "CHENNPETRO", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "ETERNAL", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "KOTAKBANK", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 441.00 vs resistance 453.20 (+2.7% below)"}
+{"date": "2026-10-09", "symbol": "MOTILALOFS", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "NYKAA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-09", "symbol": "PNBHOUSING", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}

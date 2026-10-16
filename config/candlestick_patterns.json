@@ -1,0 +1,21 @@
+{
+  "_note": "Shape thresholds and per-pattern weights (relative conviction, not probabilities - tune these as you see how often each pattern matters in practice). Scale-invariant (body_pct etc. are ratios), so one set of numbers works across daily/weekly/monthly.",
+  "marubozu": {"min_body_pct": 90.0, "weight": 3.0},
+  "doji": {"max_body_pct": 5.0, "weight": 0.0},
+  "hammer_family": {
+    "_note": "Shared by hammer/hanging_man/shooting_star/inverted_hammer - same shape, trend context picks the label.",
+    "max_body_pct": 35.0, "min_long_shadow_ratio": 2.0, "max_short_shadow_pct": 10.0,
+    "trend_lookback": 5, "weight": 2.0
+  },
+  "engulfing": {"weight": 2.5},
+  "harami": {"min_first_body_pct": 50.0, "max_second_body_ratio": 50.0, "weight": 1.5},
+  "piercing_dark_cloud": {
+    "min_first_body_pct": 60.0, "require_gap": false,
+    "_note": "require_gap=false is more practical for resampled weekly/monthly bars and less-liquid names where a clean gap beyond the prior high/low is rare; set true for strict textbook matching.",
+    "weight": 2.0
+  },
+  "star": {
+    "max_star_body_pct": 30.0, "min_first_body_pct": 60.0, "require_gap": false,
+    "weight": 3.5
+  }
+}

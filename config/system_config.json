@@ -1,0 +1,18 @@
+{
+  "mode": "paper",
+  "timezone": "Asia/Kolkata",
+  "paths": {"state_dir": "state", "cache_dir": "data_cache"},
+  "data": {
+    "base_url": "https://api.upstox.com",
+    "history_years": 10,
+    "chunk_days": 1800,
+    "overlap_days": 7,
+    "full_refresh_days": 7,
+    "http_timeout_s": 20,
+    "retries": 3,
+    "retry_backoff_s": 2.0,
+    "quote_batch_size": 100
+  },
+  "execution": {"slippage_bps": 10, "stale_order_policy": "drop"},
+  "logging": {"level": "INFO"}
+}

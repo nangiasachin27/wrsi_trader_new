@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "weekly_rule": "W-FRI",
+  "mode": "filter",
+  "min_score": 1,
+  "ath": {
+    "enabled": true,
+    "basis": "close",
+    "max_distance_pct": 5.0
+  },
+  "cup": {
+    "enabled": true,
+    "lookback_weeks": 52,
+    "left_rim_search_frac": 0.5,
+    "min_depth_pct": 12,
+    "max_depth_pct": 35,
+    "min_leg_weeks": 8,
+    "rim_tolerance_pct": 5,
+    "min_symmetry": 0.5,
+    "max_symmetry": 2.0,
+    "recent_uptick_weeks": 0
+  }
+}

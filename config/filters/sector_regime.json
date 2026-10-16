@@ -1,0 +1,32 @@
+{
+  "_note": "Per-symbol version of market_regime.json: blocks ENTRY if the stock's own sector benchmark isn't trending up. Needs config/sector_map.json populated (scripts/build_universe.py - it writes this file on every run, no extra flag needed) and industry_to_benchmark filled in below with real instrument keys added to config/universe.json. Run scripts/finish_sector_regime.py to do the mapping, instrument-key resolution, history fetch and enable step in one go (dry run by default, --apply to write). Empty map below = every symbol falls through to fail_mode until you populate it.",
+  "enabled": true,
+  "sector_map_path": "config/sector_map.json",
+  "timeframe_rule": "W-FRI",
+  "sma_period": 20,
+  "buffer_pct": 0.0,
+  "mode": "rank",
+  "min_bars": 30,
+  "industry_to_benchmark": {
+    "Automobile and Auto Components": "NIFTY AUTO",
+    "Capital Goods": "NIFTY INFRA",
+    "Chemicals": "NIFTY500",
+    "Construction": "NIFTY INFRA",
+    "Construction Materials": "NIFTY INFRA",
+    "Consumer Durables": "NIFTY CONSR DURBL",
+    "Consumer Services": "NIFTY SERV SECTOR",
+    "Diversified": "NIFTY500",
+    "Fast Moving Consumer Goods": "NIFTY FMCG",
+    "Financial Services": "NIFTY FIN SERVICE",
+    "Healthcare": "NIFTY HEALTHCARE",
+    "Information Technology": "NIFTY IT",
+    "Media Entertainment & Publication": "NIFTY MEDIA",
+    "Metals & Mining": "NIFTY METAL",
+    "Oil Gas & Consumable Fuels": "NIFTY OIL AND GAS",
+    "Power": "NIFTY ENERGY",
+    "Realty": "NIFTY REALTY",
+    "Services": "NIFTY SERV SECTOR",
+    "Telecommunication": "NIFTY SERV SECTOR",
+    "Textiles": "NIFTY500"
+  }
+}

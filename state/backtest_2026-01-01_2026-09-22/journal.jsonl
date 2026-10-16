@@ -1,0 +1,473 @@
+{"date": "2026-01-02", "symbol": "GPIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "UNOMINDA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "MARICO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "KOTAKBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "JSWSTEEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "AJANTPHARM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "GRAPHITE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "MAHABANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "COALINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "ICICIPRULI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "HEG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "BAJAJ-AUTO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "PNB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "IOC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "BOSCHLTD", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "NTPC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "CARTRADE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "HEROMOTOCO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "HBLENGINE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "NLCINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "GLENMARK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "USHAMART", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "PNBHOUSING", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-02", "symbol": "ESCORTS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-05", "symbol": "M&M", "event": "ENTRY_SKIPPED", "why": "portfolio open-risk cap"}
+{"date": "2026-01-05", "symbol": "SAIL", "event": "ENTRY_SKIPPED", "why": "gap down: open 147.40 < prev close 147.47"}
+{"date": "2026-01-09", "symbol": "NESTLEIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-12", "symbol": "LUPIN", "event": "ENTRY_SKIPPED", "why": "gap down: open 2174.00 < prev close 2182.20"}
+{"date": "2026-01-12", "symbol": "IPCALAB", "event": "ENTRY_SKIPPED", "why": "gap down: open 1574.00 < prev close 1575.00"}
+{"date": "2026-01-16", "symbol": "BSE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "MARICO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "PNB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "TECHM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "HCLTECH", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "PAYTM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "NMDC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "TATACONSUM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-16", "symbol": "3MINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-01-19", "symbol": "CANFINHOME", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-02", "symbol": "AXISBANK", "event": "ADD_SKIPPED", "why": "gap down: open 1339.00 < prev close 1340.40"}
+{"date": "2026-02-06", "symbol": "TVSMOTOR", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "POWERINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "MFSL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "ABCAPITAL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "VTL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "AJANTPHARM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "IOC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "NYKAA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "NTPC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-06", "symbol": "NMDC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-09", "symbol": "BPCL", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-09", "symbol": "AXISBANK", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-13", "symbol": "EICHERMOT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "KIRLOSENG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "LT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "SBILIFE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "BEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "IDBI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "MOTHERSON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "GRAPHITE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "ZFCVINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "SCI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "VOLTAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "BLUESTARCO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-13", "symbol": "TORNTPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-16", "symbol": "ABSLAMC", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-16", "symbol": "AXISBANK", "event": "ADD_SKIPPED", "why": "gap down: open 1324.00 < prev close 1332.30"}
+{"date": "2026-02-16", "symbol": "TATASTEEL", "event": "ADD_SKIPPED", "why": "gap down: open 201.00 < prev close 203.18"}
+{"date": "2026-02-20", "symbol": "MARICO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "BANKBARODA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "CANBK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "KEI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "NAM-INDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "AIAENG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "POLYCAB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "SCHNEIDER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "RBLBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "LTF", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "3MINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-20", "symbol": "GRANULES", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-23", "symbol": "CUMMINSIND", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-23", "symbol": "AXISBANK", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-23", "symbol": "INDIANB", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-23", "symbol": "TATASTEEL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-02-27", "symbol": "LAURUSLABS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "APOLLOHOSP", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "ANANDRATHI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "BPCL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "J&KBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "SCHAEFFLER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "DATAPATTNS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "KIMS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "CHENNPETRO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "AMBER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-02-27", "symbol": "SCI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-03-02", "symbol": "SUNDARMFIN", "event": "ENTRY_SKIPPED", "why": "gap down: open 5295.00 < prev close 5509.50"}
+{"date": "2026-03-02", "symbol": "GLENMARK", "event": "ENTRY_SKIPPED", "why": "gap down: open 2112.50 < prev close 2136.70"}
+{"date": "2026-03-02", "symbol": "AXISBANK", "event": "ADD_SKIPPED", "why": "gap down: open 1369.10 < prev close 1383.90"}
+{"date": "2026-03-02", "symbol": "INDIANB", "event": "ADD_SKIPPED", "why": "gap down: open 960.00 < prev close 990.50"}
+{"date": "2026-03-02", "symbol": "TATASTEEL", "event": "ADD_SKIPPED", "why": "gap down: open 205.00 < prev close 212.33"}
+{"date": "2026-03-06", "symbol": "ASTERDM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-03-09", "symbol": "SUNPHARMA", "event": "ENTRY_SKIPPED", "why": "gap down: open 1772.90 < prev close 1799.40"}
+{"date": "2026-03-09", "symbol": "AXISBANK", "event": "ADD_SKIPPED", "why": "gap down: open 1282.20 < prev close 1315.80"}
+{"date": "2026-03-09", "symbol": "INDIANB", "event": "ADD_SKIPPED", "why": "gap down: open 928.00 < prev close 939.40"}
+{"date": "2026-03-09", "symbol": "TATASTEEL", "event": "ADD_SKIPPED", "why": "gap down: open 193.45 < prev close 198.46"}
+{"date": "2026-03-09", "symbol": "COALINDIA", "event": "ENTRY_SKIPPED", "why": "gap down: open 439.00 < prev close 440.45"}
+{"date": "2026-03-16", "symbol": "INDIANB", "event": "ADD_SKIPPED", "why": "gap down: open 865.00 < prev close 870.30"}
+{"date": "2026-03-16", "symbol": "NAVINFLUOR", "event": "ADD_SKIPPED", "why": "gap down: open 6120.00 < prev close 6172.00"}
+{"date": "2026-03-23", "symbol": "NAVINFLUOR", "event": "ADD_SKIPPED", "why": "gap down: open 6061.00 < prev close 6124.00"}
+{"date": "2026-03-23", "symbol": "CHENNPETRO", "event": "ENTRY_SKIPPED", "why": "gap down: open 1064.00 < prev close 1064.75"}
+{"date": "2026-03-23", "symbol": "MRPL", "event": "ENTRY_SKIPPED", "why": "gap down: open 191.14 < prev close 191.19"}
+{"date": "2026-03-23", "symbol": "SCHNEIDER", "event": "ENTRY_SKIPPED", "why": "gap down: open 875.10 < prev close 890.00"}
+{"date": "2026-03-30", "symbol": "GRANULES", "event": "ENTRY_SKIPPED", "why": "gap down: open 622.50 < prev close 624.35"}
+{"date": "2026-03-30", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "gap down: open 10385.00 < prev close 10608.00"}
+{"date": "2026-04-02", "symbol": "SCHNEIDER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-02", "symbol": "CUMMINSIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-06", "symbol": "ANANDRATHI", "event": "ENTRY_SKIPPED", "why": "gap down: open 1600.00 < prev close 1604.10"}
+{"date": "2026-04-06", "symbol": "KIRLOSENG", "event": "ENTRY_SKIPPED", "why": "gap down: open 1381.10 < prev close 1383.90"}
+{"date": "2026-04-10", "symbol": "TITAN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "WELCORP", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "HINDALCO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "J&KBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "FEDERALBNK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "INDIANB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "LAURUSLABS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "SAIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "TATASTEEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "JINDALSTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NAM-INDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "BHARATFORG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "SHRIRAMFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "ZYDUSWELL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "GALLANTT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "MAHABANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-10", "symbol": "NTPC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-13", "symbol": "BSE", "event": "ENTRY_SKIPPED", "why": "gap down: open 3201.00 < prev close 3281.20"}
+{"date": "2026-04-13", "symbol": "GLENMARK", "event": "ENTRY_SKIPPED", "why": "gap down: open 2153.40 < prev close 2163.20"}
+{"date": "2026-04-13", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1070.00 < prev close 1078.30"}
+{"date": "2026-04-17", "symbol": "ASTERDM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "GMDCLTD", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "ANGELONE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "BHEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "NMDC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "CGPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "DATAPATTNS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "TORNTPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "BEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "AXISBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "ADANIPORTS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "SCI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "TATAPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "ENGINERSIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "HINDCOPPER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "HEG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "RADICO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "JPPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "USHAMART", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-17", "symbol": "GRAPHITE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-20", "symbol": "NAVA", "event": "ENTRY_SKIPPED", "why": "gap down: open 700.00 < prev close 703.10"}
+{"date": "2026-04-20", "symbol": "SARDAEN", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-04-20", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1087.80 < prev close 1089.40"}
+{"date": "2026-04-24", "symbol": "AUBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "ANURAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "CESC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "CANFINHOME", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "MARICO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "NAVINFLUOR", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "PNBHOUSING", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "JUBLINGREA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "AIAENG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "COALINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-24", "symbol": "GRSE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-27", "symbol": "NESTLEIND", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-04-27", "symbol": "HSCL", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-04-27", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1098.10 < prev close 1098.80"}
+{"date": "2026-04-27", "symbol": "VEDL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-04-30", "symbol": "VIJAYA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-30", "symbol": "RBLBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-30", "symbol": "SOLARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-30", "symbol": "USHAMART", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-30", "symbol": "OIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-04-30", "symbol": "BAJAJ-AUTO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-04", "symbol": "JSWSTEEL", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-04", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1134.40 < prev close 1135.10"}
+{"date": "2026-05-04", "symbol": "CEMPRO", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-08", "symbol": "APOLLOHOSP", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "CRAFTSMAN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "MARICO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "NEULANDLAB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "TORNTPHARM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "KEI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "ABCAPITAL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "MANAPPURAM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "GRASIM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "AUBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "DIVISLAB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "JINDALSTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "CREDITACC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "LALPATHLAB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "WOCKPHARMA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "GODREJIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "CAMS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "AJANTPHARM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "HINDZINC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "MOTHERSON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "GABRIEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "HINDCOPPER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "HAL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "JUBLINGREA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "KPIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "SUNPHARMA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-08", "symbol": "PHOENIXLTD", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-11", "symbol": "POLYCAB", "event": "ENTRY_SKIPPED", "why": "gap down: open 9004.50 < prev close 9083.00"}
+{"date": "2026-05-11", "symbol": "AMBER", "event": "ENTRY_SKIPPED", "why": "gap down: open 8781.00 < prev close 8824.50"}
+{"date": "2026-05-11", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-11", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1113.10 < prev close 1123.10"}
+{"date": "2026-05-11", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "gap down: open 1067.00 < prev close 1072.40"}
+{"date": "2026-05-11", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "gap down: open 224.50 < prev close 225.33"}
+{"date": "2026-05-15", "symbol": "BIOCON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-15", "symbol": "ZYDUSLIFE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-15", "symbol": "OIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-15", "symbol": "JPPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-15", "symbol": "FORTIS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-18", "symbol": "KIMS", "event": "ENTRY_SKIPPED", "why": "gap down: open 748.00 < prev close 761.65"}
+{"date": "2026-05-18", "symbol": "TATACONSUM", "event": "ENTRY_SKIPPED", "why": "gap down: open 1230.70 < prev close 1234.00"}
+{"date": "2026-05-18", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-18", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-18", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "gap down: open 351.55 < prev close 352.80"}
+{"date": "2026-05-18", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "gap down: open 1012.10 < prev close 1030.40"}
+{"date": "2026-05-18", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "gap down: open 221.00 < prev close 221.33"}
+{"date": "2026-05-22", "symbol": "NYKAA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-22", "symbol": "GLAND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-22", "symbol": "TATACOMM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-22", "symbol": "TIMKEN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-22", "symbol": "MOTHERSON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-22", "symbol": "ENDURANCE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-25", "symbol": "MANAPPURAM", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-25", "symbol": "SHYAMMETL", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-25", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "gap down: open 1455.20 < prev close 1463.50"}
+{"date": "2026-05-25", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-25", "symbol": "ONGC", "event": "ADD_SKIPPED", "why": "gap down: open 289.95 < prev close 290.00"}
+{"date": "2026-05-25", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-25", "symbol": "GPIL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-25", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-25", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-05-29", "symbol": "JSWENERGY", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-29", "symbol": "IFCI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-29", "symbol": "AIAENG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-29", "symbol": "JPPOWER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-29", "symbol": "JINDALSAW", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-05-29", "symbol": "KPIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-01", "symbol": "ZYDUSWELL", "event": "ENTRY_SKIPPED", "why": "gap down: open 507.00 < prev close 507.05"}
+{"date": "2026-06-01", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-01", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-01", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-01", "symbol": "GPIL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-01", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-01", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-05", "symbol": "FEDERALBNK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-05", "symbol": "KPRMILL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-05", "symbol": "NH", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-05", "symbol": "COALINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-05", "symbol": "TIMKEN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-08", "symbol": "NMDC", "event": "ENTRY_SKIPPED", "why": "gap down: open 91.15 < prev close 92.90"}
+{"date": "2026-06-08", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "gap down: open 1451.30 < prev close 1462.30"}
+{"date": "2026-06-08", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1070.00 < prev close 1079.10"}
+{"date": "2026-06-08", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "gap down: open 333.70 < prev close 336.60"}
+{"date": "2026-06-08", "symbol": "GPIL", "event": "ADD_SKIPPED", "why": "gap down: open 275.20 < prev close 280.20"}
+{"date": "2026-06-08", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "gap down: open 1033.30 < prev close 1048.80"}
+{"date": "2026-06-08", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "gap down: open 230.97 < prev close 232.60"}
+{"date": "2026-06-12", "symbol": "AJANTPHARM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-12", "symbol": "FORTIS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-12", "symbol": "BIOCON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-15", "symbol": "MARICO", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-15", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "gap down: open 1462.50 < prev close 1472.80"}
+{"date": "2026-06-15", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-15", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-15", "symbol": "GPIL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-15", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-15", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-19", "symbol": "WELSPUNLIV", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "SCHNEIDER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "FINCABLES", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "OFSS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "LUPIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "BOSCHLTD", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "PHOENIXLTD", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "NESTLEIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "LINDEINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "ENGINERSIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "SCI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "RAINBOW", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "NYKAA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "OLECTRA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "JINDALSAW", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "MOTILALOFS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "ZFCVINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "REDINGTON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "LALPATHLAB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "GABRIEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-19", "symbol": "TIMKEN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-22", "symbol": "GMRAIRPORT", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-22", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-22", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-22", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-22", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-22", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "gap down: open 231.50 < prev close 231.76"}
+{"date": "2026-06-25", "symbol": "CREDITACC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-25", "symbol": "AXISBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-25", "symbol": "DRREDDY", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-25", "symbol": "INDIGO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-25", "symbol": "AJANTPHARM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-25", "symbol": "PNBHOUSING", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-06-29", "symbol": "CHOLAFIN", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-29", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-29", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1161.10 < prev close 1163.20"}
+{"date": "2026-06-29", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-06-29", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "gap down: open 1140.00 < prev close 1141.20"}
+{"date": "2026-06-29", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "gap down: open 228.12 < prev close 229.27"}
+{"date": "2026-07-03", "symbol": "LTF", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "MANAPPURAM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "AUBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "CUB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "DELHIVERY", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "IPCALAB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "NESTLEIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "SUNPHARMA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "NH", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "SHRIRAMFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "OBEROIRLTY", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "PRESTIGE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "MAXHEALTH", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "GODREJIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "BAJFINANCE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "CHOICEIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "ICICIBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-03", "symbol": "INDHOTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-06", "symbol": "USHAMART", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-06", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-06", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-06", "symbol": "NLCINDIA", "event": "ADD_SKIPPED", "why": "gap down: open 312.65 < prev close 313.50"}
+{"date": "2026-07-06", "symbol": "ABSLAMC", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-06", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-10", "symbol": "PAYTM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-10", "symbol": "ZENTEC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-10", "symbol": "TITAN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-10", "symbol": "CANFINHOME", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-10", "symbol": "CEATLTD", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-10", "symbol": "IIFL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-10", "symbol": "GRAVITA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-10", "symbol": "REDINGTON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-13", "symbol": "DIVISLAB", "event": "ENTRY_SKIPPED", "why": "gap down: open 6830.00 < prev close 6836.00"}
+{"date": "2026-07-13", "symbol": "SHYAMMETL", "event": "ENTRY_SKIPPED", "why": "gap down: open 974.95 < prev close 975.10"}
+{"date": "2026-07-13", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1204.90 < prev close 1214.00"}
+{"date": "2026-07-13", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "gap down: open 217.10 < prev close 218.45"}
+{"date": "2026-07-17", "symbol": "WOCKPHARMA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-17", "symbol": "HOMEFIRST", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-17", "symbol": "ECLERX", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-17", "symbol": "KARURVYSYA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-17", "symbol": "BAJAJ-AUTO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-20", "symbol": "BIOCON", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-20", "symbol": "ICICIBANK", "event": "ENTRY_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-20", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "gap down: open 1184.30 < prev close 1191.40"}
+{"date": "2026-07-20", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-24", "symbol": "NESTLEIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-24", "symbol": "TVSMOTOR", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-24", "symbol": "DATAPATTNS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-24", "symbol": "SCHNEIDER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-24", "symbol": "CUMMINSIND", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-24", "symbol": "APARINDS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-27", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-27", "symbol": "ADANIPOWER", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-07-31", "symbol": "REDINGTON", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "M&MFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "CHOLAFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "CHOICEIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "WOCKPHARMA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "PAYTM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "NH", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "EICHERMOT", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "KIMS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "NAM-INDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "ETERNAL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "RBLBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "ANANTRAJ", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "BAJAJFINSV", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-07-31", "symbol": "INDHOTEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-03", "symbol": "CCL", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-08-07", "symbol": "SHRIRAMFIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "ENDURANCE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "GRASIM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "HAL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "KEI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "JINDALSAW", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "WELSPUNLIV", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "JSWSTEEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "PNBHOUSING", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "UNOMINDA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "HEROMOTOCO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "M&M", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "HINDALCO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "SBIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-07", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-10", "symbol": "CHENNPETRO", "event": "ADD_SKIPPED", "why": "gap down: open 1270.00 < prev close 1275.40"}
+{"date": "2026-08-14", "symbol": "AUBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "FINCABLES", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "IDEA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "KPIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "STARHEALTH", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "POWERINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "APLAPOLLO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "ANANTRAJ", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "DATAPATTNS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-14", "symbol": "CEMPRO", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-17", "symbol": "ABB", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-08-17", "symbol": "ABCAPITAL", "event": "ADD_SKIPPED", "why": "gap down: open 399.20 < prev close 401.00"}
+{"date": "2026-08-21", "symbol": "KPRMILL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "OBEROIRLTY", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "ZENTEC", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "360ONE", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "MCX", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "HINDCOPPER", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "MOTILALOFS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "IFCI", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "ASAHIINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "BAJAJFINSV", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-21", "symbol": "UNOMINDA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-24", "symbol": "ABCAPITAL", "event": "ADD_SKIPPED", "why": "gap down: open 410.55 < prev close 413.00"}
+{"date": "2026-08-28", "symbol": "GLENMARK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "CGCL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "SAIL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "JSWSTEEL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "WOCKPHARMA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "PARADEEP", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "LTFOODS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "ADANIENSOL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "ENGINERSIN", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "CHALET", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-28", "symbol": "UNIONBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-08-31", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-08-31", "symbol": "ABCAPITAL", "event": "ADD_SKIPPED", "why": "gap down: open 404.80 < prev close 405.55"}
+{"date": "2026-09-04", "symbol": "USHAMART", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "ICICIBANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "CUB", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "KPRMILL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "PFOCUS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "OBEROIRLTY", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "NIACL", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "MAHABANK", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-04", "symbol": "KIRLOSENG", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-07", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "gap down: open 1646.00 < prev close 1653.10"}
+{"date": "2026-09-07", "symbol": "ABCAPITAL", "event": "ADD_SKIPPED", "why": "gap down: open 404.00 < prev close 404.90"}
+{"date": "2026-09-11", "symbol": "ASAHIINDIA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-11", "symbol": "APOLLOHOSP", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-11", "symbol": "TORNTPHARM", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-11", "symbol": "ACUTAAS", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-15", "symbol": "GRAPHITE", "event": "ENTRY_SKIPPED", "why": "gap down: open 825.50 < prev close 825.80"}
+{"date": "2026-09-15", "symbol": "DATAPATTNS", "event": "ENTRY_SKIPPED", "why": "gap down: open 4829.00 < prev close 4829.20"}
+{"date": "2026-09-15", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "below min notional / caps"}
+{"date": "2026-09-18", "symbol": "JUBLPHARMA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-18", "symbol": "TEGA", "event": "ENTRY_SKIPPED", "why": "no free slot"}
+{"date": "2026-09-21", "symbol": "ABCAPITAL", "event": "ENTRY_SKIPPED", "why": "gap down: open 405.10 < prev close 410.05"}
+{"date": "2026-09-21", "symbol": "ADANIPORTS", "event": "ENTRY_SKIPPED", "why": "gap down: open 1793.70 < prev close 1824.00"}
+{"date": "2026-09-21", "symbol": "ZYDUSLIFE", "event": "ENTRY_SKIPPED", "why": "gap down: open 1155.00 < prev close 1160.00"}
+{"date": "2026-09-21", "symbol": "AUROPHARMA", "event": "ADD_SKIPPED", "why": "gap down: open 1709.80 < prev close 1734.00"}
