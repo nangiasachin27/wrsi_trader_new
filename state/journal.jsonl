@@ -108,3 +108,5 @@
 {"date": "2026-10-09", "symbol": "MOTILALOFS", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
 {"date": "2026-10-09", "symbol": "NYKAA", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
 {"date": "2026-10-09", "symbol": "PNBHOUSING", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
+{"date": "2026-10-19", "symbol": "RADICO", "event": "STALE_DROPPED", "action": "ENTRY"}
+{"date": "2026-10-19", "symbol": "KARURVYSYA", "event": "STALE_DROPPED", "action": "ENTRY"}
