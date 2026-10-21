@@ -1,0 +1,18 @@
+{
+  "_note": "Daily-bar moving-average pullback strategy (course ep.10). Tag: UPTREND only. Disabled by default - run isolated with `trader backtest --strategy pullback_ma --start ... --end ... --label pullback_ma_only`.",
+  "enabled": false,
+  "universe": "default",
+  "candlestick_config_path": "config/candlestick_patterns.json",
+  "entry": {
+    "min_bars": 260,
+    "trend_sma_period": 50,
+    "pullback_sma_period": 20,
+    "touch_tolerance_pct": 0.5,
+    "atr_period": 14,
+    "atr_mult": 1.0
+  },
+  "exit": {
+    "trail_sma_period": 20,
+    "buffer_pct": 0.0
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "_note": "Daily-bar inside-bar trend-continuation strategy (course ep.12, 3rd use case). Tag: UPTREND only. Disabled by default - run isolated with `trader backtest --strategy inside_bar_breakout --start ... --end ... --label inside_bar_breakout_only`.",
+  "enabled": false,
+  "universe": "default",
+  "entry": {
+    "min_bars": 60,
+    "trend_sma_period": 50,
+    "atr_period": 14,
+    "atr_mult": 1.0,
+    "breakout_buffer_pct": 0.0,
+    "prefer_small_range": true,
+    "max_range_atr_mult": 1.0
+  },
+  "exit": {
+    "trail_sma_period": 20,
+    "buffer_pct": 0.0
+  }
+}

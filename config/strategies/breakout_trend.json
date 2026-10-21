@@ -1,0 +1,21 @@
+{
+  "_note": "Daily-bar breakout-near-structure strategy (course ep.8). Tag: UPTREND only - see config/filters/regime_match.json. Disabled by default so it doesn't change existing weekly_rsi_sma20-only backtests; run it in isolation with `trader backtest --strategy breakout_trend --start ... --end ... --label breakout_trend_only`.",
+  "enabled": false,
+  "universe": "default",
+  "levels_timeframe": "daily",
+  "levels_config_path": "config/levels.json",
+  "entry": {
+    "min_bars": 260,
+    "trend_sma_period": 50,
+    "breakout_buffer_pct": 0.3,
+    "require_volume_confirmation": true,
+    "volume_sma_period": 20,
+    "volume_mult": 1.2,
+    "atr_period": 14,
+    "atr_mult": 1.0
+  },
+  "exit": {
+    "trail_sma_period": 20,
+    "buffer_pct": 0.0
+  }
+}

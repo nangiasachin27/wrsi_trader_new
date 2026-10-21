@@ -1,0 +1,18 @@
+{
+  "_note": "Daily-bar support-zone reversal strategy (course ep.6), long side only. Tag: SIDEWAYS (see config/filters/regime_match.json). Disabled by default - run isolated with `trader backtest --strategy sr_reversal --start ... --end ... --label sr_reversal_only`.",
+  "enabled": false,
+  "universe": "default",
+  "levels_timeframe": "daily",
+  "levels_config_path": "config/levels.json",
+  "candlestick_config_path": "config/candlestick_patterns.json",
+  "entry": {
+    "min_bars": 260,
+    "proximity_pct": 1.0,
+    "momentum_lookback": 3,
+    "atr_period": 14,
+    "atr_mult": 1.0
+  },
+  "exit": {
+    "target_tolerance_pct": 1.0
+  }
+}

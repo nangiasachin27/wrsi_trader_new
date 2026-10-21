@@ -1,0 +1,11 @@
+{
+  "_note": "Course-based swing-structure market trend (see trader/core/trend_structure.py) - states are UPTREND / SIDEWAYS / DOWNTREND, the course's own words. Separate from, and not read by, trader/core/market_trend.py's VD-day/FTD engine - that one is left untouched for comparison.",
+  "benchmark_symbol": "NIFTY500",
+  "timeframe": "daily",
+  "pivot_left": 2,
+  "pivot_right": 2,
+  "min_confirmed_swings": 2,
+  "initial_state": "SIDEWAYS",
+  "weekly_rule": "W-FRI",
+  "monthly_rule": "ME"
+}
