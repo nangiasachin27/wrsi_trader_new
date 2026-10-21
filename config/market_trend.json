@@ -1,0 +1,13 @@
+{
+  "_note": "General-market-trend state machine thresholds. fall_pct/rally_pct/ftd_pct are percent (e.g. 0.25 = 0.25%). vd_window_calendar_days is CALENDAR days (confirmed); breach_check_trading_days and ftd_search_trading_days are TRADING days (sessions) - 'next 2.5 days' was rounded up to 3 trading days since the source rule didn't specify a convention for a half-day with daily bars; tighten to 2 if you want the breach-check to be more lenient instead of more conservative.",
+  "benchmark_symbol": "NIFTY500",
+  "fall_pct": 0.25,
+  "rally_pct": 1.25,
+  "ftd_pct": 1.0,
+  "vd_window_calendar_days": 30,
+  "neutral_vd_count": 4,
+  "downtrend_vd_count": 8,
+  "breach_check_trading_days": 3,
+  "ftd_search_trading_days": 7,
+  "initial_state": "NEUTRAL"
+}

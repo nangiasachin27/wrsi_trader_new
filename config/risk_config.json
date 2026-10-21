@@ -2,7 +2,13 @@
   "capital": {
     "base_capital": 1000000,
     "mode": "fixed",
-    "allocation_pct": {"weekly_rsi_sma20": 100}
+    "allocation_pct": {
+      "weekly_rsi_sma20": 100,
+      "breakout_trend": 100,
+      "pullback_ma": 100,
+      "sr_reversal": 100,
+      "inside_bar_breakout": 100
+    }
   },
   "per_trade": {
     "risk_pct_of_base": 1.0,

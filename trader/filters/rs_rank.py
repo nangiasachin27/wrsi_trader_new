@@ -94,6 +94,19 @@ class RelativeStrengthFilter(Filter):
         return self._universe
 
     def prepare(self, asof: date, provider) -> None:
+        # Deliberately recomputes every call, with no "same week, skip it" caching. A caching
+        # attempt was tried and reverted: _weekly_return's trailing window is calculated from
+        # whatever bars exist <= asof, so within a still-forming week its answer keeps drifting
+        # day to day as new closes arrive - it is NOT a constant that only changes once the
+        # week's Friday bar completes. A "same calendar week -> skip" cache ends up serving a
+        # STALE snapshot from early in the week (e.g. Monday's) on the one day that actually
+        # matters for ranking - the Friday decision day itself - because pandas' W-FRI resample
+        # labels every day of a forming week with that same upcoming Friday. Confirmed on a real
+        # case: TARIL's RS percentile was 74.7% using a Monday snapshot vs 90.0% recomputed
+        # fresh on the Friday decision - enough to drop its composite score from 4 to 3 and lose
+        # a contested slot to a worse candidate, materially changing backtest results. If this
+        # needs to be faster again, the safe angle is having the ENGINE skip calling prepare()
+        # on days with no entry candidates to rank at all, not caching inside the filter.
         self._rs_by_symbol = {}
         self._percentile_by_symbol = {}
         if not self.enabled:

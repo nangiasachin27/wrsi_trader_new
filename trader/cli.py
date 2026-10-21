@@ -38,6 +38,13 @@ def main() -> None:
     ap.add_argument("--date", help="YYYY-MM-DD (default: today in configured timezone)")
     ap.add_argument("--start"), ap.add_argument("--end")
     ap.add_argument("--data-dir", help="CSV dir for backtest (default: cache_dir)")
+    ap.add_argument("--strategy", help="backtest/eod/open: comma-separated strategy name(s) to run in "
+                                       "ISOLATION, overriding every strategy config's own 'enabled' flag for "
+                                       "this run only (nothing is written back to the json files). Use this to "
+                                       "backtest each new swing strategy separately and compare, e.g. "
+                                       "--strategy breakout_trend, then --strategy pullback_ma, etc. Omit to "
+                                       "run whatever combination each config's own 'enabled' says (unchanged "
+                                       "default behavior).")
     ap.add_argument("--label", help="backtest: suffix for the output folder, e.g. --label strategyA_only "
                                     "-> state/backtest_<start>_<end>_strategyA_only/. Use this whenever you "
                                     "run the same date range more than once (e.g. comparing strategies in "
@@ -64,6 +71,14 @@ def main() -> None:
     a = ap.parse_args()
 
     s = load_settings()
+    if a.strategy:
+        wanted = {n.strip() for n in a.strategy.split(",") if n.strip()}
+        unknown = wanted - set(s.strategies)
+        if unknown:
+            raise SystemExit(f"--strategy: unknown strategy name(s) {sorted(unknown)}; "
+                             f"known: {sorted(s.strategies)}")
+        for name, cfg in s.strategies.items():
+            cfg["enabled"] = name in wanted
     level = "DEBUG" if a.verbose else s.system["logging"]["level"]
     logging.basicConfig(level=level, format="%(asctime)s %(levelname)s %(message)s")
     today = datetime.now(ZoneInfo(s.system["timezone"])).date()

@@ -1,10 +1,8 @@
 {
-  "_note": "Blocks an ENTRY if price sits just below a prior swing high it hasn't cleared yet. resistance = highest 'basis' price over the lookback window, excluding the most recent exclude_recent_weeks weeks (so the candidate's own current rally isn't compared against itself). proximity_pct = how close below that level counts as 'too close'. Price already ABOVE the old resistance always passes.",
+  "_note": "Blocks an ENTRY if price sits just below the nearest overhead support/resistance zone (pivot-clustered swing highs, min_touches required - same logic and same config/levels.json params as scripts/levels.py). proximity_pct = how close below that zone's near edge counts as 'too close'. Price already ABOVE the zone, or no zone found above price, always passes (fail_mode decides the latter).",
   "enabled": true,
-  "weekly_rule": "W-FRI",
-  "lookback_weeks": 52,
-  "exclude_recent_weeks": 4,
+  "timeframe": "weekly",
+  "levels_config_path": "config/levels.json",
   "proximity_pct": 3.0,
-  "basis": "high",
-  "fail_mode": "block"
+  "fail_mode": "allow"
 }
