@@ -12,7 +12,9 @@
     "max_range_atr_mult": 1.0
   },
   "exit": {
-    "trail_sma_period": 20,
+    "_note": "TIGHT Chandelier Exit (highest close since entry - atr_mult*ATR(atr_period)), ratchet-only - shorter lookback/smaller multiple than breakout_trend's, since this is a short-horizon expansion play (small-range inside bar) meant to lock in a quick move, not ride a multi-month trend.",
+    "atr_period": 10,
+    "atr_mult": 1.75,
     "buffer_pct": 0.0
   }
 }

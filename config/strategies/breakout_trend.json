@@ -15,7 +15,9 @@
     "atr_mult": 1.0
   },
   "exit": {
-    "trail_sma_period": 20,
+    "_note": "Chandelier Exit (highest close since entry - atr_mult*ATR(atr_period)), ratchet-only - replaces the old fixed daily SMA20 trail so a breakout gets room to ride its trend through a normal post-breakout retest instead of being clipped on the first dip.",
+    "atr_period": 14,
+    "atr_mult": 3.0,
     "buffer_pct": 0.0
   }
 }

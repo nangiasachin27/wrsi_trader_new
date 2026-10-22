@@ -4,7 +4,7 @@ from datetime import date
 
 from trader.core.indicators import sma
 from trader.core.models import Position, Signal
-from trader.strategies._swing_common import atr_buffer, levels_cfg, nearest_zones, ratchet, trailing_level
+from trader.strategies._swing_common import atr_buffer, chandelier_trail, levels_cfg, nearest_zones, ratchet
 from trader.strategies.base import Strategy, SymbolContext, register
 
 # Market-trend tag (see config/filters/regime_match.json): UPTREND only - the course is
@@ -25,9 +25,11 @@ class BreakoutTrend(Strategy):
     Stop sits just below the broken zone's LOWER edge (not its midpoint), buffered by ATR -
     "trading near structure" is the whole point of this setup over a bare swing-high breakout:
     the zone's own lower edge is the tightest logical invalidation level. Once in the trade,
-    the stop only trails up via a faster SMA (ratchet-only, never loosens) - riding the trend
-    per the course's 'exit on a close below the trail, or when market structure breaks' rule,
-    approximated here by the trailing SMA alone (no explicit swing-structure exit yet)."""
+    the stop trails via a Chandelier Exit - highest close since entry minus atr_mult*ATR,
+    ratchet-only - rather than a fixed-period SMA: a breakout is meant to be ridden through its
+    normal post-breakout throwback/retest, and a volatility-adaptive trail gives a calm trending
+    name room while still tightening automatically on a choppier one, instead of clipping every
+    name on the same fixed daily lookback regardless of how it actually moves."""
 
     def __init__(self, cfg: dict):
         super().__init__(cfg)
@@ -84,20 +86,21 @@ class BreakoutTrend(Strategy):
 
     def stop_level(self, ctx: SymbolContext, pos: Position) -> float | None:
         x = self.cfg["exit"]
-        return ratchet(pos.stop, trailing_level(ctx.daily["close"], x["trail_sma_period"]))
+        return ratchet(pos.stop, chandelier_trail(ctx.daily, pos.opened, x["atr_period"], x["atr_mult"]))
 
     def exit_signal(self, ctx: SymbolContext, pos: Position) -> Signal | None:
         if pos.opened and ctx.asof < date.fromisoformat(pos.opened):
             return None
         x = self.cfg["exit"]
-        trail = trailing_level(ctx.daily["close"], x["trail_sma_period"])
+        trail = chandelier_trail(ctx.daily, pos.opened, x["atr_period"], x["atr_mult"])
         if trail is None:
             return None
         px = float(ctx.daily["close"].iloc[-1])
         level = max(trail, pos.stop) if pos.stop else trail
         if px <= level * (1 - x["buffer_pct"] / 100.0):
             return Signal(ctx.symbol, self.name, "EXIT", ctx.asof.isoformat(),
-                          f"close {px:.2f} <= trailing SMA{x['trail_sma_period']} {level:.2f}",
+                          f"close {px:.2f} <= chandelier trail {level:.2f} "
+                          f"(highest close since entry - {x['atr_mult']}x ATR{x['atr_period']})",
                           ref_price=px, stop=level)
         return None
 

@@ -44,6 +44,24 @@ def atr_buffer(daily, period: int, mult: float) -> float:
     return float(a) * mult if a == a else 0.0  # NaN -> no buffer rather than crashing
 
 
+def chandelier_trail(daily, opened: str | None, period: int, atr_mult: float) -> float | None:
+    """Highest close SINCE ENTRY, minus atr_mult * ATR(period) - a volatility-adaptive trailing
+    stop (classic trend-following "Chandelier Exit"), used instead of a fixed-period SMA trail
+    for strategies meant to ride a trend: it widens automatically for a volatile name and
+    tightens for a calm one, rather than clipping every stock on the same fixed lookback
+    regardless of how it actually moves. Highest close is capped to bars on/after `opened`
+    (pos.opened, an ISO date string) so a huge pre-entry spike can't set an unreachable trail -
+    the trail only ever reflects what happened WHILE the position has been open."""
+    a = atr(daily["high"], daily["low"], daily["close"], period).iloc[-1]
+    if a != a:
+        return None
+    window = daily if not opened else daily.loc[opened:]
+    if window.empty:
+        return None
+    highest_close = float(window["close"].max())
+    return highest_close - float(a) * atr_mult
+
+
 def nearest_zones(daily, timeframe: str, cfg: dict, price: float) -> dict:
     zones = support_resistance(daily, timeframe, cfg)
     return nearest_levels(zones, price)

@@ -12,7 +12,8 @@
     "atr_mult": 1.0
   },
   "exit": {
-    "trail_sma_period": 20,
+    "_note": "Trails the SLOWER trend SMA (matches entry.trend_sma_period), not the fast pullback_sma_period entry was keyed to - entry and exit were previously the SAME fast MA, which gets re-touched on every subsequent shallow dip as the stock keeps advancing, causing short/choppy exits. Trailing the slower trend MA instead lets ordinary pullbacks pass and only exits when the broader uptrend itself actually breaks.",
+    "trail_sma_period": 50,
     "buffer_pct": 0.0
   }
 }
