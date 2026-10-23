@@ -38,7 +38,16 @@ class ResistanceFilter(Filter):
 
     Price already ABOVE the nearest zone, or with no zone above it at all (fail_mode
     decides), always passes - only the narrow band just underneath a real, multi-touch
-    level is blocked."""
+    level is blocked.
+
+    `exempt_strategies` (opt-OUT, default empty, same convention and same rationale as
+    quality.json's own exempt_strategies - see that filter's docstring): a strategy named
+    here is NEVER evaluated by this check, full stop. Added for sr_reversal - this filter
+    exists to stop a BREAKOUT strategy from buying right under a ceiling it hasn't cleared
+    yet. sr_reversal has no such concern: the next resistance zone above its entry is its own
+    profit TARGET, not something to avoid being near - a tight support-to-resistance range is
+    exactly the setup this strategy wants, not a reason to block it. Blocking sr_reversal's
+    entries here was excluding its best, tightest, most textbook range trades."""
 
     def __init__(self, cfg: dict):
         super().__init__(cfg)
@@ -56,13 +65,18 @@ class ResistanceFilter(Filter):
 
     def describe(self) -> str:
         c = self.cfg
-        return (f"timeframe={c.get('timeframe', 'weekly')}, "
-                f"proximity_pct={c.get('proximity_pct')}, fail_mode={c.get('fail_mode', 'block')}")
+        bits = [f"timeframe={c.get('timeframe', 'weekly')}", f"proximity_pct={c.get('proximity_pct')}",
+               f"fail_mode={c.get('fail_mode', 'block')}"]
+        if c.get("exempt_strategies"):
+            bits.append(f"exempt_strategies={c['exempt_strategies']}")
+        return ", ".join(bits)
 
     def evaluate(self, signal: Signal, ctx: SymbolContext) -> FilterResult:
         if not self.enabled:
             return FilterResult(True, "disabled")
         c = self.cfg
+        if signal.strategy in c.get("exempt_strategies", []):
+            return FilterResult(True, f"{signal.strategy} is exempt from the resistance filter")
         timeframe = c.get("timeframe", "weekly")
         levels_cfg = self._levels_cfg()
 

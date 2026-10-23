@@ -19,6 +19,19 @@ def sma(close: pd.Series, period: int) -> pd.Series:
     return close.rolling(period, min_periods=period).mean()
 
 
+def efficiency_ratio(close: pd.Series, period: int) -> pd.Series:
+    """Kaufman Efficiency Ratio: net directional move over `period` bars, divided by the total
+    distance traveled over the same window (sum of each bar's absolute change). 1.0 = price
+    moved in a straight line (pure trend, zero wasted motion); near 0 = price churned back and
+    forth and netted almost nowhere (pure chop). Unlike ADX (trend/core/indicators.adx), which
+    needs 2x period bars to warm up and is itself smoothed, this is a direct, un-smoothed ratio -
+    deliberately simple so a market_efficiency-style filter's threshold means exactly what it
+    says ("net moved >= X% of the distance traveled"), not an opaque oscillator scale."""
+    net_move = (close - close.shift(period)).abs()
+    path_length = close.diff().abs().rolling(period, min_periods=period).sum()
+    return net_move / path_length.replace(0.0, np.nan)
+
+
 def atr(high: pd.Series, low: pd.Series, close: pd.Series, period: int) -> pd.Series:
     """Wilder's ATR (same RMA smoothing as rsi() above, for consistency)."""
     prev_close = close.shift(1)

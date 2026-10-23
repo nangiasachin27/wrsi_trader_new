@@ -61,6 +61,8 @@ class Filter(ABC):
         for key in ("benchmark_symbol", "proximity_pct", "sma_period", "timeframe_rule", "fail_mode"):
             if key in c:
                 bits.append(f"{key}={c[key]}")
+        if c.get("exempt_strategies"):
+            bits.append(f"exempt_strategies={c['exempt_strategies']}")
         return ", ".join(bits) if bits else "enabled"
 
     @abstractmethod
@@ -86,6 +88,7 @@ def build_filter(name: str, cfg: dict) -> Filter:
     import trader.filters.trend_strength # noqa: F401
     import trader.filters.rs_rank        # noqa: F401
     import trader.filters.regime_match   # noqa: F401
+    import trader.filters.market_efficiency  # noqa: F401
     if name not in REGISTRY:
         raise KeyError(f"No filter class registered for config '{name}'. Known: {list(REGISTRY)}")
     return REGISTRY[name](cfg)

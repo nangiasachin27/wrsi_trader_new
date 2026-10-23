@@ -1,8 +1,10 @@
 {
+  "_note": "exempt_strategies: strategies in this list are NEVER scored or gated by this filter (opt-OUT, default empty - unlike regime_match/market_efficiency's opt-IN applicable_strategies, since this filter has always applied to every strategy uniformly and flipping the default would silently change behavior nobody asked to touch). sr_reversal is exempt: this filter's ATH-proximity/cup-formation checks require a near-all-time-high or bullish-base signature, which is close to the OPPOSITE of sr_reversal's own entry (a stock that just fell away from its highs into a support zone and bounced) - see trader/filters/quality.py docstring for the full diagnosis.",
   "enabled": true,
   "weekly_rule": "W-FRI",
   "mode": "filter",
   "min_score": 1,
+  "exempt_strategies": ["sr_reversal"],
   "ath": {
     "enabled": true,
     "basis": "close",

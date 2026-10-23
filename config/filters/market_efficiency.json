@@ -1,0 +1,17 @@
+{
+  "_note": "Portfolio-wide 'is the market actually trending or just chopping' check (Kaufman Efficiency Ratio on the benchmark's own daily closes - see trader/filters/market_efficiency.py docstring for the full rationale and the concrete 2023-vs-2024-2026 finding that motivated this). DISABLED by default and mode='rank' (never blocks a trade) until backtested per strategy - flip 'enabled' to true and run scripts/tune_strategy.py --filters market_efficiency --strategy <name> for each strategy in applicable_strategies to measure actual impact before ever considering mode='filter'. sr_reversal is deliberately NOT in applicable_strategies: it is a range/reversal play that wants a non-trending tape, so gating it on market efficiency would be backwards.",
+  "enabled": false,
+  "benchmark_symbol": "NIFTY500",
+  "lookback_days": 20,
+  "min_bars": 25,
+  "mode": "rank",
+  "min_score": 1,
+  "default_min_efficiency": 0.10,
+  "fail_mode": "allow",
+  "applicable_strategies": {
+    "breakout_trend": {},
+    "pullback_ma": {},
+    "inside_bar_breakout": {},
+    "weekly_rsi_sma20": {}
+  }
+}
