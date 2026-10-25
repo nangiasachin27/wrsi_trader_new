@@ -1,0 +1,23 @@
+{
+  "_note": "New-high leadership/momentum strategy (backlog item from the 2026-10-24 session: the strategy book had dip-buy, base-breakout, and mean-reversion coverage, but nothing that simply rides a name already making fresh highs on strength - see trader/strategies/new_high_momentum.py docstring for the full rationale and the 52-week-high-effect citation). Tag: UPTREND only - see config/filters/regime_match.json; this is EXPECTED to sit mostly idle in a sideways/down market, by design, not a bug. NOT exempt from quality/resistance (unlike sr_reversal/range_reversion) - both filters are aligned with a momentum thesis, not opposed to it. STATUS: newly built, NOT YET BACKTESTED against this repo's real price history. Disabled by default so it doesn't change existing backtests. Validate with a direct backtest / scripts/tune_strategy.py over your usual window(s) before enabling - no performance claim has been made or checked for this version yet.",
+  "enabled": false,
+  "universe": "default",
+  "entry": {
+    "min_bars": 260,
+    "new_high_lookback": 50,
+    "trend_sma_period": 50,
+    "require_volume_confirmation": true,
+    "volume_sma_period": 20,
+    "volume_mult": 1.2,
+    "atr_period": 14,
+    "atr_mult": 2.0
+  },
+  "exit": {
+    "_note": "No fixed profit target by design (see class docstring) - a Chandelier Exit (highest close since entry - atr_mult*ATR) does the trailing, with a faster secondary bail on an outright break of trend_fail_sma_period's own SMA so a stalled trend doesn't have to wait for the wider ATR trail to catch up.",
+    "atr_period": 14,
+    "atr_mult": 3.5,
+    "buffer_pct": 0.0,
+    "trend_fail_sma_period": 50,
+    "trend_fail_buffer_pct": 1.0
+  }
+}

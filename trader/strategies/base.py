@@ -81,6 +81,7 @@ def build_strategy(name: str, cfg: dict) -> Strategy:
     import trader.strategies.pullback_ma         # noqa: F401
     import trader.strategies.sr_reversal         # noqa: F401
     import trader.strategies.inside_bar_breakout # noqa: F401
+    import trader.strategies.new_high_momentum   # noqa: F401
     if name not in REGISTRY:
         raise KeyError(f"No strategy class registered for config '{name}'. Known: {list(REGISTRY)}")
     return REGISTRY[name](cfg)

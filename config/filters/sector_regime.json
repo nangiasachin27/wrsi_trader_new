@@ -1,6 +1,6 @@
 {
   "_note": "Per-symbol version of market_regime.json: blocks ENTRY if the stock's own sector benchmark isn't trending up. Needs config/sector_map.json populated (scripts/build_universe.py - it writes this file on every run, no extra flag needed) and industry_to_benchmark filled in below with real instrument keys added to config/universe.json. Run scripts/finish_sector_regime.py to do the mapping, instrument-key resolution, history fetch and enable step in one go (dry run by default, --apply to write). Empty map below = every symbol falls through to fail_mode until you populate it.",
-  "enabled": true,
+  "enabled": false,
   "sector_map_path": "config/sector_map.json",
   "timeframe_rule": "W-FRI",
   "sma_period": 20,

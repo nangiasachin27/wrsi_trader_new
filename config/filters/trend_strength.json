@@ -1,6 +1,6 @@
 {
   "_note": "Per-candidate confirmation that a weekly-RSI>60 entry is riding a real, strong trend - not a choppy spike the lagging weekly-wick-vs-SMA20 exit won't catch until it's already several percent underwater. mode 'rank' (default) only affects tiebreaks for a free slot; mode 'filter' hard-excludes any candidate scoring below min_score, same contract as config/filters/quality.json. Disabled by default - backtest against your own history before enabling, and consider starting in 'rank' mode to see its effect on ranking before switching to a hard 'filter' gate.",
-  "enabled": false,
+  "enabled": true,
   "weekly_rule": "W-FRI",
   "mode": "rank",
   "min_score": 1,

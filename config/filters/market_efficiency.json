@@ -12,6 +12,7 @@
     "breakout_trend": {},
     "pullback_ma": {},
     "inside_bar_breakout": {},
-    "weekly_rsi_sma20": {}
+    "weekly_rsi_sma20": {},
+    "new_high_momentum": {}
   }
 }

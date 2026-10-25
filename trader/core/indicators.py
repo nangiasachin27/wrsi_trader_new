@@ -32,6 +32,18 @@ def efficiency_ratio(close: pd.Series, period: int) -> pd.Series:
     return net_move / path_length.replace(0.0, np.nan)
 
 
+def bollinger_bands(close: pd.Series, period: int, num_std: float) -> tuple[pd.Series, pd.Series, pd.Series]:
+    """Classic Bollinger Bands: a simple-moving-average midline plus/minus `num_std` rolling
+    standard deviations (population std, ddof=0 - matches the common charting-platform
+    convention). Returns (lower, mid, upper) in that order, each a pd.Series aligned to `close`.
+    Used by range_reversion for a statistics-based range-fade signal, deliberately independent
+    of the pivot-clustered S/R zones trader.core.levels builds (sr_reversal's own mechanism) -
+    two structurally different ways of saying "this looks stretched", not the same idea twice."""
+    mid = sma(close, period)
+    std = close.rolling(period, min_periods=period).std(ddof=0)
+    return mid - num_std * std, mid, mid + num_std * std
+
+
 def atr(high: pd.Series, low: pd.Series, close: pd.Series, period: int) -> pd.Series:
     """Wilder's ATR (same RMA smoothing as rsi() above, for consistency)."""
     prev_close = close.shift(1)

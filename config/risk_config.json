@@ -7,7 +7,8 @@
       "breakout_trend": 100,
       "pullback_ma": 100,
       "sr_reversal": 100,
-      "inside_bar_breakout": 100
+      "inside_bar_breakout": 100,
+      "new_high_momentum": 100
     }
   },
   "per_trade": {

@@ -8,6 +8,7 @@
     "breakout_trend": ["UPTREND"],
     "pullback_ma": ["UPTREND"],
     "inside_bar_breakout": ["UPTREND"],
-    "sr_reversal": ["SIDEWAYS"]
+    "sr_reversal": ["SIDEWAYS"],
+    "new_high_momentum": ["UPTREND"]
   }
 }
