@@ -80,3 +80,11 @@ class TrendStrengthFilter(Filter):
                         if notes["sma_dist_pct"] is not None else "SMA n/a")
         reason = f"trend_strength score {score}" + (f" ({', '.join(parts)})" if parts else "")
         return FilterResult(passed, reason, score=score, meta=notes)
+
+    def max_score(self) -> float:
+        """adx + sma_trend, each worth 1 point when its own sub-check is turned on - see
+        Filter.max_score()'s docstring."""
+        if not self.enabled:
+            return 0.0
+        c = self.cfg
+        return float(int(c["adx"]["enabled"]) + int(c["sma_trend"]["enabled"]))

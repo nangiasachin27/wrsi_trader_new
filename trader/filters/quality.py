@@ -37,3 +37,13 @@ class QualityFilter(Filter):
             score += int(cup_ok)
         passed = not (c["mode"] == "filter" and score < c["min_score"])
         return FilterResult(passed, f"quality score {score}", score=score, meta=notes)
+
+    def max_score(self) -> float:
+        """ath + cup, each worth 1 point when its own sub-check is turned on - see
+        Filter.max_score()'s docstring for why this must match evaluate()'s own ceiling
+        exactly (0 whenever disabled, so a disabled filter never drags the cross-strategy
+        ranking average down with a spurious zero)."""
+        if not self.enabled:
+            return 0.0
+        c = self.cfg
+        return float(int(c["ath"]["enabled"]) + int(c["cup"]["enabled"]))

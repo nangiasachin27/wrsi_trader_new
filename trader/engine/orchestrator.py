@@ -108,23 +108,38 @@ class Engine:
                     log.debug("SCAN  %-12s no entry signal (%s)", sym, name)
                     continue
                 # Overlay filters, applied identically regardless of which strategy produced
-                # this candidate: every enabled, non-excluded filter must pass, and every
-                # non-excluded filter's score (0 for pure hard-gates) adds to the strategy's
-                # own signal.score for ranking. `exclude_filters` is the strategy's OWN config
-                # (backlog item from the 2026-10-25 session, replacing the old per-filter
-                # exempt_strategies/applicable_strategies/applicable_regimes maps) - a filter
-                # named there is skipped entirely for this strategy's candidates: it never runs,
-                # never scores, never gates. See trader/filters/base.py's class docstring.
+                # this candidate: every enabled, non-excluded filter must pass. `exclude_filters`
+                # is the strategy's OWN config (backlog item from the 2026-10-25 session,
+                # replacing the old per-filter exempt_strategies/applicable_strategies/
+                # applicable_regimes maps) - a filter named there is skipped entirely for this
+                # strategy's candidates: it never runs, never scores, never gates. See
+                # trader/filters/base.py's class docstring.
+                #
+                # Ranking score (backlog item from the 2026-10-26 session - see
+                # Filter.max_score()'s docstring for the full rationale): signal.score is the
+                # AVERAGE of score/max_score() across every non-excluded filter that actually
+                # scores (max_score() > 0) - NOT a raw sum. Summing used to systematically favor
+                # whichever strategy's winning combo happened to include more scoring filters or
+                # filters with a wider native scale (e.g. trend_strength's 0-2 vs sector_regime's
+                # 0-1), independent of actual signal quality - confirmed as the dominant driver
+                # of pullback_ma's near-total starvation (max possible raw score of 1, vs
+                # sr_reversal's 4) when all 5 strategies ran together sharing max_positions. A
+                # pure pass/fail gate (resistance/market_regime/regime_match, max_score()==0) is
+                # excluded from the average entirely, not counted as a zero - it was never meant
+                # to carry ranking weight, only gate.
                 excluded = strat.cfg.get("exclude_filters", [])
-                blocked_by, results = None, {}
+                blocked_by, results, score_fracs = None, {}, []
                 for fname, filt in self.filters.items():
                     if fname in excluded:
                         continue
                     res = filt.evaluate(sig, ctx)
                     results[fname] = res
-                    sig.score += res.score
+                    fmax = filt.max_score()
+                    if fmax > 0:
+                        score_fracs.append(res.score / fmax)
                     if not res.passed and blocked_by is None:
                         blocked_by = fname
+                sig.score = sum(score_fracs) / len(score_fracs) if score_fracs else 0.0
                 sig.meta["filters"] = {k: {"passed": r.passed, "reason": r.reason, "score": r.score, **r.meta}
                                        for k, r in results.items()}
                 if blocked_by:
@@ -145,7 +160,7 @@ class Engine:
                 ath = f"{q['ath_dist_pct']:.1f}" if "ath_dist_pct" in q else "n/a"
                 cup = "Y" if q.get("cup_ok") else ("N" if "cup_ok" in q else "n/a")
                 taken = "TAKEN" if i <= max(slots, 0) else "no free slot"
-                log.info("  %-3d %-12s %6d %6.1f %6.1f %10s %5s  %s",
+                log.info("  %-3d %-12s %6.2f %6.1f %6.1f %10s %5s  %s",
                          i, sig.symbol, sig.score, sig.meta.get("rsi_w", 0), sig.meta.get("rsi_m", 0),
                          ath, cup, taken)
         for sig in cands[:max(slots, 0)]:

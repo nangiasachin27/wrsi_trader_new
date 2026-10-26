@@ -115,3 +115,8 @@ class MarketEfficiencyFilter(Filter):
                  f"required {min_eff:.3f} for {signal.strategy}")
         return FilterResult(passed, reason, score=score,
                             meta={"efficiency": round(self._efficiency, 3), "min_efficiency": min_eff})
+
+    def max_score(self) -> float:
+        """Single above/below-threshold bit (see evaluate()) - 1 whenever enabled, 0 otherwise.
+        See Filter.max_score()'s docstring."""
+        return 1.0 if self.enabled else 0.0

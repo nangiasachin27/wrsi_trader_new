@@ -174,3 +174,8 @@ class RelativeStrengthFilter(Filter):
         passed = True if mode == "rank" else pct >= min_pct
         rs = self._rs_by_symbol.get(signal.symbol, 0.0)
         return FilterResult(passed, f"RS percentile {pct:.0%} (rel. return {rs:+.1%} vs benchmark)", score=score)
+
+    def max_score(self) -> float:
+        """Fixed 0/1/2 percentile-bucket scheme (see evaluate()) - 2 whenever enabled, 0
+        otherwise. See Filter.max_score()'s docstring."""
+        return 2.0 if self.enabled else 0.0

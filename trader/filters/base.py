@@ -53,8 +53,10 @@ class Filter(ABC):
     per-candidate filter. Same contract either way - no separate base classes needed.
 
     A candidate is excluded if ANY enabled, non-excluded filter's evaluate() returns
-    passed=False. A candidate's final ranking score is its own signal.score plus every
-    non-excluded filter's score.
+    passed=False. A candidate's final ranking score (used only to break ties for scarce
+    max_positions slots - see trader.risk.portfolio) is the AVERAGE, across every non-excluded
+    filter that actually scores (max_score() > 0), of that filter's score/max_score() - NOT a
+    raw sum (see max_score()'s own docstring below for why summing was a cross-strategy bias).
     """
 
     name: str = ""
@@ -78,6 +80,30 @@ class Filter(ABC):
 
     def prepare(self, asof: date, provider: DataProvider) -> None:
         """Optional: precompute/cache shared state once per eod run. Default: no-op."""
+
+    def max_score(self) -> float:
+        """The highest value this filter's own evaluate() can return as FilterResult.score,
+        GIVEN this filter's own current config (sub-checks it has turned on, enabled flag).
+        Added 2026-10-26 to fix a cross-strategy slot-ranking bias (see
+        strategy-performance-log.md / filter-tuning-master-table.md): orchestrator.run_eod
+        used to sum every non-excluded filter's raw score straight into signal.score, which
+        systematically favored whichever strategy's winning combo happened to include MORE
+        scoring filters, or filters with a WIDER native scale (e.g. trend_strength's 0-2 vs
+        sector_regime's 0-1) - nothing to do with actual signal quality. A strategy with a
+        single max-1 scoring filter (pullback_ma: sector_regime alone) was getting crushed in
+        slot competition against one summing two max-2 filters (sr_reversal: trend_strength +
+        rs_rank), independent of which candidate was actually the better pick that day.
+        orchestrator.run_eod now normalizes each scoring filter's contribution to score/max_score
+        before AVERAGING (not summing) across a strategy's own scoring filters - so every
+        strategy's final ranking score lands in the same [0, 1] range regardless of how many
+        scoring filters it uses or their native scales. Default: 0.0 - a filter that never sets
+        FilterResult.score (a pure pass/fail gate, e.g. resistance/market_regime/regime_match)
+        correctly contributes NOTHING to the average (excluded, not counted as a zero) rather
+        than dragging it down; override this in any filter whose evaluate() DOES set a score,
+        returning 0.0 whenever this filter is currently disabled (same reasoning: a disabled
+        filter must not drag the average down with a spurious zero either) or whenever a
+        sub-check that contributes to its own max is itself turned off."""
+        return 0.0
 
     def describe(self) -> str:
         """One-line summary for the startup 'FILTERS ON' log (Engine._log_filter_status).

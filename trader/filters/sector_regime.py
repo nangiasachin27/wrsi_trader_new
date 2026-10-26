@@ -94,3 +94,8 @@ class SectorRegimeFilter(Filter):
 
         passed = True if mode == "rank" else st.bullish
         return FilterResult(passed, f"[{industry}] {st.reason}", score=int(st.bullish))
+
+    def max_score(self) -> float:
+        """Single bullish/bearish bit (see evaluate()) - 1 whenever enabled, 0 otherwise.
+        See Filter.max_score()'s docstring."""
+        return 1.0 if self.enabled else 0.0
