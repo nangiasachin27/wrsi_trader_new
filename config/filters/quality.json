@@ -1,6 +1,6 @@
 {
-  "_note": "Per-strategy applicability (which strategies are exempt from this filter) moved out of this config on 2026-10-25 - see each strategy's own config `exclude_filters` list instead (sr_reversal excludes this filter; see trader/filters/base.py's class docstring for the full mechanism and rationale).",
-  "enabled": true,
+  "_note": "Per-strategy applicability (which strategies are exempt from this filter) moved out of this config on 2026-10-25 - see each strategy's own config `exclude_filters` list instead (sr_reversal excludes this filter; see trader/filters/base.py's class docstring for the full mechanism and rationale). Flipped to disabled on 2026-10-26: the tune_strategy.py --mode smart sweep across every strategy (weekly_rsi_sma20, breakout_trend, sr_reversal, new_high_momentum, pullback_ma) found quality was never part of any strategy's winning combo - it either had no effect or made the combo worse everywhere it was tried. Re-enable only if a future strategy's own sweep picks it.",
+  "enabled": false,
   "weekly_rule": "W-FRI",
   "mode": "filter",
   "min_score": 1,

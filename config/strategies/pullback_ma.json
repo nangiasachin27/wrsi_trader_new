@@ -1,6 +1,7 @@
 {
-  "_note": "Daily-bar moving-average pullback strategy (course ep.10). Tag: UPTREND only - see market_regime_tag below (moved here from config/filters/regime_match.json on 2026-10-25 - see trader/filters/base.py's class docstring). Disabled by default - run isolated with `trader backtest --strategy pullback_ma --start ... --end ... --label pullback_ma_only`.",
-  "enabled": false,
+  "_note": "Daily-bar moving-average pullback strategy (course ep.10). Tag: UPTREND only - see market_regime_tag below (moved here from config/filters/regime_match.json on 2026-10-25 - see trader/filters/base.py's class docstring). Disabled by default - run isolated with `trader backtest --strategy pullback_ma --start ... --end ... --label pullback_ma_only`. exclude_filters added 2026-10-26 per the tune_strategy.py --mode smart sweep: winning combo is sector_regime ALONE (CAGR 23.77%, maxDD -21.97%, PF 1.74, 609 trades, 26.3% win) - round 2 found nothing (including rs_rank, which helps maxDD alone but drags cagr down combined) that beat it, so every other globally-live filter is excluded.",
+  "enabled": true,
+  "exclude_filters": ["resistance", "market_regime", "trend_strength", "rs_rank"],
   "market_regime_tag": "UPTREND",
   "universe": "default",
   "candlestick_config_path": "config/candlestick_patterns.json",

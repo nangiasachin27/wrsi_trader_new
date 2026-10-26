@@ -1,6 +1,7 @@
 {
   "_note": "Enforces each new swing strategy's declared market-trend tag against trader.core.trend_structure's UPTREND/SIDEWAYS/DOWNTREND state machine - the price-action course's own swing-structure method (HH+HL / LH+LL after 2+ swings, break of market structure -> SIDEWAYS), NOT trader.core.market_trend's separate IBD-style VD-day/FTD engine (that module is untouched and still used by scripts/market_trend.py). The tag itself now lives in each STRATEGY's own config as `market_regime_tag` (moved out of this file on 2026-10-25 - see trader/filters/base.py's class docstring and each strategy's own config _note). A strategy with no `market_regime_tag` set is NOT gated at all (weekly_rsi_sma20 excludes this filter outright via its own exclude_filters, since it was never tagged). Enabled by default: with no tagged strategy enabled this is a no-op, so it's safe to leave on.",
-  "enabled": true,
+  "_note2": "Flipped to disabled on 2026-10-26: the tune_strategy.py --mode smart sweep across every tagged strategy found regime_match was never part of any strategy's winning combo (enabling it, alone or combined, always hurt cagr/maxDD versus not using it - even for sr_reversal's own SIDEWAYS tag). Each strategy's market_regime_tag is left in place for a possible future regime-conditional filter-switching layer (see backlog), but currently unused while this filter is off.",
+  "enabled": false,
   "benchmark_symbol": "NIFTY500",
   "trend_structure_config_path": "config/trend_structure.json",
   "fail_mode": "block"

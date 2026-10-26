@@ -1,6 +1,6 @@
 {
-  "_note": "Blocks new ENTRY signals (not exits, not existing positions) when the broader market benchmark isn't itself in an uptrend. Disabled by default - run scripts/find_index_instrument.py, add the chosen index's instrument_key to config/universe.json's 'instruments' map (never to a tradeable 'list'), fetch its history with scripts/fetch_history.py --symbols <benchmark_symbol>, then flip enabled to true here.",
-  "enabled": false,
+  "_note": "Blocks new ENTRY signals (not exits, not existing positions) when the broader market benchmark isn't itself in an uptrend. Flipped to enabled on 2026-10-26 per the tune_strategy.py --mode smart sweep results (NIFTY500 history is already fetched/used by other filters - resistance/regime_match/rs_rank/market_efficiency - so no setup needed). It's part of weekly_rsi_sma20's winning combo (resistance+market_regime+trend_strength+sector_regime, Run 7) - see each strategy's own `exclude_filters` for who else sees it.",
+  "enabled": true,
   "benchmark_symbol": "NIFTY500",
   "timeframe_rule": "W-FRI",
   "sma_period": 20,

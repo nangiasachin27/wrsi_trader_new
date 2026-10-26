@@ -19,7 +19,7 @@
     "cash_buffer_pct": 1.0
   },
   "portfolio": {
-    "max_positions": 10,
+    "max_positions": 20,
     "max_total_open_risk_pct_of_base": 8.0
   },
   "pyramiding": {
