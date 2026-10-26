@@ -28,6 +28,14 @@ class Engine:
         self.capital = CapitalManager(settings.risk)
         self.strategies = {n: build_strategy(n, c) for n, c in settings.strategies.items() if c["enabled"]}
         self.filters: dict[str, Filter] = {n: build_filter(n, c) for n, c in settings.filters.items()}
+        # Backlog item from the 2026-10-25 session: a filter that needs a per-strategy
+        # PARAMETER (regime_match's tag, market_efficiency's threshold override) reads it from
+        # the originating strategy's own config, bound here once - see Filter.bind_strategy_cfgs
+        # (trader/filters/base.py) for the full rationale. Only enabled strategies are included
+        # (a disabled one never produces a candidate signal, so it's never looked up).
+        strategy_cfgs = {n: s.cfg for n, s in self.strategies.items()}
+        for filt in self.filters.values():
+            filt.bind_strategy_cfgs(strategy_cfgs)
         self._status_logged = False
 
     # ---- helpers ---------------------------------------------------------------------------
@@ -100,10 +108,18 @@ class Engine:
                     log.debug("SCAN  %-12s no entry signal (%s)", sym, name)
                     continue
                 # Overlay filters, applied identically regardless of which strategy produced
-                # this candidate: every enabled filter must pass, and every filter's score
-                # (0 for pure hard-gates) adds to the strategy's own signal.score for ranking.
+                # this candidate: every enabled, non-excluded filter must pass, and every
+                # non-excluded filter's score (0 for pure hard-gates) adds to the strategy's
+                # own signal.score for ranking. `exclude_filters` is the strategy's OWN config
+                # (backlog item from the 2026-10-25 session, replacing the old per-filter
+                # exempt_strategies/applicable_strategies/applicable_regimes maps) - a filter
+                # named there is skipped entirely for this strategy's candidates: it never runs,
+                # never scores, never gates. See trader/filters/base.py's class docstring.
+                excluded = strat.cfg.get("exclude_filters", [])
                 blocked_by, results = None, {}
                 for fname, filt in self.filters.items():
+                    if fname in excluded:
+                        continue
                     res = filt.evaluate(sig, ctx)
                     results[fname] = res
                     sig.score += res.score

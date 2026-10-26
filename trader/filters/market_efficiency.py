@@ -28,13 +28,18 @@ class MarketEfficiencyFilter(Filter):
     exit logic - so the fix belongs at the market-regime layer, not in another round of
     per-strategy exit tuning.
 
-    OPT-IN per strategy (`applicable_strategies`, same convention as regime_match's
-    `applicable_regimes` - a strategy with no entry there is NEVER gated or scored by this
-    filter, full stop, regardless of enabled/mode). sr_reversal is deliberately left OUT of
-    that map: it is a range/reversal play that specifically wants a non-trending tape, so
-    penalizing it for low efficiency would be exactly backwards. A future iteration might
-    reward sr_reversal for LOW efficiency instead - that is a separate, deliberate design
-    choice (tracked separately), not something this filter does on its own.
+    Whether a strategy participates in this filter at all is decided upstream by that
+    strategy's own `exclude_filters` list (see trader/filters/base.py's class docstring and
+    trader/engine/orchestrator.py's candidate loop) - backlog item from the 2026-10-25
+    session, replacing the old `applicable_strategies` map that used to live here. sr_reversal
+    deliberately excludes this filter: it is a range/reversal play that specifically wants a
+    non-trending tape, so penalizing it for low efficiency would be exactly backwards. A
+    future iteration might reward sr_reversal for LOW efficiency instead - that is a separate,
+    deliberate design choice (tracked separately), not something this filter does on its own.
+
+    A participating strategy can override `default_min_efficiency` for itself via its own
+    config's `"market_efficiency_override": {"min_efficiency": ...}` (read via
+    bind_strategy_cfgs() - see base.py), instead of a per-strategy dict living here.
 
     mode 'rank' (default, and the only mode this should run in until it has been backtested
     against real history) NEVER blocks a trade - it only nudges ranking score, exactly like
@@ -52,8 +57,7 @@ class MarketEfficiencyFilter(Filter):
     def describe(self) -> str:
         c = self.cfg
         return (f"benchmark_symbol={c.get('benchmark_symbol')}, lookback_days={c.get('lookback_days')}, "
-                f"mode={c.get('mode')}, default_min_efficiency={c.get('default_min_efficiency')}, "
-                f"applicable_strategies={list(c.get('applicable_strategies', {}))}")
+                f"mode={c.get('mode')}, default_min_efficiency={c.get('default_min_efficiency')}")
 
     def prepare(self, asof: date, provider: DataProvider) -> None:
         if not self.enabled:
@@ -90,12 +94,12 @@ class MarketEfficiencyFilter(Filter):
         if not self.enabled:
             return FilterResult(True, "disabled")
 
-        # Check the opt-in tag FIRST, before caring whether the benchmark/efficiency value
-        # could even be computed - sr_reversal (and any other untagged strategy) must never be
-        # gated or need the benchmark at all, same discipline as regime_match's own tag check.
-        override = self.cfg.get("applicable_strategies", {}).get(signal.strategy)
-        if override is None:
-            return FilterResult(True, f"{signal.strategy} not in applicable_strategies - not gated")
+        # Participation is decided upstream (strategy's own exclude_filters, see
+        # trader/engine/orchestrator.py) - evaluate() only runs at all for a strategy that
+        # opted in, so there's no "not applicable" branch needed here any more. Just read
+        # this strategy's own override (if any) for the one parameter that can vary per
+        # strategy - bound via bind_strategy_cfgs(), not a map living in this filter's config.
+        override = self._strategy_cfgs.get(signal.strategy, {}).get("market_efficiency_override", {})
 
         mode = self.cfg.get("mode", "rank")
         if self._efficiency is None:

@@ -1,14 +1,7 @@
 {
-  "_note": "Enforces each new swing strategy's declared market-trend tag (see each strategy's own config _note) against trader.core.trend_structure's UPTREND/SIDEWAYS/DOWNTREND state machine - the price-action course's own swing-structure method (HH+HL / LH+LL after 2+ swings, break of market structure -> SIDEWAYS), NOT trader.core.market_trend's separate IBD-style VD-day/FTD engine (that module is untouched and still used by scripts/market_trend.py). A strategy with no entry below is NOT gated at all - tagging is opt-in, so weekly_rsi_sma20 (untagged) is unaffected. Enabled by default: with no tagged strategy enabled this is a no-op (every candidate's strategy name misses the map and passes straight through), so it's safe to leave on.",
+  "_note": "Enforces each new swing strategy's declared market-trend tag against trader.core.trend_structure's UPTREND/SIDEWAYS/DOWNTREND state machine - the price-action course's own swing-structure method (HH+HL / LH+LL after 2+ swings, break of market structure -> SIDEWAYS), NOT trader.core.market_trend's separate IBD-style VD-day/FTD engine (that module is untouched and still used by scripts/market_trend.py). The tag itself now lives in each STRATEGY's own config as `market_regime_tag` (moved out of this file on 2026-10-25 - see trader/filters/base.py's class docstring and each strategy's own config _note). A strategy with no `market_regime_tag` set is NOT gated at all (weekly_rsi_sma20 excludes this filter outright via its own exclude_filters, since it was never tagged). Enabled by default: with no tagged strategy enabled this is a no-op, so it's safe to leave on.",
   "enabled": true,
   "benchmark_symbol": "NIFTY500",
   "trend_structure_config_path": "config/trend_structure.json",
-  "fail_mode": "block",
-  "applicable_regimes": {
-    "breakout_trend": ["UPTREND"],
-    "pullback_ma": ["UPTREND"],
-    "inside_bar_breakout": ["UPTREND"],
-    "sr_reversal": ["SIDEWAYS"],
-    "new_high_momentum": ["UPTREND"]
-  }
+  "fail_mode": "block"
 }

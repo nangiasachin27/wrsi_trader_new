@@ -1,6 +1,8 @@
 {
-  "_note": "Daily-bar support-zone reversal strategy (course ep.6), long side only. Tag: SIDEWAYS (see config/filters/regime_match.json). Disabled by default - run isolated with `trader backtest --strategy sr_reversal --start ... --end ... --label sr_reversal_only`.",
+  "_note": "Daily-bar support-zone reversal strategy (course ep.6), long side only. Tag: SIDEWAYS - see market_regime_tag below. exclude_filters: quality and resistance are near-ATH/breakout signatures that structurally fight this strategy's own fade-the-level entry (a stock that just fell AWAY from its highs and bounced); market_efficiency wants a non-trending tape for this strategy, exactly backwards from what that filter rewards. (All three, plus the regime tag, moved here from their respective filter configs' own per-strategy maps on 2026-10-25 - see trader/filters/base.py's class docstring; this strategy's applicability was previously unchanged, just relocated.) Disabled by default - run isolated with `trader backtest --strategy sr_reversal --start ... --end ... --label sr_reversal_only`.",
   "enabled": false,
+  "exclude_filters": ["quality", "resistance", "market_efficiency"],
+  "market_regime_tag": "SIDEWAYS",
   "universe": "default",
   "levels_timeframe": "daily",
   "levels_config_path": "config/levels.json",

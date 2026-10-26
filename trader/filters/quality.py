@@ -13,25 +13,18 @@ class QualityFilter(Filter):
     free slot - it only loses the tiebreak to a higher-scoring one. mode 'filter' turns this
     into a hard gate: a candidate below min_score is excluded outright, regardless of slots.
 
-    `exempt_strategies` (opt-OUT, default empty - every other filter in this codebase that
-    distinguishes strategies is opt-IN instead, e.g. regime_match/market_efficiency's
-    `applicable_strategies`; this one is deliberately the other way round because quality has
-    always applied to every strategy uniformly, so flipping the default here would silently
-    change behavior for strategies nobody asked to touch): a strategy named here is NEVER
-    scored or gated by this filter, full stop, regardless of mode. Added for sr_reversal -
-    this filter's ATH-proximity/cup-formation checks are near-ATH, trend-continuation
-    signatures. sr_reversal's whole premise is buying a stock that just fell AWAY from its
-    highs into a support zone and bounced - almost the opposite of "near its all-time high" -
-    so this filter was structurally fighting that strategy's own logic, not complementing it,
-    and is very likely why sr_reversal's surviving trades looked trend-correlated instead of
-    showing genuine reversal character."""
+    Per-strategy applicability (e.g. sr_reversal's exemption - this filter's ATH-proximity/
+    cup-formation checks are near-ATH, trend-continuation signatures, which is close to the
+    OPPOSITE of sr_reversal's own entry: a stock that just fell AWAY from its highs into a
+    support zone and bounced) is no longer decided here - it lives in sr_reversal's own
+    config as `"exclude_filters": ["quality", ...]` (see trader/filters/base.py's class
+    docstring and trader/engine/orchestrator.py's candidate loop, which skips calling this
+    filter at all for an excluded strategy's candidates - this filter never sees them)."""
 
     def evaluate(self, signal: Signal, ctx: SymbolContext) -> FilterResult:
         if not self.enabled:
             return FilterResult(True, "disabled")
         c = self.cfg
-        if signal.strategy in c.get("exempt_strategies", []):
-            return FilterResult(True, f"{signal.strategy} is exempt from the quality filter")
         score, notes = 0, {}
         if c["ath"]["enabled"]:
             ath_ok, dist = near_ath(ctx.daily, c["ath"])

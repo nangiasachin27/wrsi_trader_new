@@ -37,9 +37,15 @@ class RegimeMatchFilter(Filter):
     (trend_structure's classifier is price/swing-based, not volume-based), unlike the old
     market_trend-based version of this filter.
 
-    A strategy with no entry in `applicable_regimes` is NOT gated (always passes) - tagging is
+    The regime tag itself (`"market_regime_tag": "UPTREND"`/`"SIDEWAYS"`/`"DOWNTREND"`) now
+    lives in each STRATEGY's own config, not in a map here (backlog item from the 2026-10-25
+    session - see trader/filters/base.py's class docstring on bind_strategy_cfgs()). A strategy
+    with no `market_regime_tag` in its own config is NOT gated (always passes) - tagging is
     opt-in per strategy, so existing strategies (e.g. weekly_rsi_sma20) are unaffected unless
-    explicitly added to the map."""
+    their own config sets a tag. Whether a strategy participates in this filter AT ALL is a
+    separate, upstream decision made via that strategy's own `exclude_filters` list (see
+    trader/engine/orchestrator.py's candidate loop) - a strategy only needs a `market_regime_tag`
+    if it hasn't excluded this filter."""
 
     def __init__(self, cfg: dict):
         super().__init__(cfg)
@@ -48,8 +54,7 @@ class RegimeMatchFilter(Filter):
 
     def describe(self) -> str:
         c = self.cfg
-        return (f"benchmark_symbol={c.get('benchmark_symbol')}, "
-                f"fail_mode={c.get('fail_mode')}, tagged_strategies={list(c.get('applicable_regimes', {}))}")
+        return f"benchmark_symbol={c.get('benchmark_symbol')}, fail_mode={c.get('fail_mode')}"
 
     def _trend_structure_cfg(self) -> dict:
         p = ROOT / self.cfg.get("trend_structure_config_path", "config/trend_structure.json")
@@ -85,10 +90,14 @@ class RegimeMatchFilter(Filter):
         # Check the tag FIRST, before caring whether the market state could even be computed -
         # an untagged strategy (e.g. weekly_rsi_sma20) must never be gated or need a benchmark
         # at all, regardless of whether NIFTY500/the universe happen to be available this run
-        # (small/synthetic test fixtures in particular have neither).
-        allowed = self.cfg.get("applicable_regimes", {}).get(signal.strategy)
+        # (small/synthetic test fixtures in particular have neither). Tag now comes from the
+        # ORIGINATING STRATEGY's own config (bound via bind_strategy_cfgs()), not a map here.
+        strat_cfg = self._strategy_cfgs.get(signal.strategy, {})
+        allowed = strat_cfg.get("market_regime_tag")
         if allowed is None:
             return FilterResult(True, f"{signal.strategy} has no regime tag - not gated")
+        if isinstance(allowed, str):
+            allowed = [allowed]  # a strategy's own config states one tag, not a list - normalize here
 
         if self._state is None:
             fail_open = self.cfg.get("fail_mode", "block") == "allow"

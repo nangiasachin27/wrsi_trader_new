@@ -1,6 +1,7 @@
 {
-  "_note": "Daily-bar inside-bar trend-continuation strategy (course ep.12, 3rd use case). Tag: UPTREND only. Disabled by default - run isolated with `trader backtest --strategy inside_bar_breakout --start ... --end ... --label inside_bar_breakout_only`.",
+  "_note": "Daily-bar inside-bar trend-continuation strategy (course ep.12, 3rd use case). Tag: UPTREND only - see market_regime_tag below (moved here from config/filters/regime_match.json on 2026-10-25 - see trader/filters/base.py's class docstring). Disabled by default - run isolated with `trader backtest --strategy inside_bar_breakout --start ... --end ... --label inside_bar_breakout_only`.",
   "enabled": false,
+  "market_regime_tag": "UPTREND",
   "universe": "default",
   "entry": {
     "min_bars": 60,

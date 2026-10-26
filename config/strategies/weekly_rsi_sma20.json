@@ -1,5 +1,7 @@
 {
+  "_note": "exclude_filters: strategy-owned filter applicability (backlog item from the 2026-10-25 session, replacing the old per-filter exempt_strategies/applicable_strategies/applicable_regimes maps - see trader/filters/base.py's class docstring). This strategy excludes regime_match only because it has never been tagged with a market_regime_tag (no UPTREND/SIDEWAYS/DOWNTREND phase of its own was ever assigned) - regime_match was always a structural no-op for it, confirmed identical in every tune_strategy.py sweep row run against it.",
   "enabled": true,
+  "exclude_filters": ["regime_match"],
   "universe": "default",
   "timeframes": {
     "weekly_rule": "W-FRI",

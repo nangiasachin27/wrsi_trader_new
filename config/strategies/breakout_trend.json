@@ -1,6 +1,7 @@
 {
-  "_note": "Daily-bar breakout-near-structure strategy (course ep.8). Tag: UPTREND only - see config/filters/regime_match.json. Disabled by default so it doesn't change existing weekly_rsi_sma20-only backtests; run it in isolation with `trader backtest --strategy breakout_trend --start ... --end ... --label breakout_trend_only`.",
+  "_note": "Daily-bar breakout-near-structure strategy (course ep.8). Tag: UPTREND only - market_regime_tag below, read by config/filters/regime_match.json's filter (moved here from that filter's own config on 2026-10-25 - see trader/filters/base.py's class docstring). Disabled by default so it doesn't change existing weekly_rsi_sma20-only backtests; run it in isolation with `trader backtest --strategy breakout_trend --start ... --end ... --label breakout_trend_only`.",
   "enabled": false,
+  "market_regime_tag": "UPTREND",
   "universe": "default",
   "levels_timeframe": "daily",
   "levels_config_path": "config/levels.json",

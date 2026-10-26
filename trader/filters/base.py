@@ -24,6 +24,27 @@ class Filter(ABC):
     strategy's candidates, so adding a second strategy later gets every existing filter for
     free without re-implementing any of it.
 
+    STRATEGY-OWNED applicability (backlog item from the 2026-10-25 session, replacing the old
+    per-filter exempt_strategies/applicable_strategies/applicable_regimes maps): whether a
+    given strategy participates in a given filter at all is now decided by that STRATEGY's own
+    config (`exclude_filters: [...]` - see trader/strategies/base.py and each strategy's own
+    config _note), not by a map living inside the filter's config. trader.engine.orchestrator's
+    candidate loop skips calling evaluate() for any filter named in the originating strategy's
+    `exclude_filters` before a filter is ever consulted - so by the time evaluate() runs for a
+    given signal, the strategy has already opted in, full stop. This is what makes the
+    "filters are strategy-agnostic" claim above actually true in code again: a filter no
+    longer needs (and should not re-implement) its own opt-in/opt-out logic keyed on
+    `signal.strategy`.
+
+    A filter that still needs a per-strategy PARAMETER (not just a yes/no) - e.g. regime_match
+    needs each strategy's own market-regime tag, market_efficiency can take a per-strategy
+    efficiency-threshold override - reads it from the ORIGINATING STRATEGY's own config via
+    `self._strategy_cfgs[signal.strategy]`, bound once by bind_strategy_cfgs() below (called by
+    Engine.__init__ right after both the strategies and filters dicts exist). That data lives
+    in each strategy's own config too (e.g. `"market_regime_tag": "UPTREND"`), for the same
+    reason exclude_filters does: one strategy config is the single place to see everything
+    that strategy runs with, instead of needing to cross-reference every filter's own config.
+
     prepare() runs ONCE per eod, before any candidate is evaluated - use it to compute or
     cache anything shared (a market-wide regime check, a sector benchmark's status per
     industry) so evaluate() doesn't refetch the same data once per symbol. A filter that
@@ -31,18 +52,29 @@ class Filter(ABC):
     a portfolio-wide filter; one that looks at `signal.symbol` or `ctx` per call is a
     per-candidate filter. Same contract either way - no separate base classes needed.
 
-    A candidate is excluded if ANY enabled filter's evaluate() returns passed=False.
-    A candidate's final ranking score is its own signal.score plus every filter's score.
+    A candidate is excluded if ANY enabled, non-excluded filter's evaluate() returns
+    passed=False. A candidate's final ranking score is its own signal.score plus every
+    non-excluded filter's score.
     """
 
     name: str = ""
 
     def __init__(self, cfg: dict):
         self.cfg = cfg
+        self._strategy_cfgs: dict[str, dict] = {}
 
     @property
     def enabled(self) -> bool:
         return bool(self.cfg.get("enabled", False))
+
+    def bind_strategy_cfgs(self, strategy_cfgs: dict[str, dict]) -> None:
+        """Called once by Engine.__init__, after both the strategies and filters dicts exist,
+        with {strategy_name: strategy.cfg} for every currently-ENABLED strategy (a disabled
+        strategy never produces a candidate signal, so it never needs to be looked up here).
+        Only filters that read a per-strategy PARAMETER (not just applicability, which is
+        already handled upstream by exclude_filters - see the class docstring) need to use
+        this; most filters can ignore it entirely. Default: just stores it."""
+        self._strategy_cfgs = strategy_cfgs
 
     def prepare(self, asof: date, provider: DataProvider) -> None:
         """Optional: precompute/cache shared state once per eod run. Default: no-op."""
@@ -51,7 +83,9 @@ class Filter(ABC):
         """One-line summary for the startup 'FILTERS ON' log (Engine._log_filter_status).
         Default: surface whichever of these common knobs this filter's cfg actually has, so
         every filter gets a reasonable line for free; override in a subclass for something
-        more specific (e.g. naming the benchmark symbol or which sub-checks are on)."""
+        more specific (e.g. naming the benchmark symbol or which sub-checks are on). Per-
+        strategy applicability is no longer part of a filter's own description - see each
+        strategy's own config for its `exclude_filters` list instead."""
         c = self.cfg
         bits = []
         if "mode" in c:
@@ -61,8 +95,6 @@ class Filter(ABC):
         for key in ("benchmark_symbol", "proximity_pct", "sma_period", "timeframe_rule", "fail_mode"):
             if key in c:
                 bits.append(f"{key}={c[key]}")
-        if c.get("exempt_strategies"):
-            bits.append(f"exempt_strategies={c['exempt_strategies']}")
         return ", ".join(bits) if bits else "enabled"
 
     @abstractmethod
