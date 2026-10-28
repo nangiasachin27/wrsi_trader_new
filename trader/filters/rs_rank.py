@@ -63,9 +63,15 @@ class RelativeStrengthFilter(Filter):
     trend_strength/sector_regime in rank mode. mode 'filter' hard-blocks any
     candidate below min_percentile.
 
-    Score: candidates are bucketed by RS percentile within today's universe into
-    the same 0-2 range trend_strength uses, so the two combine on comparable
-    scales: top decile (>=90th pct) = 2, next 20% (>=70th pct) = 1, else = 0.
+    Score: the candidate's own RS percentile (0, 1.0], used directly - no bucketing.
+    This was a fixed 0/1/2 three-value bucket until 2026-10-27: with that few possible
+    values, any day with more than a handful of candidates produced large tied groups at
+    the max score, and ties were then broken by an arbitrary, undocumented ordering
+    (strategy-config filename, then symbol, alphabetically - see orchestrator.py's sort
+    key) rather than by anything resembling quality. The percentile itself is already a
+    clean continuous (0, 1.0] value (computed in prepare() below) - real ties among
+    distinct symbols are now vanishingly rare, since no two symbols are likely to log the
+    exact same relative return down to float precision.
     """
 
     def __init__(self, cfg: dict):
@@ -163,19 +169,14 @@ class RelativeStrengthFilter(Filter):
             passed = True if mode == "rank" else fail_open
             return FilterResult(passed, f"no RS data for {signal.symbol}", score=0)
 
-        if pct >= 0.90:
-            score = 2
-        elif pct >= 0.70:
-            score = 1
-        else:
-            score = 0
-
         min_pct = float(self.cfg.get("min_percentile", 0.0))
         passed = True if mode == "rank" else pct >= min_pct
         rs = self._rs_by_symbol.get(signal.symbol, 0.0)
-        return FilterResult(passed, f"RS percentile {pct:.0%} (rel. return {rs:+.1%} vs benchmark)", score=score)
+        return FilterResult(passed, f"RS percentile {pct:.0%} (rel. return {rs:+.1%} vs benchmark)", score=pct)
 
     def max_score(self) -> float:
-        """Fixed 0/1/2 percentile-bucket scheme (see evaluate()) - 2 whenever enabled, 0
-        otherwise. See Filter.max_score()'s docstring."""
-        return 2.0 if self.enabled else 0.0
+        """Percentile is already (0, 1.0] (see prepare()) - 1.0 whenever enabled, 0
+        otherwise. Changed from a fixed 2.0 on 2026-10-27 when the 0/1/2 bucket scheme was
+        dropped in favor of using the raw percentile directly - see evaluate()'s docstring.
+        See Filter.max_score()'s own docstring for why this ratio matters."""
+        return 1.0 if self.enabled else 0.0

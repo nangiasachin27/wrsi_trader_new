@@ -47,7 +47,19 @@ class MarketEfficiencyFilter(Filter):
     -> excluded outright) - do not switch to it without first comparing both modes' actual
     equity-curve impact per strategy; a brand-new filter should not get hard-gating power over
     real trades until its effect has actually been measured, which is the entire point of
-    shipping this disabled-by-default in 'rank' mode."""
+    shipping this disabled-by-default in 'rank' mode.
+
+    Scoring (continuous as of 2026-10-27): was a flat 0/1 on the above/below-threshold bit -
+    fixed preemptively for the same reason sector_regime was (see its own evaluate()
+    docstring for the concrete regression this caused there): a strategy whose ONLY scoring
+    filter is a binary 0/1 check will win nearly every slot contest against one using a
+    continuous filter (rs_rank/trend_strength/sector_regime, as of 2026-10-27), since a clean
+    1.0 on pass almost always beats a continuous reading that's rarely exactly 1.0 - regardless
+    of which candidate is actually better. This filter is globally disabled as of 2026-10-27 so
+    the fix has no live effect yet, but would have hit the exact same bug the moment it was
+    enabled alongside anything else. Uses `self._efficiency` (already continuous, 0-1 Kaufman
+    Efficiency Ratio - see prepare()) directly instead of bucketing it to a pass/fail bit first.
+    """
 
     def __init__(self, cfg: dict):
         super().__init__(cfg)
@@ -109,14 +121,22 @@ class MarketEfficiencyFilter(Filter):
 
         min_eff = override.get("min_efficiency", self.cfg.get("default_min_efficiency", 0.10))
         ok = self._efficiency >= min_eff
-        score = int(ok)
-        passed = not (mode == "filter" and score < self.cfg.get("min_score", 1))
+        gate_score = int(ok)  # unchanged gate semantics - compared against min_score below, exactly as before
+        # Continuous ranking score as of 2026-10-27: efficiency_ratio() is already bounded
+        # [0, 1] by construction (net move / path length - see
+        # trader.core.indicators.efficiency_ratio), so no score_ceiling is needed here the way
+        # sector_regime/trend_strength use one - the raw value IS already the right scale.
+        # Clamped defensively in case of float noise. Does NOT affect the gate/reason logic
+        # below, which still uses the old boolean gate_score.
+        score = max(0.0, min(1.0, self._efficiency))
+        passed = not (mode == "filter" and gate_score < self.cfg.get("min_score", 1))
         reason = (f"market efficiency {self._efficiency:.3f} {'>=' if ok else '<'} "
                  f"required {min_eff:.3f} for {signal.strategy}")
         return FilterResult(passed, reason, score=score,
                             meta={"efficiency": round(self._efficiency, 3), "min_efficiency": min_eff})
 
     def max_score(self) -> float:
-        """Single above/below-threshold bit (see evaluate()) - 1 whenever enabled, 0 otherwise.
-        See Filter.max_score()'s docstring."""
+        """The raw efficiency ratio itself, already bounded [0, 1] - 1.0 whenever enabled, 0
+        otherwise either way. Was a flat 0/1 bit before 2026-10-27 (see evaluate()'s
+        docstring). See Filter.max_score()'s own docstring."""
         return 1.0 if self.enabled else 0.0

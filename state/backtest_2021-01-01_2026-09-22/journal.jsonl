@@ -1,5 +1,0 @@
-{"date": "2021-01-01", "symbol": "DABUR", "event": "ENTRY_FILTERED", "filter": "resistance", "reason": "price 534.20 vs nearest weekly resistance zone 535.00-535.95 (strength 2) (+0.1% below)"}
-{"date": "2021-01-01", "symbol": "GMRAIRPORT", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
-{"date": "2021-01-01", "symbol": "LTFOODS", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
-{"date": "2021-01-01", "symbol": "PIIND", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}
-{"date": "2021-01-01", "symbol": "RADICO", "event": "ENTRY_FILTERED", "filter": "quality", "reason": "quality score 0"}

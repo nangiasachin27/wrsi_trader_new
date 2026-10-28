@@ -144,12 +144,23 @@ class Engine:
                                        for k, r in results.items()}
                 if blocked_by:
                     log.debug("SCAN  %-12s blocked by filter '%s': %s", sym, blocked_by, results[blocked_by].reason)
-                    self.store.journal(date=asof, symbol=sym, event="ENTRY_FILTERED",
+                    self.store.journal(date=asof, symbol=sym, event="ENTRY_FILTERED", strategy=name,
                                        filter=blocked_by, reason=results[blocked_by].reason)
                     continue
                 cands.append(sig)
 
         cands.sort(key=lambda s: (-s.score, -s.meta.get("rsi_w", 0.0)))
+        # Full post-filter, pre-slot shortlist for this eod, one record per candidate, each
+        # tagged with its own strategy and rank - added 2026-10-27 specifically so the day's
+        # ~N qualifying candidates can be audited by hand (symbol + strategy + score) without
+        # reconstructing them from the ENTRY_SKIPPED winners text, which only ever carried a
+        # symbol and was never tagged with which strategy produced it. This event fires even on
+        # a day with zero competition (candidates <= free slots), unlike ENTRY_SKIPPED.
+        if cands:
+            self.store.journal(date=asof, event="SHORTLIST", n_candidates=len(cands), n_slots=max(slots, 0),
+                               candidates=[{"rank": i, "symbol": s.symbol, "strategy": s.strategy,
+                                            "score": round(s.score, 4), "taken": i <= max(slots, 0)}
+                                           for i, s in enumerate(cands, 1)])
         if cands:
             log.info("ENTRY RANKING %s: %d candidate(s), %d slot(s) available",
                      asof, len(cands), max(slots, 0))
@@ -166,13 +177,13 @@ class Engine:
         for sig in cands[:max(slots, 0)]:
             orders.append(self._order(sig, nxt))
         n_slots = max(slots, 0)
-        winners = ", ".join(f"{c.symbol}(score {c.score:g}, wRSI {c.meta.get('rsi_w', 0):.1f})"
+        winners = ", ".join(f"{c.symbol}[{c.strategy}](score {c.score:g}, wRSI {c.meta.get('rsi_w', 0):.1f})"
                             for c in cands[:n_slots]) or f"none - {len(pf.positions)} positions already held"
         for rank, sig in enumerate(cands[n_slots:], start=n_slots + 1):
             why = (f"no free slot: ranked #{rank} of {len(cands)} (score {sig.score:g}, "
                    f"wRSI {sig.meta.get('rsi_w', 0):.1f}); {n_slots} slot(s) went to: {winners}")
             log.info("SIGNAL ENTRY %-12s skipped: %s", sig.symbol, why)
-            self.store.journal(date=asof, symbol=sig.symbol, event="ENTRY_SKIPPED", why=why)
+            self.store.journal(date=asof, symbol=sig.symbol, event="ENTRY_SKIPPED", strategy=sig.strategy, why=why)
 
         self.store.save_pending(orders)
         self.store.save_portfolio(pf)
