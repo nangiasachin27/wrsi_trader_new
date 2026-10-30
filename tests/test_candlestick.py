@@ -11,6 +11,7 @@ from trader.core.candlestick import detect_patterns, net_sentiment, patterns_for
 CFG = {
     "marubozu": {"min_body_pct": 90.0, "weight": 3.0},
     "doji": {"max_body_pct": 5.0, "weight": 0.0},
+    "spinning_top": {"max_body_pct": 35.0, "weight": 0.0},
     "hammer_family": {"max_body_pct": 35.0, "min_long_shadow_ratio": 2.0, "max_short_shadow_pct": 10.0,
                       "trend_lookback": 5, "weight": 2.0},
     "engulfing": {"weight": 2.5},

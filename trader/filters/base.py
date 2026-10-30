@@ -15,6 +15,24 @@ class FilterResult:
     reason: str
     score: float = 0.0          # contributes to ranking; 0 for pure hard-gates
     meta: dict = field(default_factory=dict)
+    contributes_to_score: bool = True
+    # Per-CANDIDATE opt-out of the ranking average (2026-10-29) - distinct from a filter's own
+    # global max_score()==0 (a pure gate, never scores for ANY candidate). Some filters have a
+    # genuine "no information" case for a SPECIFIC candidate, not just "my answer is 0" - e.g.
+    # candlestick.py when no recognized pattern matched at all vs. a detected-but-weight-0
+    # pattern (doji) or a genuinely bearish one. Treating "no information" as a flat 0.0 score
+    # is the SAME bias category fixed twice before for other filters (raw-sum bias, bucketed-
+    # score ties, binary-vs-continuous mismatch): when the no-information case is the OVERWHELMING
+    # majority (candlestick: ~95-99% of real candidates have no recognized pattern), averaging a
+    # near-constant 0 into orchestrator.py's score_fracs systematically drags down every strategy
+    # carrying this filter relative to one that doesn't (sr_reversal), independent of actual
+    # candidate quality - confirmed via a controlled A/B (candlestick on vs off, same 1-year
+    # window, nothing else changed): enabling it cut portfolio net P&L by 62%, and sr_reversal's
+    # own trade count swung 20x despite its own score computation being completely unaffected by
+    # the toggle (it excludes this filter) - proof the damage was pure slot-reallocation, not
+    # signal quality. Set False to abstain this candidate from the average entirely (as if this
+    # filter didn't exist for it this one time); default True preserves every other filter's
+    # existing behavior unchanged.
 
 
 class Filter(ABC):

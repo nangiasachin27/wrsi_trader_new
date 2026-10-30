@@ -73,6 +73,36 @@ def _doji(bars: pd.DataFrame, i: int, cfg: dict) -> PatternMatch | None:
     return PatternMatch("doji", "neutral", c["weight"], 1)
 
 
+@register_pattern("spinning_top")
+def _spinning_top(bars: pd.DataFrame, i: int, cfg: dict) -> PatternMatch | None:
+    """Built 2026-10-29, found via a categorization pass on the candlestick filter's own
+    "no pattern matched" bucket (the ~80-95% majority case the 2026-10-29 contributes_to_score
+    fix abstains on) - see strategy-performance-log.md's "Candlestick unrecognized-pattern
+    categorization" section for the full analysis. A small-to-moderate body (bigger than doji's
+    very tight max_body_pct, smaller than a trending/plain candle) with roughly BALANCED shadows
+    on both sides is a real, conventionally-named pattern (indecision/consolidation, same
+    family-spirit as doji but less extreme) that was falling into "no pattern" purely because
+    hammer_family specifically requires one DOMINANT long shadow (min_long_shadow_ratio) and the
+    OTHER shadow to be short (max_short_shadow_pct) - a spinning top fails that asymmetry test by
+    construction, not because it isn't a real shape. Distinguishing test: body_pct in
+    (doji's max_body_pct, max_body_pct] AND neither shadow is at least `min_long_shadow_ratio`
+    times the other (reuses hammer_family's own ratio knob so the two patterns partition the
+    small-body space without a gap or overlap between them)."""
+    c = cfg["spinning_top"]
+    hf = cfg["hammer_family"]
+    s = _shape(bars, i)
+    if s["range"] <= 0 or not (cfg["doji"]["max_body_pct"] < s["body_pct"] <= c["max_body_pct"]):
+        return None
+    upper, lower = s["upper_shadow"], s["lower_shadow"]
+    lo, hi = min(upper, lower), max(upper, lower)
+    if hi <= 0 or lo <= 0:
+        return None  # one-sided shadow with the other truly zero isn't "balanced" - belongs to
+                     # hammer_family's own asymmetric test instead, not this pattern
+    if hi / lo >= hf["min_long_shadow_ratio"]:
+        return None  # asymmetric enough to be hammer_family's territory, not this one
+    return PatternMatch("spinning_top", "neutral", c["weight"], 1)
+
+
 def _hammer_family(bars: pd.DataFrame, i: int, cfg: dict) -> PatternMatch | None:
     """Hammer, Hanging Man, Shooting Star, and Inverted Hammer are all the SAME shape (small
     body, one long shadow, one short shadow) - only the preceding trend decides which of the

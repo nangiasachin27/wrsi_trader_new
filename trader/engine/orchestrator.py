@@ -135,7 +135,14 @@ class Engine:
                     res = filt.evaluate(sig, ctx)
                     results[fname] = res
                     fmax = filt.max_score()
-                    if fmax > 0:
+                    # contributes_to_score (2026-10-29): a per-CANDIDATE opt-out, distinct from
+                    # fmax>0 (a per-FILTER one). A filter can have a genuine "no information"
+                    # case for this specific candidate (e.g. candlestick.py when no pattern
+                    # matched at all) - see FilterResult's own docstring for why averaging that
+                    # in as a flat 0 is the same bias already fixed twice elsewhere, confirmed by
+                    # a controlled A/B. Default True, so every other filter's behavior is
+                    # unchanged.
+                    if fmax > 0 and res.contributes_to_score:
                         score_fracs.append(res.score / fmax)
                     if not res.passed and blocked_by is None:
                         blocked_by = fname

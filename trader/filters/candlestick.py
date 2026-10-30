@@ -47,6 +47,24 @@ class CandlestickFilter(Filter):
     saturates to a full 1.0) and clamped to [0, 1] - same continuous-scoring convention trend_
     strength/rs_rank were just moved to on 2026-10-27, so a strong marubozu+engulfing combo
     outranks a single weak doji-adjacent candle instead of tying with it.
+
+    ABSTAINS from the ranking average when NO pattern matched at all (2026-10-29 fix) - set via
+    FilterResult.contributes_to_score=False, not a flat score of 0.0. Checked against real
+    history: a recognized shape matches on only ~1-5% of actual candidates for the 3 strategies
+    that decide off the daily close (breakout_trend/new_high_momentum/pullback_ma) - so "no
+    pattern matched" is the OVERWHELMING majority case, not an edge case. Scoring it as a flat
+    0.0 (this filter's original behavior, shipped 2026-10-27) meant this filter contributed a
+    near-constant 0 into orchestrator.py's averaged ranking score for every strategy carrying
+    it, systematically dragging their average down relative to sr_reversal (the one strategy
+    that excludes this filter entirely) - independent of whether any given candidate was
+    actually good or bad. Confirmed empirically via a controlled A/B (candlestick enabled vs
+    disabled, identical 1-year window, nothing else changed): enabling it cut portfolio net P&L
+    by 62%, and sr_reversal's OWN trade count swung 20x even though its own score computation is
+    completely unaffected by the toggle - proof the damage was pure slot-reallocation away from
+    the 4 strategies carrying this filter, not a genuine signal-quality effect. A real, detected
+    pattern (including a weight-0 one like doji, which IS informative - "the market is
+    indecisive right here") still scores and contributes normally; only the "no shape matched
+    at all" case abstains.
     """
 
     def __init__(self, cfg: dict):
@@ -84,9 +102,13 @@ class CandlestickFilter(Filter):
 
         ceiling = float(self.cfg.get("score_ceiling", 5.0))
         score = max(0.0, min(1.0, ns / ceiling)) if ceiling > 0 else 0.0
+        # Abstain from the ranking average when nothing was detected at all - see the class
+        # docstring's 2026-10-29 fix. A real match (even a weight-0 doji) still contributes.
+        contributes = bool(matches)
 
         reason = f"{timeframe} candle net_sentiment {ns:+.1f} ({names})"
-        return FilterResult(passed, reason, score=score, meta={"net_sentiment": round(ns, 2), "timeframe": timeframe})
+        return FilterResult(passed, reason, score=score, meta={"net_sentiment": round(ns, 2), "timeframe": timeframe},
+                            contributes_to_score=contributes)
 
     def max_score(self) -> float:
         """Continuous net_sentiment/score_ceiling ratio, clamped to [0, 1] in evaluate() - 1.0

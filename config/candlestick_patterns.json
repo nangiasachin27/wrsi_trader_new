@@ -2,6 +2,10 @@
   "_note": "Shape thresholds and per-pattern weights (relative conviction, not probabilities - tune these as you see how often each pattern matters in practice). Scale-invariant (body_pct etc. are ratios), so one set of numbers works across daily/weekly/monthly.",
   "marubozu": {"min_body_pct": 90.0, "weight": 3.0},
   "doji": {"max_body_pct": 5.0, "weight": 0.0},
+  "spinning_top": {
+    "_note": "2026-10-29, see trader/core/candlestick.py's _spinning_top docstring. Partitions the small-body space with doji (above) and hammer_family (below): body_pct > doji.max_body_pct and <= this max_body_pct, AND neither shadow is >= hammer_family.min_long_shadow_ratio times the other (that asymmetric case belongs to hammer_family instead).",
+    "max_body_pct": 35.0, "weight": 0.0
+  },
   "hammer_family": {
     "_note": "Shared by hammer/hanging_man/shooting_star/inverted_hammer - same shape, trend context picks the label.",
     "max_body_pct": 35.0, "min_long_shadow_ratio": 2.0, "max_short_shadow_pct": 10.0,
