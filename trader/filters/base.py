@@ -166,6 +166,7 @@ def build_filter(name: str, cfg: dict) -> Filter:
     import trader.filters.regime_match   # noqa: F401
     import trader.filters.market_efficiency  # noqa: F401
     import trader.filters.candlestick    # noqa: F401
+    import trader.filters.sentiment      # noqa: F401
     if name not in REGISTRY:
         raise KeyError(f"No filter class registered for config '{name}'. Known: {list(REGISTRY)}")
     return REGISTRY[name](cfg)

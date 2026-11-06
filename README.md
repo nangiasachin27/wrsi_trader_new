@@ -185,3 +185,27 @@ this drop) show close to zero trades across the board until it's addressed, so
 flagging it now rather than after you run the comparisons. Worth deciding whether
 to revert it, loosen the proximity/clustering thresholds in `config/levels.json`,
 or dig into it further — happy to help with whichever direction you pick.
+
+## Sentiment filter (`config/filters/sentiment.json`, `trader/filters/sentiment.py`)
+
+A per-candidate veto on clearly negative news. It reads daily CSVs written by
+news_scraper's `python -m sentiment_backtest.export` into `sentiment_gate/`. The row for day T
+uses only news known before 15:15 IST on T, so the eod scan on T can use it, and the order
+fills at T+1's open. It's a pure gate (`max_score()` is 0), so it never affects ranking.
+
+- `mode`: `filter` blocks flagged candidates. `shadow` lets them through with
+  `meta.would_block`, for a live trial before trusting it.
+- `fail_mode: allow`: a symbol-day that was never scraped passes, and `meta.coverage` says so.
+  `no_news` means it was scraped and nothing was found; `missing` means it was not scraped.
+- `veto_score` / `veto_weight` / `require_more_negative` are the rule fixed before the
+  news_scraper backtest. Don't tune them against wrsi backtests.
+- `lookback_days: 1` uses today's row only. Longer windows weren't validated.
+
+Backtest workflow, scraping only what the backtest asks about:
+
+    python -m trader backtest --start 2026-01-01 --end 2026-10-31 --label base
+    python scripts/sentiment_check.py pairs state/backtest_2026-01-01_2026-10-31_base --out pairs.csv
+    #   news_scraper:  python scrape_pairs.py pairs.csv --skip-existing
+    #                  python -m sentiment_backtest.export --start 2026-01-01 --end 2026-10-31 --out <wrsi>/sentiment_gate/sentiment_2026-01-01_2026-10-31.csv
+    python scripts/sentiment_check.py trades state/backtest_2026-01-01_2026-10-31_base --out sentiment_trades.csv
+    #   then the A/B: set "enabled": true, re-run with --label sent, and compare.

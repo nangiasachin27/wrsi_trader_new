@@ -1,0 +1,12 @@
+{
+  "_note": "News-sentiment veto (trader/filters/sentiment.py). Reads the daily CSVs written by news_scraper's `python -m sentiment_backtest.export` into sentiment_gate/. Pure gate: never scores. Disabled until wrsi's own A/B backtest over a window with sentiment coverage shows it helps; then run it in mode 'shadow' live before 'filter'. veto_score / veto_weight / require_more_negative are the rule fixed before the news_scraper backtest - do NOT tune them on wrsi backtests. fail_mode 'allow': a symbol-day that was never scraped passes (unknown is not negative).",
+  "enabled": false,
+  "mode": "filter",
+  "path": "sentiment_gate",
+  "glob": "*.csv",
+  "fail_mode": "allow",
+  "lookback_days": 1,
+  "veto_score": -0.25,
+  "veto_weight": 1.0,
+  "require_more_negative": true
+}
