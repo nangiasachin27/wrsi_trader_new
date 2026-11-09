@@ -17,6 +17,9 @@ jobs:
         with: {path: data_cache, key: "bars-${{ github.run_id }}", restore-keys: "bars-"}
       - run: python -m trader open
         env: {UPSTOX_ACCESS_TOKEN: "${{ secrets.UPSTOX_ACCESS_TOKEN }}"}
+      - name: Run summary
+        if: always()
+        run: python scripts/run_summary.py open >> "$GITHUB_STEP_SUMMARY"
       - run: |
           git config user.name "wrsi-bot"; git config user.email "bot@users.noreply.github.com"
           git add state
