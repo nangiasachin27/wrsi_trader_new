@@ -40,7 +40,11 @@ class Engine:
 
     # ---- helpers ---------------------------------------------------------------------------
     def _ctx(self, sym: str, asof: date) -> SymbolContext | None:
-        df = self.provider.get_daily(sym, asof)
+        try:
+            df = self.provider.get_daily(sym, asof)
+        except Exception as e:  # one symbol's data problem must not abort the whole EOD
+            log.error("%s: data fetch failed - skipped (%s)", sym, e)
+            return None
         if df.empty or df.index[-1].date() != asof:
             log.warning("%s: no bar for %s (last=%s) - skipped", sym, asof, None if df.empty else df.index[-1].date())
             return None

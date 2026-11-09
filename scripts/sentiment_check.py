@@ -6,6 +6,9 @@
   #    only the ones actually taken (smallest set, enough for step 3):
   python scripts/sentiment_check.py pairs state/backtest_2026-01-01_2026-10-31_base --taken-only --out pairs.csv
 
+  #    within reach of a free slot (what the A/B actually needs; days with a full book drop out):
+  python scripts/sentiment_check.py pairs state/backtest_2026-01-01_2026-10-31_base --slot-margin 2 --out pairs.csv
+
   # 2. scrape them in news_scraper:  python scrape_pairs.py pairs.csv --skip-existing
   #    then export:                 python -m sentiment_backtest.export --start ... --end ... --out <wrsi>/sentiment_gate/...
 
@@ -42,7 +45,7 @@ def _shortlists(bt_dir: Path):
         for line in fh:
             rec = json.loads(line)
             if rec.get("event") == "SHORTLIST":
-                yield str(rec["date"])[:10], rec.get("candidates", [])
+                yield str(rec["date"])[:10], rec.get("candidates", []), int(rec.get("n_slots") or 0)
 
 
 def _filter(path: str | None) -> SentimentFilter:
@@ -57,8 +60,15 @@ def _filter(path: str | None) -> SentimentFilter:
 def cmd_pairs(a) -> int:
     pairs: set[tuple[str, str]] = set()
     for bt in a.backtest_dirs:
-        for d, cands in _shortlists(Path(bt)):
-            pairs |= {(d, c["symbol"]) for c in cands if c.get("taken") or not a.taken_only}
+        for d, cands, slots in _shortlists(Path(bt)):
+            for c in cands:
+                if a.taken_only and not c.get("taken"):
+                    continue
+                # A candidate ranked far below the free slots can only be reached if that many
+                # names above it are vetoed on the same day - flags are rare, so it never is.
+                if a.slot_margin is not None and (slots <= 0 or c.get("rank", 0) > slots + a.slot_margin):
+                    continue
+                pairs.add((d, c["symbol"]))
     have = 0
     if a.missing_only:
         f = _filter(a.sentiment_path)
@@ -83,7 +93,7 @@ def cmd_trades(a) -> int:
     if not tl.exists():
         raise SystemExit(f"{tl} not found")
     taken: dict[str, list[str]] = {}
-    for d, cands in _shortlists(bt):
+    for d, cands, _ in _shortlists(bt):
         for c in cands:
             if c.get("taken"):
                 taken.setdefault(c["symbol"], []).append(d)
@@ -147,6 +157,8 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("backtest_dirs", nargs="+")
     pr.add_argument("--out", default="pairs.csv")
     pr.add_argument("--taken-only", action="store_true", help="only candidates that got a slot")
+    pr.add_argument("--slot-margin", type=int, metavar="N",
+                    help="only candidates ranked within free slots + N (days with no free slot add nothing)")
     pr.add_argument("--missing-only", action="store_true", help="leave out pairs already in the sentiment CSVs")
     pr.add_argument("--sentiment-path", help="CSV file or folder (default: the filter config's path)")
     tr = sub.add_parser("trades", help="closed trades grouped by sentiment at their signal date")

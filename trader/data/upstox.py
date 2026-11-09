@@ -5,6 +5,7 @@ import logging
 import os
 import time
 from datetime import date, datetime, timedelta
+from datetime import time as time_of_day
 from pathlib import Path
 from urllib.parse import quote
 from zoneinfo import ZoneInfo
@@ -15,6 +16,10 @@ import requests
 from trader.data.base import DataProvider
 
 log = logging.getLogger(__name__)
+
+
+class UpstoxClientError(requests.HTTPError):
+    """Non-retryable 4xx from Upstox (bad key/range/token). Carries the response body."""
 
 
 class UpstoxProvider(DataProvider):
@@ -40,8 +45,11 @@ class UpstoxProvider(DataProvider):
                 r = self.session.get(url, params=params, timeout=self.c["http_timeout_s"])
                 if r.status_code == 429 or r.status_code >= 500:
                     raise requests.HTTPError(f"{r.status_code}: {r.text[:200]}")
-                r.raise_for_status()
+                if r.status_code >= 400:  # other 4xx won't fix themselves - fail fast, keep the body
+                    raise UpstoxClientError(f"{r.status_code} for {url}: {r.text[:300]}")
                 return r.json()
+            except UpstoxClientError:
+                raise
             except requests.RequestException as e:
                 if attempt == self.c["retries"] - 1:
                     raise
@@ -74,17 +82,56 @@ class UpstoxProvider(DataProvider):
 
         if (symbol, today) not in self._fresh:
             key = self.instruments[symbol]
-            if need_full:  # periodic full re-pull picks up corporate-action adjustments
-                start = today - timedelta(days=365 * self.c["history_years"])
-                cached = self._fetch(key, start, today)
-                meta.write_text(json.dumps({"full": today.isoformat()}))
-            else:
-                start = cached.index[-1].date() - timedelta(days=self.c["overlap_days"])
-                new = self._fetch(key, start, today)
-                cached = pd.concat([cached[cached.index < new.index[0]], new]) if len(new) else cached
-            cached.to_csv(f, index_label="date")
+            try:
+                if need_full:  # periodic full re-pull picks up corporate-action adjustments
+                    try:
+                        start = today - timedelta(days=365 * self.c["history_years"])
+                        cached = self._fetch(key, start, today)
+                        meta.write_text(json.dumps({"full": today.isoformat()}))
+                    except requests.RequestException as e:
+                        if cached is None or cached.empty:
+                            raise
+                        # one bad symbol must not block the whole run: keep the old history,
+                        # top it up incrementally, retry the full pull next run
+                        log.warning("%s: full refresh failed (%s) - falling back to incremental", symbol, e)
+                        cached = self._incremental(key, cached, today)
+                else:
+                    cached = self._incremental(key, cached, today)
+                cached = self._append_today(key, cached, today)
+                cached.to_csv(f, index_label="date")
+            except requests.RequestException as e:
+                if cached is None or cached.empty:
+                    raise
+                log.warning("%s: fetch failed (%s) - using cached bars to %s",
+                            symbol, e, cached.index[-1].date())
             self._fresh.add((symbol, today))
         return cached.loc[: pd.Timestamp(end)]
+
+    def _incremental(self, key: str, cached: pd.DataFrame, today: date) -> pd.DataFrame:
+        start = cached.index[-1].date() - timedelta(days=self.c["overlap_days"])
+        new = self._fetch(key, start, today)
+        return pd.concat([cached[cached.index < new.index[0]], new]) if len(new) else cached
+
+    def _append_today(self, key: str, cached: pd.DataFrame, today: date) -> pd.DataFrame:
+        """The historical-candle endpoint only returns completed days up to yesterday; today's
+        daily candle comes from the intraday endpoint. Only used after the close, so the bar is final."""
+        if not self.c.get("fetch_today_intraday", True):
+            return cached
+        if cached.index[-1].date() >= today or datetime.now(self.tz).time() < time_of_day(15, 35):
+            return cached
+        url = f"{self.c['base_url']}/v3/historical-candle/intraday/{quote(key, safe='')}/days/1"
+        try:
+            rows = self._get(url)["data"]["candles"]
+        except requests.RequestException as e:
+            log.warning("today's candle unavailable for %s: %s", key, e)
+            return cached
+        if not rows:
+            return cached
+        df = pd.DataFrame(rows).iloc[:, :6]
+        df.columns = ["date", "open", "high", "low", "close", "volume"]
+        df["date"] = pd.to_datetime(df["date"], utc=True).dt.tz_convert(self.tz).dt.tz_localize(None).dt.normalize()
+        df = df[df["date"].dt.date == today].drop_duplicates("date").set_index("date")
+        return pd.concat([cached[cached.index < df.index[0]], df]) if len(df) else cached
 
     # ---- open quotes ----------------------------------------------------------------------
     def get_open_quotes(self, symbols: list[str], on: date) -> dict[str, float]:

@@ -113,3 +113,28 @@ def test_backtest_blocks_flagged_entries(data, tmp_path):
     assert not any(t["symbol"] == first["symbol"] and t["date"] == first["date"] for t in gated)
     shadow = run({"enabled": True, "mode": "shadow", "path": str(tmp_path / "gate")}, "shadow")
     assert [(t["symbol"], t["date"]) for t in shadow] == [(t["symbol"], t["date"]) for t in base]
+
+
+def test_pairs_slot_margin(tmp_path):
+    import json
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    import sentiment_check
+
+    bt = tmp_path / "bt"
+    bt.mkdir()
+    cands = lambda n, k: [{"rank": i, "symbol": f"S{i}", "taken": i <= k} for i in range(1, n + 1)]  # noqa: E731
+    with open(bt / "journal.jsonl", "w") as fh:
+        fh.write(json.dumps({"date": "2026-03-02", "event": "SHORTLIST", "n_slots": 2, "candidates": cands(10, 2)}) + "\n")
+        fh.write(json.dumps({"date": "2026-03-03", "event": "SHORTLIST", "n_slots": 0, "candidates": cands(10, 0)}) + "\n")
+
+    def run(*extra):
+        out = tmp_path / "p.csv"
+        sentiment_check.main(["pairs", str(bt), "--out", str(out), *extra])
+        return out.read_text().strip().splitlines()[1:]
+
+    assert len(run()) == 20
+    assert run("--slot-margin", "2") == [f"2026-03-02,S{i}" for i in range(1, 5)]  # full-book day drops out
+    assert len(run("--taken-only")) == 2
