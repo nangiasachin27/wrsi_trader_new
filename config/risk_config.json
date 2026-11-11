@@ -8,7 +8,9 @@
       "pullback_ma": 100,
       "sr_reversal": 100,
       "inside_bar_breakout": 100,
-      "new_high_momentum": 100
+      "new_high_momentum": 100,
+      "vcp_breakout": 100,
+      "high_tight_flag": 100
     }
   },
   "per_trade": {

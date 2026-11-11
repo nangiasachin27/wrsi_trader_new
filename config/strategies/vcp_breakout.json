@@ -1,0 +1,47 @@
+{
+  "_note": "Minervini VCP breakout, built 2026-11-12 from the user's spec (Part 1). See trader/strategies/vcp_breakout.py. EXECUTION APPROXIMATION: the spec fires a buy-stop intraday at pivot (High4 + tick); this engine is EOD -> next open, so the signal fires on the session whose high reached the pivot and fills at the NEXT session's open. For live trading, scripts/swing_watchlist.py lists tomorrow's ARMED pivots so a real broker buy-stop/GTT can be placed instead. Trend Template condition 8 (RS >= 70) = rs_rank filter gated at rs_rank_min_percentile (13-week return vs NIFTY500, universe percentile); set it to null to make condition 8 optional, as the spec allows. All other overlay filters excluded so the strategy runs exactly to spec - tune with scripts/tune_strategy.py before adding any. tick = NSE price tick (spec's $0.01). Disabled by default: run in isolation with --strategy vcp_breakout. UNTESTED on real data.",
+  "enabled": false,
+  "exclude_filters": [
+    "candlestick",
+    "market_efficiency",
+    "market_regime",
+    "quality",
+    "regime_match",
+    "resistance",
+    "sector_regime",
+    "sentiment",
+    "trend_strength",
+    "repeat_loser_cooldown"
+  ],
+  "rs_rank_min_percentile": 0.7,
+  "market_regime_tag": "UPTREND",
+  "universe": "default",
+  "entry": {
+    "min_bars": 272,
+    "trend_template": {
+      "sma_fast": 50,
+      "sma_mid": 150,
+      "sma_slow": 200,
+      "sma_slow_rising_lookback": 20,
+      "lookback_52w": 252,
+      "min_above_52w_low_pct": 30.0,
+      "max_below_52w_high_pct": 25.0
+    },
+    "contraction_bars": 4,
+    "max_spread_pct": 4.0,
+    "tick": 0.05,
+    "trigger_on": "high",
+    "max_initial_risk_pct": 5.0
+  },
+  "open_checks": {
+    "_note": "Skip if the open is at/below the stop, or more than max_chase_pct above the pivot (null = never skip). The 5% risk cap is re-applied against the actual open.",
+    "max_chase_pct": 5.0
+  },
+  "exit": {
+    "stop_trigger": "close",
+    "target_r": 2.0,
+    "target_trigger": "high",
+    "trim_fraction": 0.5,
+    "trail_ema_period": 20
+  }
+}

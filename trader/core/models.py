@@ -20,6 +20,11 @@ class Position:
     fees_paid: float = 0.0
     adds: int = 0
     opened: str = ""
+    # Per-position strategy state (added 2026-11-12 for vcp_breakout / high_tight_flag partial
+    # profit-taking). The engine writes "initial_stop" at entry; a TRIM fill writes
+    # "trimmed_qty"/"realized_pnl"/"trims". Defaults to {} so portfolio.json files written
+    # before this field existed still load unchanged.
+    meta: dict = field(default_factory=dict)
 
     @property
     def qty(self) -> int:
@@ -55,7 +60,7 @@ class Position:
 class Signal:
     symbol: str
     strategy: str
-    action: str  # ENTRY | ADD | EXIT
+    action: str  # ENTRY | ADD | EXIT | TRIM (partial sell; meta["fraction"], optional meta["new_stop"])
     asof: str
     reason: str
     score: float = 0.0

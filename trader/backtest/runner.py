@@ -55,12 +55,18 @@ def trade_log(trades: list[dict]) -> pd.DataFrame:
     sells = [t for t in trades if t["side"] == "SELL"]
     if not sells:
         return pd.DataFrame(columns=["symbol", "strategy", "entry_date", "exit_date", "holding_days",
-                                     "qty", "avg_cost", "exit_price", "pnl", "pnl_pct", "adds", "exit_reason"])
+                                     "qty", "avg_cost", "exit_price", "pnl", "pnl_pct", "adds", "exit_reason",
+                                     "partial_qty", "partial_pnl"])
     rows = [{
         "symbol": t["symbol"], "strategy": t.get("strategy"), "entry_date": t.get("entry_date"),
         "exit_date": t["date"], "holding_days": t.get("holding_days"), "qty": t["qty"], "avg_cost": t["avg_cost"],
         "exit_price": t["price"], "pnl": t["pnl"],
-        "pnl_pct": round(t["pnl"] / (t["avg_cost"] * t["qty"]) * 100, 2) if t["avg_cost"] * t["qty"] else None,
+        # qty is the shares sold on the CLOSING fill; a position that was scaled out (TRIM rows)
+        # started with qty + partial_qty, and pnl already includes the partials - so pnl_pct is
+        # measured against the full original cost basis, not just the last tranche.
+        "pnl_pct": (round(t["pnl"] / (t["avg_cost"] * (t["qty"] + t.get("partial_qty", 0))) * 100, 2)
+                    if t["avg_cost"] * t["qty"] else None),
         "adds": t["adds"], "exit_reason": t["reason"],
+        "partial_qty": t.get("partial_qty", 0), "partial_pnl": t.get("partial_pnl", 0.0),
     } for t in sells]
     return pd.DataFrame(rows).sort_values("exit_date").reset_index(drop=True)

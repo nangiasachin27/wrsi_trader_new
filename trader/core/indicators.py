@@ -19,6 +19,11 @@ def sma(close: pd.Series, period: int) -> pd.Series:
     return close.rolling(period, min_periods=period).mean()
 
 
+def ema(close: pd.Series, period: int) -> pd.Series:
+    """Standard exponential MA (alpha = 2/(period+1), recursive, NaN until `period` bars)."""
+    return close.ewm(span=period, adjust=False, min_periods=period).mean()
+
+
 def efficiency_ratio(close: pd.Series, period: int) -> pd.Series:
     """Kaufman Efficiency Ratio: net directional move over `period` bars, divided by the total
     distance traveled over the same window (sum of each bar's absolute change). 1.0 = price

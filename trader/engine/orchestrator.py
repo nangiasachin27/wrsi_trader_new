@@ -88,7 +88,9 @@ class Engine:
             sig = strat.exit_signal(ctx, pos)
             if sig:
                 orders.append(self._order(sig, nxt))
-                exiting.add(sym)
+                # A TRIM is a partial sell - the position (and its slot) survives it.
+                if sig.action != "TRIM":
+                    exiting.add(sym)
             elif pos.adds < max_adds and (sig := strat.add_signal(ctx, pos)):
                 orders.append(self._order(sig, nxt))
             else:
@@ -229,16 +231,36 @@ class Engine:
             pos = pf.positions.pop(o.symbol)
             fill = self.broker.execute("SELL", o.symbol, pos.qty, px, asof)
             proceeds = fill.qty * fill.price - fill.fees
-            pnl = proceeds - pos.cost - pos.fees_paid
+            # Realized P&L of any earlier TRIM(s) on this position is folded into the closing
+            # SELL row, so every consumer (summarize, trade_log, analyze_trades, Monte Carlo,
+            # repeat_loser_cooldown) still sees exactly ONE SELL row per round trip whose pnl is
+            # the whole trade's result. avg_cost is the ORIGINAL entry cost basis.
+            partial_pnl = float(pos.meta.get("realized_pnl", 0.0))
+            trimmed_qty = int(pos.meta.get("trimmed_qty", 0))
+            pnl = proceeds - pos.cost - pos.fees_paid + partial_pnl
             hold_days = (asof - date.fromisoformat(pos.opened)).days if pos.opened else None
             log.info("FILL  SELL %-12s qty %-6d @ %8.2f  fees %6.2f  pnl %+9.2f  held %sd  (%s)",
                      o.symbol, fill.qty, fill.price, fill.fees, pnl, hold_days, o.reason)
             pf.cash += proceeds
             pf.trades.append({"date": iso, "symbol": o.symbol, "strategy": o.strategy, "side": "SELL",
                               "qty": fill.qty, "price": fill.price, "fees": fill.fees,
-                              "avg_cost": round(pos.avg_cost, 2), "pnl": round(pnl, 2),
+                              "avg_cost": round(pos.meta.get("entry_avg_cost", pos.avg_cost), 2),
+                              "pnl": round(pnl, 2),
                               "adds": pos.adds, "reason": o.reason,
-                              "entry_date": pos.opened, "holding_days": hold_days})
+                              "entry_date": pos.opened, "holding_days": hold_days,
+                              **({"partial_qty": trimmed_qty, "partial_pnl": round(partial_pnl, 2)}
+                                 if trimmed_qty else {})})
+
+        for o in (o for o in due if o.action == "TRIM"):
+            px = opens.get(o.symbol)
+            pos = pf.positions.get(o.symbol)
+            if pos is None:          # fully exited by an EXIT processed above - nothing to trim
+                continue
+            if px is None:           # no quote: retry next session, same policy as EXIT
+                o.exec_date = self.cal.next_trading_day(asof).isoformat()
+                keep.append(o)
+                continue
+            self._trim(pf, pos, o, px, asof)
 
         for o in sorted((o for o in due if o.action in ("ENTRY", "ADD")), key=lambda x: -x.score):
             self._buy(pf, o, opens.get(o.symbol), prev_day, asof)
@@ -287,8 +309,12 @@ class Engine:
         pf.cash -= fill.qty * fill.price + fill.fees
         lot = Lot(fill.qty, fill.price, fill.date)
         if o.action == "ENTRY":
+            # initial_stop is the stop the trade was SIZED against (after any validate_open
+            # adjustment) - strategies that scale out at a multiple of initial risk (R) need it,
+            # because pos.stop itself moves (breakeven, trails) during the trade.
             pf.positions[o.symbol] = Position(o.symbol, o.strategy, [lot], o.stop, fill.price,
-                                              fees_paid=fill.fees, opened=fill.date)
+                                              fees_paid=fill.fees, opened=fill.date,
+                                              meta={"initial_stop": o.stop})
         else:
             p = pf.positions[o.symbol]
             p.lots.append(lot)
@@ -298,3 +324,45 @@ class Engine:
         pf.trades.append({"date": fill.date, "symbol": o.symbol, "strategy": o.strategy,
                           "side": "BUY", "action": o.action, "qty": fill.qty, "price": fill.price,
                           "fees": fill.fees, "stop": round(o.stop, 2), "reason": o.reason})
+
+    def _trim(self, pf: Portfolio, pos: Position, o: PendingOrder, px: float, asof: date) -> None:
+        """Partial sell of meta['fraction'] of the position (FIFO across lots). Never sells the
+        whole position - that is what EXIT is for - so a trim always leaves >= 1 share and keeps
+        its slot. Realized P&L (with this sale's fees and a pro-rata share of the entry fees) is
+        banked in pos.meta and reported on the eventual closing SELL row, not as its own SELL."""
+        frac = float(o.meta.get("fraction", 0.0))
+        qty = min(int(pos.qty * frac), pos.qty - 1)
+        if qty <= 0:
+            log.info("skip TRIM %s: %.0f%% of %d shares rounds to 0", o.symbol, frac * 100, pos.qty)
+            self.store.journal(date=asof, symbol=o.symbol, event="TRIM_SKIPPED", why="qty rounds to 0")
+            return
+        pos.meta.setdefault("entry_avg_cost", round(pos.avg_cost, 4))
+        fill = self.broker.execute("SELL", o.symbol, qty, px, asof)
+        entry_fee_share = pos.fees_paid * qty / pos.qty
+        cost_sold, left = 0.0, qty
+        for lot in pos.lots:                 # FIFO consume
+            take = min(lot.qty, left)
+            cost_sold += take * lot.price
+            lot.qty -= take
+            left -= take
+            if left == 0:
+                break
+        pos.lots = [l for l in pos.lots if l.qty > 0]
+        pos.fees_paid -= entry_fee_share
+        pnl = fill.qty * fill.price - fill.fees - cost_sold - entry_fee_share
+        pf.cash += fill.qty * fill.price - fill.fees
+        pos.meta["realized_pnl"] = float(pos.meta.get("realized_pnl", 0.0)) + pnl
+        pos.meta["trimmed_qty"] = int(pos.meta.get("trimmed_qty", 0)) + qty
+        pos.meta["trims"] = int(pos.meta.get("trims", 0)) + 1
+        new_stop = o.meta.get("new_stop")
+        if new_stop is not None:
+            pos.stop = max(pos.stop, float(new_stop))   # ratchet only
+        pos.last_price = fill.price
+        log.info("FILL  TRIM %-12s qty %-6d @ %8.2f  fees %6.2f  pnl %+9.2f  left %d  stop %.2f  (%s)",
+                 o.symbol, fill.qty, fill.price, fill.fees, pnl, pos.qty, pos.stop, o.reason)
+        # side "TRIM" (not "SELL") on purpose: existing SELL-counting consumers keep treating a
+        # round trip as one closed trade; total_fees (sums every row) still includes this fee.
+        pf.trades.append({"date": fill.date, "symbol": o.symbol, "strategy": o.strategy, "side": "TRIM",
+                          "qty": fill.qty, "price": fill.price, "fees": fill.fees,
+                          "pnl": round(pnl, 2), "remaining_qty": pos.qty, "new_stop": round(pos.stop, 2),
+                          "reason": o.reason, "entry_date": pos.opened})

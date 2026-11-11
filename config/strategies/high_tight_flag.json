@@ -1,0 +1,42 @@
+{
+  "_note": "Kullamagi High Tight Flag / daily momentum breakout, built 2026-11-12 from the user's spec (Part 2). See trader/strategies/high_tight_flag.py. Same EXECUTION APPROXIMATION as vcp_breakout: signal on the session whose high crossed yesterday's high + tick, fill at the next open (watchlist script lists tomorrow's armed pivots for real buy-stops). min_room_pct = the spec's undefined 'room to breathe': if yesterday's-low stop is closer than this to the pivot, Flag_Low5 - tick is used instead. trail_before_trim = apply the SMA10 close-below exit even when the day-1/2 partial never happened (spec is silent). rs_rank kept in RANK mode only (no gate - spec has no RS condition) so this strategy gets a non-zero ranking score in shared-slot runs; with no scoring filter at all its score would be 0.0 and it would lose every slot tie. Disabled by default: run in isolation with --strategy high_tight_flag. UNTESTED on real data.",
+  "enabled": false,
+  "exclude_filters": [
+    "candlestick",
+    "market_efficiency",
+    "market_regime",
+    "quality",
+    "regime_match",
+    "resistance",
+    "sector_regime",
+    "sentiment",
+    "trend_strength",
+    "repeat_loser_cooldown"
+  ],
+  "market_regime_tag": "UPTREND",
+  "universe": "default",
+  "entry": {
+    "min_bars": 60,
+    "surge_lookback": 40,
+    "min_surge_pct": 30.0,
+    "flag_bars": 5,
+    "max_flag_range_pct": 8.0,
+    "ma_support": "either",
+    "sma_fast": 10,
+    "sma_slow": 20,
+    "tick": 0.05,
+    "trigger_on": "high",
+    "min_room_pct": 2.0,
+    "max_initial_risk_pct": null
+  },
+  "open_checks": {
+    "max_chase_pct": 5.0
+  },
+  "exit": {
+    "stop_trigger": "close",
+    "trail_sma_period": 10,
+    "trail_before_trim": true,
+    "partial_max_day": 2,
+    "trim_fraction": 0.33
+  }
+}
