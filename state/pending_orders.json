@@ -1,1 +1,1113 @@
-[]
+[
+  {
+    "symbol": "MCX",
+    "strategy": "new_high_momentum",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 3720.00 is a 50-bar high, above trend SMA50 3298.19, on confirming volume",
+    "score": 0.972,
+    "stop": 3471.7487450230306,
+    "ref_price": 3720.0,
+    "meta": {
+      "new_high_lookback": 50,
+      "trend_sma": 3298.1939999999995,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 3720.00",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 97% (rel. return +27.2% vs benchmark)",
+          "score": 0.972
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.2147",
+          "sent_weight": 3.2335,
+          "sent_n": 8,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "ANGELONE",
+    "strategy": "new_high_momentum",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 349.00 is a 50-bar high, above trend SMA50 300.05, on confirming volume",
+    "score": 0.952,
+    "stop": 326.64543832965524,
+    "ref_price": 349.0,
+    "meta": {
+      "new_high_lookback": 50,
+      "trend_sma": 300.053,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 349.00",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 95% (rel. return +20.9% vs benchmark)",
+          "score": 0.952
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.7336",
+          "sent_weight": 1.0866,
+          "sent_n": 2,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "NAVINFLUOR",
+    "strategy": "new_high_momentum",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 10002.00 is a 50-bar high, above trend SMA50 8526.39, on confirming volume",
+    "score": 0.95,
+    "stop": 9383.606694791066,
+    "ref_price": 10002.0,
+    "meta": {
+      "new_high_lookback": 50,
+      "trend_sma": 8526.39,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 10002.00",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 95% (rel. return +20.9% vs benchmark)",
+          "score": 0.95
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.3793",
+          "sent_weight": 0.2755,
+          "sent_n": 3,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "PNB",
+    "strategy": "new_high_momentum",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 142.81 is a 50-bar high, above trend SMA50 119.61, on confirming volume",
+    "score": 0.948,
+    "stop": 135.33033380323735,
+    "ref_price": 142.81,
+    "meta": {
+      "new_high_lookback": 50,
+      "trend_sma": 119.6058,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 142.81",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 95% (rel. return +20.4% vs benchmark)",
+          "score": 0.948
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.2995",
+          "sent_weight": 6.7096,
+          "sent_n": 15,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "PAYTM",
+    "strategy": "new_high_momentum",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 1939.90 is a 50-bar high, above trend SMA50 1716.42, on confirming volume",
+    "score": 0.946,
+    "stop": 1813.471366842504,
+    "ref_price": 1939.9,
+    "meta": {
+      "new_high_lookback": 50,
+      "trend_sma": 1716.4159999999997,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 1939.90",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 95% (rel. return +20.4% vs benchmark)",
+          "score": 0.946
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.2357",
+          "sent_weight": 0.8814,
+          "sent_n": 4,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "INDGN",
+    "strategy": "new_high_momentum",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 666.20 is a 50-bar high, above trend SMA50 598.99, on confirming volume",
+    "score": 0.944,
+    "stop": 622.5278371338919,
+    "ref_price": 666.2,
+    "meta": {
+      "new_high_lookback": 50,
+      "trend_sma": 598.9910000000001,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 666.20",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 94% (rel. return +19.3% vs benchmark)",
+          "score": 0.944
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.0132",
+          "sent_weight": 0.1941,
+          "sent_n": 1,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "GESHIP",
+    "strategy": "breakout_trend",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 1518.00 broke daily resistance zone 1502.20-1509.00 (strength 2), above trend SMA50 1486.97",
+    "score": 0.93,
+    "stop": 1443.6485029782777,
+    "ref_price": 1518.0,
+    "meta": {
+      "zone_low": 1502.2,
+      "zone_high": 1509.0,
+      "zone_strength": 2,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 93% (rel. return +17.6% vs benchmark)",
+          "score": 0.93
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.0121",
+          "sent_weight": 0.1025,
+          "sent_n": 1,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "FEDERALBNK",
+    "strategy": "weekly_rsi_sma20",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "wRSI 66.8 crossed 60, mRSI 70.4",
+    "score": 0.9118453815261044,
+    "stop": 342.115,
+    "ref_price": 360.95,
+    "meta": {
+      "rsi_w": 66.81958931305526,
+      "rsi_m": 70.3657091725598,
+      "sma": 342.115,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_regime": {
+          "passed": true,
+          "reason": "benchmark NIFTY500 close 23734.20 > weekly SMA20 22939.97",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 360.95",
+          "score": 0.0
+        },
+        "sector_regime": {
+          "passed": true,
+          "reason": "[Financial Services] benchmark NIFTY FIN SERVICE close 27855.50 > weekly SMA20 25985.41 (percentile 95% of 20 sectors today)",
+          "score": 0.95
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "-0.0046",
+          "sent_weight": 0.5412,
+          "sent_n": 5,
+          "sent_flagged_dates": []
+        },
+        "trend_strength": {
+          "passed": true,
+          "reason": "trend_strength score 1.75 (ADX 34.2, price +17.5% vs SMA50)",
+          "score": 1.7473815261044177,
+          "adx_ok": true,
+          "adx_val": 34.2,
+          "sma_trend_ok": true,
+          "sma_dist_pct": 17.5
+        }
+      }
+    }
+  },
+  {
+    "symbol": "INDUSTOWER",
+    "strategy": "pullback_ma",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "pullback to SMA20 384.42 rejected by piercing_line, close 396.00 back above it, trend SMA50 intact",
+    "score": 0.9,
+    "stop": 374.09632161761976,
+    "ref_price": 396.0,
+    "meta": {
+      "pullback_sma": 384.4175,
+      "patterns": "piercing_line",
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "sector_regime": {
+          "passed": true,
+          "reason": "[Telecommunication] benchmark NIFTY SERV SECTOR close 32484.85 > weekly SMA20 30714.07 (percentile 90% of 20 sectors today)",
+          "score": 0.9
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.3449",
+          "sent_weight": 0.594,
+          "sent_n": 2,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "CYIENT",
+    "strategy": "sr_reversal",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "rejection of daily support zone 1068.90-1076.30 (strength 2) by piercing_line after a fall into the level",
+    "score": 0.8917791164658635,
+    "stop": 1023.2848747372415,
+    "ref_price": 1104.9,
+    "meta": {
+      "zone_low": 1068.9,
+      "zone_high": 1076.3,
+      "patterns": "piercing_line",
+      "filters": {
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 97% (rel. return +26.8% vs benchmark)",
+          "score": 0.97
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (no_news)",
+          "score": 0.0,
+          "coverage": "no_news",
+          "sent_score": null,
+          "sent_weight": 0.0,
+          "sent_n": 0,
+          "sent_flagged_dates": []
+        },
+        "trend_strength": {
+          "passed": true,
+          "reason": "trend_strength score 1.63 (ADX 30.8, price +11.6% vs SMA50)",
+          "score": 1.6271164658634538,
+          "adx_ok": true,
+          "adx_val": 30.8,
+          "sma_trend_ok": true,
+          "sma_dist_pct": 11.6
+        }
+      }
+    }
+  },
+  {
+    "symbol": "LEMONTREE",
+    "strategy": "breakout_trend",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 121.96 broke daily resistance zone 121.45-122.65 (strength 4), above trend SMA50 109.65",
+    "score": 0.89,
+    "stop": 117.64985535518228,
+    "ref_price": 121.96,
+    "meta": {
+      "zone_low": 121.45,
+      "zone_high": 122.65,
+      "zone_strength": 4,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 89% (rel. return +11.4% vs benchmark)",
+          "score": 0.89
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (no_news)",
+          "score": 0.0,
+          "coverage": "no_news",
+          "sent_score": null,
+          "sent_weight": 0.0,
+          "sent_n": 0,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "UNOMINDA",
+    "strategy": "new_high_momentum",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 1388.00 is a 50-bar high, above trend SMA50 1182.83, on confirming volume",
+    "score": 0.884,
+    "stop": 1302.957455822878,
+    "ref_price": 1388.0,
+    "meta": {
+      "new_high_lookback": 50,
+      "trend_sma": 1182.83,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 1388.00",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 88% (rel. return +11.3% vs benchmark)",
+          "score": 0.884
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "-0.014",
+          "sent_weight": 0.319,
+          "sent_n": 1,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "MAHABANK",
+    "strategy": "weekly_rsi_sma20",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "wRSI 63.2 crossed 60, mRSI 66.6",
+    "score": 0.8538855421686746,
+    "stop": 82.6405,
+    "ref_price": 91.7,
+    "meta": {
+      "rsi_w": 63.236657065022605,
+      "rsi_m": 66.59396230406183,
+      "sma": 82.6405,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_regime": {
+          "passed": true,
+          "reason": "benchmark NIFTY500 close 23734.20 > weekly SMA20 22939.97",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 91.70",
+          "score": 0.0
+        },
+        "sector_regime": {
+          "passed": true,
+          "reason": "[Financial Services] benchmark NIFTY FIN SERVICE close 27855.50 > weekly SMA20 25985.41 (percentile 95% of 20 sectors today)",
+          "score": 0.95
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (no_news)",
+          "score": 0.0,
+          "coverage": "no_news",
+          "sent_score": null,
+          "sent_weight": 0.0,
+          "sent_n": 0,
+          "sent_flagged_dates": []
+        },
+        "trend_strength": {
+          "passed": true,
+          "reason": "trend_strength score 1.52 (ADX 23.3, price +21.5% vs SMA50)",
+          "score": 1.5155421686746988,
+          "adx_ok": true,
+          "adx_val": 23.3,
+          "sma_trend_ok": true,
+          "sma_dist_pct": 21.5
+        }
+      }
+    }
+  },
+  {
+    "symbol": "BALRAMCHIN",
+    "strategy": "sr_reversal",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "rejection of daily support zone 636.80-641.95 (strength 3) by bullish_engulfing after a fall into the level",
+    "score": 0.8523755020080321,
+    "stop": 610.7850814468478,
+    "ref_price": 657.45,
+    "meta": {
+      "zone_low": 636.8,
+      "zone_high": 641.95,
+      "patterns": "bullish_engulfing",
+      "filters": {
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 79% (rel. return +4.6% vs benchmark)",
+          "score": 0.788
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "-0.0417",
+          "sent_weight": 0.1871,
+          "sent_n": 1,
+          "sent_flagged_dates": []
+        },
+        "trend_strength": {
+          "passed": true,
+          "reason": "trend_strength score 1.83 (ADX 40.3, price +20.3% vs SMA50)",
+          "score": 1.8335020080321285,
+          "adx_ok": true,
+          "adx_val": 40.3,
+          "sma_trend_ok": true,
+          "sma_dist_pct": 20.3
+        }
+      }
+    }
+  },
+  {
+    "symbol": "ANURAS",
+    "strategy": "breakout_trend",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 1300.60 broke daily resistance zone 1208.20-1224.00 (strength 2), above trend SMA50 1175.58",
+    "score": 0.828,
+    "stop": 1170.5897806334476,
+    "ref_price": 1300.6,
+    "meta": {
+      "zone_low": 1208.2,
+      "zone_high": 1224.0,
+      "zone_strength": 2,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 83% (rel. return +7.0% vs benchmark)",
+          "score": 0.828
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.3184",
+          "sent_weight": 0.402,
+          "sent_n": 1,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "BANKINDIA",
+    "strategy": "breakout_trend",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 154.10 broke daily resistance zone 153.24-154.34 (strength 2), above trend SMA50 137.08",
+    "score": 0.818,
+    "stop": 149.00720050885312,
+    "ref_price": 154.1,
+    "meta": {
+      "zone_low": 153.24,
+      "zone_high": 154.34,
+      "zone_strength": 2,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 82% (rel. return +6.3% vs benchmark)",
+          "score": 0.818
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.1054",
+          "sent_weight": 2.6382,
+          "sent_n": 10,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "AEGISVOPAK",
+    "strategy": "breakout_trend",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 285.93 broke daily resistance zone 280.25-284.40 (strength 3), above trend SMA50 276.01",
+    "score": 0.81,
+    "stop": 266.63597846616693,
+    "ref_price": 285.93,
+    "meta": {
+      "zone_low": 280.25,
+      "zone_high": 284.4,
+      "zone_strength": 3,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 81% (rel. return +5.7% vs benchmark)",
+          "score": 0.81
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (no_news)",
+          "score": 0.0,
+          "coverage": "no_news",
+          "sent_score": null,
+          "sent_weight": 0.0,
+          "sent_n": 0,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  },
+  {
+    "symbol": "KPRMILL",
+    "strategy": "sr_reversal",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "rejection of daily support zone 1123.00-1138.00 (strength 3) by bullish_engulfing after a fall into the level",
+    "score": 0.7908172690763052,
+    "stop": 1084.2934836411725,
+    "ref_price": 1158.4,
+    "meta": {
+      "zone_low": 1123.0,
+      "zone_high": 1138.0,
+      "patterns": "bullish_engulfing",
+      "filters": {
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 77% (rel. return +3.8% vs benchmark)",
+          "score": 0.774
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (no_news)",
+          "score": 0.0,
+          "coverage": "no_news",
+          "sent_score": null,
+          "sent_weight": 0.0,
+          "sent_n": 0,
+          "sent_flagged_dates": []
+        },
+        "trend_strength": {
+          "passed": true,
+          "reason": "trend_strength score 1.62 (ADX 28.2, price +15.2% vs SMA50)",
+          "score": 1.6152690763052209,
+          "adx_ok": true,
+          "adx_val": 28.2,
+          "sma_trend_ok": true,
+          "sma_dist_pct": 15.2
+        }
+      }
+    }
+  },
+  {
+    "symbol": "UNIONBANK",
+    "strategy": "weekly_rsi_sma20",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "wRSI 66.8 crossed 60, mRSI 65.5",
+    "score": 0.7778273092369478,
+    "stop": 178.377,
+    "ref_price": 203.0,
+    "meta": {
+      "rsi_w": 66.76536691414312,
+      "rsi_m": 65.54113247240798,
+      "sma": 178.377,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_regime": {
+          "passed": true,
+          "reason": "benchmark NIFTY500 close 23734.20 > weekly SMA20 22939.97",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "resistance": {
+          "passed": true,
+          "reason": "no weekly resistance zone found above price 203.00",
+          "score": 0.0
+        },
+        "sector_regime": {
+          "passed": true,
+          "reason": "[Financial Services] benchmark NIFTY FIN SERVICE close 27855.50 > weekly SMA20 25985.41 (percentile 95% of 20 sectors today)",
+          "score": 0.95
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.2504",
+          "sent_weight": 0.9615,
+          "sent_n": 5,
+          "sent_flagged_dates": []
+        },
+        "trend_strength": {
+          "passed": true,
+          "reason": "trend_strength score 1.21 (ADX 18.8, price +16.2% vs SMA50)",
+          "score": 1.2113092369477911,
+          "adx_ok": false,
+          "adx_val": 18.8,
+          "sma_trend_ok": true,
+          "sma_dist_pct": 16.2
+        }
+      }
+    }
+  },
+  {
+    "symbol": "TATACOMM",
+    "strategy": "breakout_trend",
+    "action": "ENTRY",
+    "created": "2026-11-13",
+    "exec_date": "2026-11-16",
+    "reason": "close 1772.90 broke daily resistance zone 1765.00-1766.10 (strength 2), above trend SMA50 1712.24",
+    "score": 0.744,
+    "stop": 1712.2181300871082,
+    "ref_price": 1772.9,
+    "meta": {
+      "zone_low": 1765.0,
+      "zone_high": 1766.1,
+      "zone_strength": 2,
+      "filters": {
+        "candlestick": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "market_efficiency": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "quality": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "regime_match": {
+          "passed": true,
+          "reason": "disabled",
+          "score": 0.0
+        },
+        "rs_rank": {
+          "passed": true,
+          "reason": "RS percentile 74% (rel. return +2.6% vs benchmark)",
+          "score": 0.744
+        },
+        "sentiment": {
+          "passed": true,
+          "reason": "sentiment ok (news)",
+          "score": 0.0,
+          "coverage": "news",
+          "sent_score": "0.0591",
+          "sent_weight": 0.5197,
+          "sent_n": 4,
+          "sent_flagged_dates": []
+        }
+      }
+    }
+  }
+]
