@@ -13,9 +13,12 @@ class CapitalManager:
     def initial_cash(self) -> float:
         return float(self.cap["base_capital"])
 
-    def strategy_base(self, strategy: str, equity: float) -> float:
-        root = self.cap["base_capital"] if self.cap["mode"] == "fixed" else equity
+    def strategy_base(self, strategy: str, equity: float, mode: str | None = None) -> float:
+        """mode overrides capital.mode for one strategy (its config's sizing.capital_mode)."""
+        root = self.cap["base_capital"] if (mode or self.cap["mode"]) == "fixed" else equity
         return root * self.cap["allocation_pct"][strategy] / 100.0
 
-    def risk_amount(self, strategy: str, equity: float) -> float:
-        return self.strategy_base(strategy, equity) * self.risk_pct / 100.0
+    def risk_amount(self, strategy: str, equity: float, mode: str | None = None,
+                    risk_pct: float | None = None) -> float:
+        pct = self.risk_pct if risk_pct is None else risk_pct
+        return self.strategy_base(strategy, equity, mode) * pct / 100.0

@@ -4,6 +4,7 @@ import logging
 from datetime import date, timedelta
 
 from trader.brokers.base import Broker
+from trader.brokers.paper import compute_fees
 from trader.core.calendar import TradingCalendar
 from trader.core.config import Settings
 from trader.core.models import Lot, PendingOrder, Position, Signal
@@ -11,7 +12,7 @@ from trader.data.base import DataProvider
 from trader.filters.base import Filter, build_filter
 from trader.portfolio.state import Portfolio, StateStore
 from trader.risk.capital import CapitalManager
-from trader.risk.sizing import size_add, size_entry, total_open_risk
+from trader.risk.sizing import effective_risk, size_add, size_entry, total_open_risk
 from trader.strategies.base import SymbolContext, build_strategy
 
 log = logging.getLogger(__name__)
@@ -27,6 +28,13 @@ class Engine:
         self.s, self.provider, self.broker, self.store, self.cal = settings, provider, broker, store, calendar
         self.capital = CapitalManager(settings.risk)
         self.strategies = {n: build_strategy(n, c) for n, c in settings.strategies.items() if c["enabled"]}
+        intraday = [n for n, st in self.strategies.items() if st.intraday]
+        if intraday and not getattr(broker, "simulates_fills", False):
+            # Intraday mode books fills from the session's OHLC after the close - valid for paper
+            # and backtests only. Live needs the buy-stop / stop-loss / limit orders placed at the
+            # broker before the session, which is not built yet.
+            raise RuntimeError(f"strategies {intraday} use execution.mode 'intraday', which is "
+                               f"simulated and needs a paper broker; {type(broker).__name__} can't run it")
         self.filters: dict[str, Filter] = {n: build_filter(n, c) for n, c in settings.filters.items()}
         # Backlog item from the 2026-10-25 session: a filter that needs a per-strategy
         # PARAMETER (regime_match's tag, market_efficiency's threshold override) reads it from
@@ -83,19 +91,11 @@ class Engine:
             if ctx is None:
                 continue
             strat = self.strategies[pos.strategy]
-            pos.last_price = ctx.last_close
-            pos.stop = strat.stop_level(ctx, pos) or pos.stop
-            sig = strat.exit_signal(ctx, pos)
-            if sig:
-                orders.append(self._order(sig, nxt))
-                # A TRIM is a partial sell - the position (and its slot) survives it.
-                if sig.action != "TRIM":
-                    exiting.add(sym)
-            elif pos.adds < max_adds and (sig := strat.add_signal(ctx, pos)):
-                orders.append(self._order(sig, nxt))
-            else:
-                log.debug("HOLD  %-12s qty %d avg %.2f stop %.2f last %.2f",
-                         sym, pos.qty, pos.avg_cost, pos.stop, pos.last_price)
+            # Resting orders (intraday-mode strategies only) fill DURING today's session, so they
+            # are settled before anything that looks at today's close.
+            if strat.intraday and self._intraday_fills(pf, pos, ctx, strat, asof) == "EXIT":
+                continue
+            self._manage(pos, ctx, strat, nxt, orders, exiting, max_adds)
 
         slots = self.s.risk["portfolio"]["max_positions"] - (len(pf.positions) - len(exiting))
         for filt in self.filters.values():
@@ -188,7 +188,11 @@ class Engine:
                          i, sig.symbol, sig.score, sig.meta.get("rsi_w", 0), sig.meta.get("rsi_m", 0),
                          ath, cup, taken)
         for sig in cands[:max(slots, 0)]:
-            orders.append(self._order(sig, nxt))
+            strat = self.strategies[sig.strategy]
+            if strat.intraday:
+                self._enter_intraday(pf, sig, strat, asof, nxt, orders, exiting, max_adds)
+            else:
+                orders.append(self._order(sig, nxt))
         n_slots = max(slots, 0)
         winners = ", ".join(f"{c.symbol}[{c.strategy}](score {c.score:g}, wRSI {c.meta.get('rsi_w', 0):.1f})"
                             for c in cands[:n_slots]) or f"none - {len(pf.positions)} positions already held"
@@ -228,28 +232,7 @@ class Engine:
                     o.exec_date = self.cal.next_trading_day(asof).isoformat()
                     keep.append(o)
                 continue
-            pos = pf.positions.pop(o.symbol)
-            fill = self.broker.execute("SELL", o.symbol, pos.qty, px, asof)
-            proceeds = fill.qty * fill.price - fill.fees
-            # Realized P&L of any earlier TRIM(s) on this position is folded into the closing
-            # SELL row, so every consumer (summarize, trade_log, analyze_trades, Monte Carlo,
-            # repeat_loser_cooldown) still sees exactly ONE SELL row per round trip whose pnl is
-            # the whole trade's result. avg_cost is the ORIGINAL entry cost basis.
-            partial_pnl = float(pos.meta.get("realized_pnl", 0.0))
-            trimmed_qty = int(pos.meta.get("trimmed_qty", 0))
-            pnl = proceeds - pos.cost - pos.fees_paid + partial_pnl
-            hold_days = (asof - date.fromisoformat(pos.opened)).days if pos.opened else None
-            log.info("FILL  SELL %-12s qty %-6d @ %8.2f  fees %6.2f  pnl %+9.2f  held %sd  (%s)",
-                     o.symbol, fill.qty, fill.price, fill.fees, pnl, hold_days, o.reason)
-            pf.cash += proceeds
-            pf.trades.append({"date": iso, "symbol": o.symbol, "strategy": o.strategy, "side": "SELL",
-                              "qty": fill.qty, "price": fill.price, "fees": fill.fees,
-                              "avg_cost": round(pos.meta.get("entry_avg_cost", pos.avg_cost), 2),
-                              "pnl": round(pnl, 2),
-                              "adds": pos.adds, "reason": o.reason,
-                              "entry_date": pos.opened, "holding_days": hold_days,
-                              **({"partial_qty": trimmed_qty, "partial_pnl": round(partial_pnl, 2)}
-                                 if trimmed_qty else {})})
+            self._close_position(pf, o.symbol, o.strategy, px, asof, o.reason)
 
         for o in (o for o in due if o.action == "TRIM"):
             px = opens.get(o.symbol)
@@ -269,10 +252,117 @@ class Engine:
         self.store.save_pending(keep)
         log.info("OPEN %s: processed %d due orders, equity %.0f", asof, len(due), pf.equity())
 
-    def _buy(self, pf: Portfolio, o: PendingOrder, px: float | None, prev_day: date, asof: date) -> None:
-        def skip(why: str) -> None:
+    # ---- shared position mechanics -----------------------------------------------------------
+    def _manage(self, pos: Position, ctx: SymbolContext, strat, nxt: date, orders: list,
+                exiting: set, max_adds: int) -> None:
+        """Close-based management of one held position (unchanged logic, factored out so a
+        position bought intraday today is managed at today's close exactly like a held one)."""
+        sym = pos.symbol
+        pos.last_price = ctx.last_close
+        pos.stop = strat.stop_level(ctx, pos) or pos.stop
+        sig = strat.exit_signal(ctx, pos)
+        if sig:
+            orders.append(self._order(sig, nxt))
+            # A TRIM is a partial sell - the position (and its slot) survives it.
+            if sig.action != "TRIM":
+                exiting.add(sym)
+        elif pos.adds < max_adds and (sig := strat.add_signal(ctx, pos)):
+            orders.append(self._order(sig, nxt))
+        else:
+            log.debug("HOLD  %-12s qty %d avg %.2f stop %.2f last %.2f",
+                     sym, pos.qty, pos.avg_cost, pos.stop, pos.last_price)
+
+    def _close_position(self, pf: Portfolio, symbol: str, strategy: str, px: float, asof: date,
+                        reason: str) -> None:
+        pos = pf.positions.pop(symbol)
+        fill = self.broker.execute("SELL", symbol, pos.qty, px, asof)
+        proceeds = fill.qty * fill.price - fill.fees
+        # Realized P&L of any earlier TRIM(s) on this position is folded into the closing
+        # SELL row, so every consumer (summarize, trade_log, analyze_trades, Monte Carlo,
+        # repeat_loser_cooldown) still sees exactly ONE SELL row per round trip whose pnl is
+        # the whole trade's result. avg_cost is the ORIGINAL entry cost basis.
+        partial_pnl = float(pos.meta.get("realized_pnl", 0.0))
+        trimmed_qty = int(pos.meta.get("trimmed_qty", 0))
+        pnl = proceeds - pos.cost - pos.fees_paid + partial_pnl
+        hold_days = (asof - date.fromisoformat(pos.opened)).days if pos.opened else None
+        log.info("FILL  SELL %-12s qty %-6d @ %8.2f  fees %6.2f  pnl %+9.2f  held %sd  (%s)",
+                 symbol, fill.qty, fill.price, fill.fees, pnl, hold_days, reason)
+        pf.cash += proceeds
+        pf.trades.append({"date": asof.isoformat(), "symbol": symbol, "strategy": strategy, "side": "SELL",
+                          "qty": fill.qty, "price": fill.price, "fees": fill.fees,
+                          "avg_cost": round(pos.meta.get("entry_avg_cost", pos.avg_cost), 2),
+                          "pnl": round(pnl, 2),
+                          "adds": pos.adds, "reason": reason,
+                          "entry_date": pos.opened, "holding_days": hold_days,
+                          **({"partial_qty": trimmed_qty, "partial_pnl": round(partial_pnl, 2)}
+                             if trimmed_qty else {})})
+
+    # ---- resting orders (strategies with "execution": {"mode": "intraday"}) -------------------
+    def _intraday_fills(self, pf: Portfolio, pos: Position, ctx: SymbolContext, strat,
+                        asof: date) -> str | None:
+        """Simulates the resting orders that were in force for `pos` during session `asof`:
+        1. hard stop-loss at pos.stop: low <= stop -> sell everything at min(open, stop)
+           (a gap below the stop fills at the open, as a real SL-M order would);
+        2. otherwise a take-profit limit from strat.take_profit_order(): high >= price -> sell
+           its fraction at max(open, price) and ratchet the stop to its new_stop.
+        The stop is checked first - with only daily OHLC the intrabar order is unknown, so a
+        session that touched both is booked as the (conservative) stop-out. After a take-profit
+        fill the raised stop applies from the next session. Returns "EXIT", "TRIM" or None."""
+        bar = ctx.daily.iloc[-1]
+        o, h, lo = float(bar["open"]), float(bar["high"]), float(bar["low"])
+        if pos.stop and lo <= pos.stop + 1e-9:
+            px = min(o, pos.stop)
+            how = "gap below stop, filled at open" if o < pos.stop else "filled at stop"
+            self._close_position(pf, pos.symbol, pos.strategy, px, asof,
+                                 f"hard stop {pos.stop:.2f}: low {lo:.2f} ({how})")
+            return "EXIT"
+        tp = strat.take_profit_order(ctx, pos)
+        if tp and h >= tp["price"] - 1e-9:
+            px = max(o, tp["price"])
+            order = PendingOrder(pos.symbol, pos.strategy, "TRIM", asof.isoformat(), asof.isoformat(),
+                                 f"{tp['reason']} (limit {tp['price']:.2f}, filled {px:.2f})", 0.0,
+                                 tp.get("new_stop"), px,
+                                 {"fraction": tp["fraction"], "new_stop": tp.get("new_stop")})
+            self._trim(pf, pos, order, px, asof)
+            return "TRIM"
+        return None
+
+    def _enter_intraday(self, pf: Portfolio, sig: Signal, strat, asof: date, nxt: date,
+                        orders: list, exiting: set, max_adds: int) -> None:
+        """Buy-stop entry filled on its own trigger session `asof` at strat.entry_fill_price(),
+        through the normal _buy path (validate_open, sizing, caps). Then, on that same session:
+        - if the low also reached the (post-validate_open) stop, the stop is booked as hit at the
+          stop price - daily bars cannot show whether that low came before or after the entry,
+          so the conservative outcome is assumed (config execution.same_bar_stop: "assume_hit";
+          "ignore" skips this check);
+        - otherwise the new position goes through the same close-based management as every held
+          position (so a 'closes positive on day 1' rule sees day 1)."""
+        ctx = self._ctx(sig.symbol, asof)
+        if ctx is None:
+            return
+        bar = ctx.daily.iloc[-1]
+        px = strat.entry_fill_price(sig, bar)
+        o = PendingOrder(sig.symbol, sig.strategy, sig.action, sig.asof, asof.isoformat(),
+                         sig.reason, sig.score, sig.stop, sig.ref_price, sig.meta)
+        log.info("SIGNAL %-5s %-12s %s -> buy-stop filled same session @ %.2f | %s",
+                 sig.action, sig.symbol, asof, px, sig.reason)
+        if not self._buy(pf, o, px, asof - timedelta(days=1), asof):
+            return
+        pos = pf.positions[sig.symbol]
+        if strat.cfg.get("execution", {}).get("same_bar_stop", "assume_hit") == "assume_hit" \
+                and float(bar["low"]) <= pos.stop + 1e-9:
+            self._close_position(pf, pos.symbol, pos.strategy, pos.stop, asof,
+                                 f"hard stop {pos.stop:.2f} hit on entry session (low {float(bar['low']):.2f}; "
+                                 f"intrabar order unknown - assumed after entry)")
+            return
+        self._manage(pos, ctx, strat, nxt, orders, exiting, max_adds)
+
+    def _buy(self, pf: Portfolio, o: PendingOrder, px: float | None, prev_day: date, asof: date) -> bool:
+        """Returns True only when a fill happened (existing callers ignore the result)."""
+        def skip(why: str) -> bool:
             log.info("skip %s %s: %s", o.action, o.symbol, why)
             self.store.journal(date=asof, symbol=o.symbol, event=f"{o.action}_SKIPPED", why=why)
+            return False
 
         if px is None:
             return skip("no open quote")
@@ -283,25 +373,33 @@ class Engine:
         if not ok:
             return skip(why)
 
-        risk = self.s.risk
+        # Per-strategy `sizing` override (effective_risk) - a strategy without one gets exactly
+        # self.s.risk / capital.mode / the open-risk cap, as before.
+        risk, cap_mode, use_open_risk_cap = effective_risk(self.s.risk, self.strategies[o.strategy].cfg)
         est = px * (1 + self.s.system["execution"]["slippage_bps"] / 1e4)  # size on the price we will actually pay
         eq = pf.equity()
-        base, amt = self.capital.strategy_base(o.strategy, eq), self.capital.risk_amount(o.strategy, eq)
+        base = self.capital.strategy_base(o.strategy, eq, cap_mode)
+        amt = self.capital.risk_amount(o.strategy, eq, cap_mode, risk["per_trade"]["risk_pct_of_base"])
         if o.action == "ENTRY":
             if o.symbol in pf.positions or len(pf.positions) >= risk["portfolio"]["max_positions"]:
                 return skip("held or max positions")
             qty, why = size_entry(amt, est, o.stop, base, pf.cash, risk)
             new_risk = qty * max(est - o.stop, 0.0)
             cap = base * risk["portfolio"]["max_total_open_risk_pct_of_base"] / 100.0
-            if qty and total_open_risk(pf.positions) + new_risk > cap:
+            if qty and use_open_risk_cap and total_open_risk(pf.positions) + new_risk > cap:
                 return skip("portfolio open-risk cap")
         else:
             pos = pf.positions.get(o.symbol)
             if pos is None:
                 return skip("no position to add to")
             qty, why = size_add(pos, est, o.stop, base, pf.cash, risk)
+        # Fees must fit in cash too. Only binds when a strategy sizes with no cash buffer (the
+        # spec-sized strategies); with risk_config's 1% buffer it never triggers, so existing
+        # strategies are unaffected. Without it cash could go fractionally negative.
+        while qty > 0 and qty * est + compute_fees("BUY", qty * est, self.s.fees) > pf.cash:
+            qty -= 1
         if qty <= 0:
-            return skip(why)
+            return skip(why if why != "ok" else "cash does not cover qty + fees")
 
         fill = self.broker.execute("BUY", o.symbol, qty, px, asof)
         log.info("FILL  BUY  %-12s qty %-6d @ %8.2f  fees %6.2f  (%s, stop %.2f)",
@@ -324,6 +422,7 @@ class Engine:
         pf.trades.append({"date": fill.date, "symbol": o.symbol, "strategy": o.strategy,
                           "side": "BUY", "action": o.action, "qty": fill.qty, "price": fill.price,
                           "fees": fill.fees, "stop": round(o.stop, 2), "reason": o.reason})
+        return True
 
     def _trim(self, pf: Portfolio, pos: Position, o: PendingOrder, px: float, asof: date) -> None:
         """Partial sell of meta['fraction'] of the position (FIFO across lots). Never sells the

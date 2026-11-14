@@ -1,5 +1,5 @@
 {
-  "_note": "Kullamagi High Tight Flag / daily momentum breakout, built 2026-11-12 from the user's spec (Part 2). See trader/strategies/high_tight_flag.py. Same EXECUTION APPROXIMATION as vcp_breakout: signal on the session whose high crossed yesterday's high + tick, fill at the next open (watchlist script lists tomorrow's armed pivots for real buy-stops). min_room_pct = the spec's undefined 'room to breathe': if yesterday's-low stop is closer than this to the pivot, Flag_Low5 - tick is used instead. trail_before_trim = apply the SMA10 close-below exit even when the day-1/2 partial never happened (spec is silent). rs_rank kept in RANK mode only (no gate - spec has no RS condition) so this strategy gets a non-zero ranking score in shared-slot runs; with no scoring filter at all its score would be 0.0 and it would lose every slot tie. Disabled by default: run in isolation with --strategy high_tight_flag. UNTESTED on real data.",
+  "_note": "Kullamagi High Tight Flag = spec Part 2 (user document 2026-11-12), see trader/strategies/high_tight_flag.py. Every value below is the spec's unless its own _note says otherwise. No overlay filter gates entries (the spec has none); rs_rank stays in rank mode only, so this strategy gets a non-zero score when it competes for a shared slot (it never blocks). Disabled by default; run with --strategy high_tight_flag.",
   "enabled": false,
   "exclude_filters": [
     "candlestick",
@@ -13,9 +13,24 @@
     "trend_strength",
     "repeat_loser_cooldown"
   ],
-  "market_regime_tag": "UPTREND",
   "universe": "default",
+  "execution": {
+    "_note": "intraday = the spec's orders simulated on daily OHLC: buy-stop entry filled on the trigger session at max(open, pivot); resting hard stop filled at min(open, stop) when the low reaches it. Close-conditioned rules fill at the next open (a market order placed after the close). same_bar_stop 'assume_hit': a session that reaches both entry and stop is booked as stopped out, because daily bars cannot show the order. 'next_open' = old EOD model (not spec).",
+    "mode": "intraday",
+    "same_bar_stop": "assume_hit"
+  },
+  "sizing": {
+    "_note": "Spec Part 3, applied to this strategy only (other strategies keep risk_config.json as-is). Risk Dollars = Account_Equity * 1%; Risk Per Share = Entry - SL; Size = floor(Risk Dollars / Risk Per Share); if Size * Entry > Account_Equity * 20%, cut to 20%. Account_Equity = current equity (cash + open positions at market) -> capital_mode 'equity'. The system's non-spec sizing extras are switched off here: no 3% minimum stop distance, no minimum notional, no cash buffer, no portfolio open-risk cap. Still applied (not rules, physical limits): available cash and the portfolio-wide max_positions in risk_config.json.",
+    "capital_mode": "equity",
+    "risk_pct": 1.0,
+    "max_position_pct": 20.0,
+    "min_stop_distance_pct": 0.0,
+    "min_notional": 0,
+    "cash_buffer_pct": 0.0,
+    "portfolio_open_risk_cap": false
+  },
   "entry": {
+    "_note": "min_room_pct is the only interpretive number: the spec's undefined 'room to breathe'. If Yesterday_Low - 0.01 is closer than this to the pivot, Flag_Low5 - 0.01 is used. max_initial_risk_pct null = no cap (the spec gives none for HTF).",
     "min_bars": 60,
     "surge_lookback": 40,
     "min_surge_pct": 30.0,
@@ -24,16 +39,13 @@
     "ma_support": "either",
     "sma_fast": 10,
     "sma_slow": 20,
-    "tick": 0.05,
+    "tick": 0.01,
     "trigger_on": "high",
     "min_room_pct": 2.0,
     "max_initial_risk_pct": null
   },
-  "open_checks": {
-    "max_chase_pct": 5.0
-  },
   "exit": {
-    "stop_trigger": "close",
+    "_note": "Day 1 = entry session; a close above entry on day 1 or 2 -> sell 33% at the next open, stop -> entry (once). Close strictly below SMA10 -> sell everything at the next open. trail_before_trim true = that SMA10 exit applies to the whole position even if the partial never happened (reading of 'close the entire position'); false = only after the partial.",
     "trail_sma_period": 10,
     "trail_before_trim": true,
     "partial_max_day": 2,

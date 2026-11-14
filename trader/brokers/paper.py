@@ -18,6 +18,10 @@ def compute_fees(side: str, value: float, cfg: dict) -> float:
 
 
 class PaperBroker(Broker):
+    # Fills are simulated from bar prices, so the engine may book intraday resting-order fills
+    # (Strategy.intraday) through it. A real broker must instead hold real SL / buy-stop orders.
+    simulates_fills = True
+
     def __init__(self, fee_cfg: dict, slippage_bps: float):
         self.fee_cfg, self.slip = fee_cfg, slippage_bps
 

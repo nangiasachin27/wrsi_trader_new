@@ -63,6 +63,31 @@ class Strategy(ABC):
     def validate_open(self, order: PendingOrder, open_px: float, prev_close: float) -> tuple[bool, str]:
         return True, "ok"
 
+    # ---- resting-order execution (opt-in; added 2026-11-12) --------------------------------
+    # Default for every strategy is the original model: signals are computed after the close and
+    # filled at the NEXT session's open. A strategy whose config has "execution": {"mode":
+    # "intraday"} instead gets resting broker orders simulated on the session's own OHLC by the
+    # engine (Engine._intraday_fills / _enter_intraday):
+    #   - entry: a buy-stop filled on the trigger session at entry_fill_price(),
+    #   - hard stop: pos.stop is a resting stop-loss, filled at min(open, stop) on the first
+    #     session whose low reaches it,
+    #   - take_profit_order(): a resting limit sell for part of the position.
+    # Close-conditioned rules ("if it CLOSES above/below X") still fill at the next open, which is
+    # when a market order placed after the close actually executes.
+    @property
+    def intraday(self) -> bool:
+        return self.cfg.get("execution", {}).get("mode") == "intraday"
+
+    def entry_fill_price(self, sig: Signal, bar: pd.Series) -> float:
+        """Intraday mode only: fill price of `sig` on its own trigger session `bar`."""
+        return float(bar["open"])
+
+    def take_profit_order(self, ctx: SymbolContext, pos: Position) -> dict | None:
+        """Intraday mode only: a resting limit sell in force for the session being evaluated -
+        {"price", "fraction", "new_stop", "reason"} or None. Must only use information known
+        BEFORE that session (entry, initial stop, earlier bars) - never ctx.daily's last row."""
+        return None
+
 
 REGISTRY: dict[str, type[Strategy]] = {}
 

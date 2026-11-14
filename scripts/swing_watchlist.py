@@ -3,15 +3,17 @@ high_tight_flag) - or any strategy exposing a setup(completed_bars) method.
 
 Two lists per strategy, both computed by the SAME strategy code the engine/backtester runs:
 
-  TRIGGERED  entry_signal() fired on the as-of session (the pivot was crossed today). This is
-             exactly what `trader.cli eod` turns into a pending order for the next open.
+  TRIGGERED  entry_signal() fired on the as-of session (the pivot was crossed today). For an
+             intraday-execution strategy the engine books the buy-stop fill on that session;
+             otherwise `trader.cli eod` turns it into a pending order for the next open.
   ARMED      setup() is valid on the as-of session's completed bars: tomorrow is the "live
              candle". Place a buy-stop at PIVOT with the listed STOP - this is the spec's
              intraday execution, which the EOD engine can only approximate.
 
-Every row is sized through the engine's own trader.risk.sizing.size_entry (1% risk of base,
-20% max exposure, min notional, cash buffer - all from config/risk_config.json), so the
-quantities here are what the engine would buy. vcp_breakout's Trend Template condition 8
+Every row is sized exactly as Engine._buy does (effective_risk + size_entry: each strategy's own
+`sizing` block where it has one - for vcp_breakout/high_tight_flag the spec's 1% of current
+equity, 20% max exposure - else config/risk_config.json), so the quantities are what the engine
+would buy with the current equity and cash. vcp_breakout's Trend Template condition 8
 (RS >= 70) is evaluated by the real rs_rank filter (prepare + evaluate), not a re-implementation.
 
 Usage:
@@ -39,7 +41,7 @@ from trader.core.models import Signal  # noqa: E402
 from trader.data.historical import HistoricalProvider, load_csv_dir  # noqa: E402
 from trader.filters.base import build_filter  # noqa: E402
 from trader.risk.capital import CapitalManager  # noqa: E402
-from trader.risk.sizing import size_entry  # noqa: E402
+from trader.risk.sizing import effective_risk, size_entry  # noqa: E402
 from trader.strategies.base import SymbolContext, build_strategy  # noqa: E402
 
 log = logging.getLogger("watchlist")
@@ -99,21 +101,24 @@ def held_symbols(state_dir: Path) -> set[str]:
 
 
 # ---- core -----------------------------------------------------------------------------------
-def size(cfg_risk: dict, capital: CapitalManager, strategy: str, entry: float, stop: float,
-         cash: float, slippage_bps: float) -> dict:
-    """Engine sizing (size_entry) plus the breakdown of which cap bound, for display."""
+def size(settings, capital: CapitalManager, strategy: str, entry: float, stop: float,
+         cash: float, equity: float, slippage_bps: float) -> dict:
+    """Engine sizing (effective_risk + size_entry, exactly as Engine._buy) plus which cap bound."""
+    cfg_risk, mode, _ = effective_risk(settings.risk, settings.strategies[strategy])
     est = entry * (1 + slippage_bps / 1e4)
-    base, amt = capital.strategy_base(strategy, cash), capital.risk_amount(strategy, cash)
+    base = capital.strategy_base(strategy, equity, mode)
+    amt = capital.risk_amount(strategy, equity, mode, cfg_risk["per_trade"]["risk_pct_of_base"])
     qty, why = size_entry(amt, est, stop, base, cash, cfg_risk)
-    risk_qty = int(amt // max(est - stop, 1e-9))
-    cap_qty = int(base * cfg_risk["per_trade"]["max_position_pct_of_base"] / 100.0 // est)
+    pt = cfg_risk["per_trade"]
+    risk_qty = int(amt // max(est - stop, est * pt["min_stop_distance_pct"] / 100.0, 1e-9))
+    cap_qty = int(base * pt["max_position_pct_of_base"] / 100.0 // est)
     bound = "risk" if qty == risk_qty else ("20%-exposure cap" if qty == cap_qty else "cash/min-stop")
     return {"qty": qty, "notional": round(qty * est, 0), "risk_rs": round(qty * max(est - stop, 0), 0),
             "risk_pct_of_base": round(qty * max(est - stop, 0) / base * 100, 2) if base else None,
             "sizing": "ok, bound by " + bound if qty else why}
 
 
-def scan(settings, data, strategies, asof, cash, held) -> list[dict]:
+def scan(settings, data, strategies, asof, cash, equity, held) -> list[dict]:
     days = sorted({ts.date() for df in data.values() for ts in df.index if ts.date() <= asof})
     cal = TradingCalendar(set(), trading_days=days)
     provider = HistoricalProvider(data)
@@ -147,8 +152,12 @@ def scan(settings, data, strategies, asof, cash, held) -> list[dict]:
                 found = []
                 sig = strat.entry_signal(ctx)
                 if sig:
-                    found.append(("TRIGGERED", sig.ref_price, sig.stop, sig.reason,
-                                  f"engine BUY at {nxt} open (pending order)"))
+                    if strat.intraday:   # buy-stop filled on this session (Engine._enter_intraday)
+                        fill = strat.entry_fill_price(sig, d.iloc[-1])
+                        act = f"buy-stop filled {asof} @ {fill:.2f} (engine books it on this session)"
+                    else:
+                        act = f"engine BUY at {nxt} open (pending order)"
+                    found.append(("TRIGGERED", sig.ref_price, sig.stop, sig.reason, act))
                 st = strat.setup(d) if hasattr(strat, "setup") else None
                 if st:
                     det = {k: v for k, v in st.details.items() if k != "trend_template"}
@@ -173,7 +182,7 @@ def scan(settings, data, strategies, asof, cash, held) -> list[dict]:
                              "risk_pct": round((pivot - stop) / pivot * 100, 2),
                              "rs_pct": None if rs_pct is None else round(rs_pct * 100),
                              "held": sym in held, "action": action, "detail": detail,
-                             **size(settings.risk, capital, name, pivot, stop, cash, slip)})
+                             **size(settings, capital, name, pivot, stop, cash, equity, slip)})
         log.info("%s: scanned %d symbols (%d errors)", name, n_ok, n_err)
     return rows
 
@@ -224,20 +233,25 @@ def main() -> None:
     asof = resolve_asof(data, bench, a.date)
     state_dir = ROOT / s.system["paths"]["state_dir"]
     held = held_symbols(state_dir)
-    cash = a.cash
-    if cash is None:
-        try:
-            cash = float(json.loads((state_dir / "portfolio.json").read_text())["cash"])
-        except Exception:  # noqa: BLE001
-            cash = float(s.risk["capital"]["base_capital"])
+    cash, equity = a.cash, None
+    try:
+        pf = json.loads((state_dir / "portfolio.json").read_text())
+        equity = float(pf["cash"]) + sum(sum(l["qty"] for l in p["lots"]) * p["last_price"]
+                                         for p in pf["positions"].values())
+        cash = float(pf["cash"]) if cash is None else cash
+    except Exception:  # noqa: BLE001 - no live state yet: size off base capital
+        pass
+    base = float(s.risk["capital"]["base_capital"])
+    cash = base if cash is None else cash
+    equity = cash if equity is None else equity
 
-    rows = scan(s, data, strategies, asof, cash, held)
+    rows = scan(s, data, strategies, asof, cash, equity, held)
     df = pd.DataFrame(rows, columns=COLS)
     out = Path(a.out) if a.out else state_dir / f"watchlist_{asof.isoformat()}.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out, index=False)
 
-    print(f"\nWATCHLIST as of {asof}  (sizing cash {cash:,.0f}, base {s.risk['capital']['base_capital']:,.0f})")
+    print(f"\nWATCHLIST as of {asof}  (sizing: equity {equity:,.0f}, cash {cash:,.0f})")
     if df.empty:
         print("  no setups.")
     show = ["symbol", "pivot", "stop", "risk_pct", "qty", "notional", "risk_rs", "rs_pct", "held", "action"]

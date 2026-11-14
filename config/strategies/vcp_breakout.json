@@ -1,5 +1,5 @@
 {
-  "_note": "Minervini VCP breakout, built 2026-11-12 from the user's spec (Part 1). See trader/strategies/vcp_breakout.py. EXECUTION APPROXIMATION: the spec fires a buy-stop intraday at pivot (High4 + tick); this engine is EOD -> next open, so the signal fires on the session whose high reached the pivot and fills at the NEXT session's open. For live trading, scripts/swing_watchlist.py lists tomorrow's ARMED pivots so a real broker buy-stop/GTT can be placed instead. Trend Template condition 8 (RS >= 70) = rs_rank filter gated at rs_rank_min_percentile (13-week return vs NIFTY500, universe percentile); set it to null to make condition 8 optional, as the spec allows. All other overlay filters excluded so the strategy runs exactly to spec - tune with scripts/tune_strategy.py before adding any. tick = NSE price tick (spec's $0.01). Disabled by default: run in isolation with --strategy vcp_breakout. UNTESTED on real data.",
+  "_note": "Minervini VCP breakout = spec Part 1 (user document 2026-11-12), see trader/strategies/vcp_breakout.py. Every value below is the spec's unless its own _note says otherwise. Condition 8 (RS >= 70) = rs_rank filter gated at rs_rank_min_percentile (13-week return vs NIFTY500, universe percentile - the spec's 3-month proxy with NIFTY500 for the S&P 500); set null to treat condition 8 as optional, which the spec allows. All other overlay filters are excluded: they are not part of the spec. Disabled by default; run with --strategy vcp_breakout.",
   "enabled": false,
   "exclude_filters": [
     "candlestick",
@@ -14,8 +14,22 @@
     "repeat_loser_cooldown"
   ],
   "rs_rank_min_percentile": 0.7,
-  "market_regime_tag": "UPTREND",
   "universe": "default",
+  "execution": {
+    "_note": "intraday = the spec's orders simulated on daily OHLC: buy-stop entry filled on the trigger session at max(open, pivot); resting hard stop filled at min(open, stop) when the low reaches it. Close-conditioned rules fill at the next open (a market order placed after the close). same_bar_stop 'assume_hit': a session that reaches both entry and stop is booked as stopped out, because daily bars cannot show the order. 'next_open' = old EOD model (not spec).",
+    "mode": "intraday",
+    "same_bar_stop": "assume_hit"
+  },
+  "sizing": {
+    "_note": "Spec Part 3, applied to this strategy only (other strategies keep risk_config.json as-is). Risk Dollars = Account_Equity * 1%; Risk Per Share = Entry - SL; Size = floor(Risk Dollars / Risk Per Share); if Size * Entry > Account_Equity * 20%, cut to 20%. Account_Equity = current equity (cash + open positions at market) -> capital_mode 'equity'. The system's non-spec sizing extras are switched off here: no 3% minimum stop distance, no minimum notional, no cash buffer, no portfolio open-risk cap. Still applied (not rules, physical limits): available cash and the portfolio-wide max_positions in risk_config.json.",
+    "capital_mode": "equity",
+    "risk_pct": 1.0,
+    "max_position_pct": 20.0,
+    "min_stop_distance_pct": 0.0,
+    "min_notional": 0,
+    "cash_buffer_pct": 0.0,
+    "portfolio_open_risk_cap": false
+  },
   "entry": {
     "min_bars": 272,
     "trend_template": {
@@ -29,19 +43,15 @@
     },
     "contraction_bars": 4,
     "max_spread_pct": 4.0,
-    "tick": 0.05,
+    "tick": 0.01,
     "trigger_on": "high",
     "max_initial_risk_pct": 5.0
   },
-  "open_checks": {
-    "_note": "Skip if the open is at/below the stop, or more than max_chase_pct above the pivot (null = never skip). The 5% risk cap is re-applied against the actual open.",
-    "max_chase_pct": 5.0
-  },
   "exit": {
-    "stop_trigger": "close",
+    "_note": "target_r 2.0 = 1:2 R:R on trim_fraction 0.5, stop -> exact entry. trail_mode: the spec says 'trail the remainder using a 20-day EMA' without saying how - 'stop' = resting stop at max(entry, EMA20) updated each close (default), 'close' = exit next open after a close below EMA20.",
     "target_r": 2.0,
-    "target_trigger": "high",
     "trim_fraction": 0.5,
-    "trail_ema_period": 20
+    "trail_ema_period": 20,
+    "trail_mode": "stop"
   }
 }

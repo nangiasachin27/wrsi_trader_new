@@ -99,7 +99,7 @@ def main() -> None:
         tl = trade_log(trades)
 
         print(f"\n{'='*90}\nBACKTEST {a.start} -> {a.end}  ({len(data)} symbols loaded)\n{'='*90}")
-        for k, v in summarize(eq, trades).items():
+        for k, v in summarize(eq, trades, s.risk["capital"]["base_capital"]).items():
             print(f"  {k:18s}: {v}")
 
         if not tl.empty:

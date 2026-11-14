@@ -6,8 +6,8 @@ import pandas as pd
 
 from trader.core.indicators import sma
 from trader.core.models import PendingOrder, Position, Signal
-from trader.strategies._breakout_common import (Setup, bars_held, check_open, entry_price,
-                                                hard_stop_hit, triggered)
+from trader.strategies._breakout_common import (Setup, bars_held, buy_stop_fill, check_open,
+                                                entry_price, hard_stop_hit, triggered)
 from trader.strategies.base import Strategy, SymbolContext, register
 
 
@@ -29,30 +29,36 @@ def momentum_surge(daily: pd.DataFrame, lookback: int) -> tuple[float | None, di
 
 @register("high_tight_flag")
 class HighTightFlag(Strategy):
-    """Kristjan Kullamagi High Tight Flag / daily momentum breakout (spec Part 2, 2026-11-12).
+    """Kristjan Kullamagi High Tight Flag / daily momentum breakout - spec Part 2 (user document,
+    2026-11-12). Default config = the spec's rules exactly; every non-spec choice is listed below.
 
-    Setup (completed bars; the last completed bar is the spec's "yesterday"):
-      - Momentum surge over the last `surge_lookback` (40) bars >= min_surge_pct (30%).
-      - Flag = last `flag_bars` (5) completed bars:
-          A) every flag close > its own SMA10 or SMA20 (`ma_support`: either|sma10|sma20|both;
-             spec says "SMA10 or SMA20" -> either);
-          B) (Flag_High5 - Flag_Low5) / Flag_Low5 * 100 <= max_flag_range_pct (8%).
-      - pivot = yesterday's high + tick.
-      - stop = yesterday's low - tick (always the TIGHTER of the spec's two choices, since
-        yesterday is inside the flag); if that leaves less than `min_room_pct` between pivot and
-        stop ("room to breathe"), fall back to Flag_Low5 - tick.
+    Setup (setup(), on COMPLETED bars; the last completed bar is the spec's "yesterday"):
+      - Momentum surge: last 40 bars, Low40 = lowest low, HighMax = highest high AFTER Low40,
+        (HighMax - Low40) / Low40 * 100 >= 30.
+      - Flag = last 5 completed bars: (A) every close > its own SMA10 or SMA20; (B) (Flag_High5 -
+        Flag_Low5) / Flag_Low5 * 100 <= 8.
+      - pivot = Yesterday_High + 0.01.
+      - SL = the tighter of Yesterday_Low - 0.01 and Flag_Low5 - 0.01 (yesterday is inside the
+        flag, so this is always Yesterday_Low - 0.01), "provided it gives the trade room to
+        breathe". The spec does not quantify that: `min_room_pct` (2%) - if the tighter stop is
+        closer than that to the pivot, Flag_Low5 - 0.01 is used. This is the only interpretive
+        number in the entry.
 
-    Trigger: next session's high reaches the pivot (`trigger_on: "high"`, spec) - or closes above
-    it (`"close"`). Fill is the following session's open in this EOD engine (see config _note).
+    Execution (`execution.mode: "intraday"`, simulated resting orders - see Strategy.intraday):
+      - "Market buy immediately upon trigger detection" = buy-stop at the pivot, filled on the
+        session whose high reaches it at max(open, pivot).
+      - Hard stop-loss: resting; fills at min(open, stop) on the first session the low reaches it.
+      - Day 1 = the entry session. If the trade CLOSES above entry on day 1 or day 2, sell 33% and
+        move the remaining stop to breakeven. The condition is only known at the close, so the
+        sale is a market order at the next open (once per trade).
+      - Trailing exit: a close strictly below SMA10 -> market sell of the entire position at the
+        next open. Read as applying to the whole position whether or not the partial happened
+        ("close the entire position"); `trail_before_trim: false` restricts it to after the
+        partial instead.
 
-    Exits:
-      - hard stop: close (or low) at/below pos.stop -> EXIT.
-      - trail: close strictly below SMA10 -> EXIT (spec: "only when a daily candle closes below
-        SMA10"). `trail_before_trim: true` also applies it before the partial (the spec is silent
-        on a trade that is never positive on day 1-2; without this it would have no trail at all).
-      - partial: if the close is above entry on day 1 or day 2 (`partial_max_day`), TRIM
-        `trim_fraction` (33%) and move the stop to breakeven. At most once.
-    No pyramiding (spec has none).
+    With daily bars the intrabar order is unknown, so an entry session that also reaches the stop
+    is booked as stopped out (conservative). No risk ceiling (the spec gives none for HTF).
+    `execution.mode: "next_open"` restores the old EOD -> next-open model. No pyramiding.
     """
 
     def setup(self, daily: pd.DataFrame) -> Setup | None:
@@ -113,8 +119,11 @@ class HighTightFlag(Strategy):
                             "flag_range_pct": st.details["flag_range_pct"], "stop_basis": st.details["stop_basis"]})
 
     def validate_open(self, order: PendingOrder, open_px: float, prev_close: float) -> tuple[bool, str]:
-        return check_open(order, open_px, self.cfg["open_checks"],
+        return check_open(order, open_px, self.cfg.get("open_checks", {}),
                           self.cfg["entry"].get("max_initial_risk_pct"))
+
+    def entry_fill_price(self, sig: Signal, bar: pd.Series) -> float:
+        return buy_stop_fill(bar, sig.ref_price, self.cfg["entry"]["trigger_on"])
 
     def stop_level(self, ctx: SymbolContext, pos: Position) -> float | None:
         return None   # stop only moves once, to breakeven, on the TRIM fill (engine applies new_stop)
@@ -125,9 +134,12 @@ class HighTightFlag(Strategy):
         x, d = self.cfg["exit"], ctx.daily
         live = d.iloc[-1]
         px = float(live["close"])
-        if hard_stop_hit(live, pos.stop, x["stop_trigger"]):
+        # Hard stop: a resting order handled by the engine in intraday mode; close-checked here
+        # only in the legacy next_open mode.
+        if not self.intraday and hard_stop_hit(live, pos.stop, x.get("stop_trigger", "close")):
+            trig = x.get("stop_trigger", "close")
             return Signal(ctx.symbol, self.name, "EXIT", ctx.asof.isoformat(),
-                          f"{x['stop_trigger']} {float(live[x['stop_trigger']]):.2f} <= stop {pos.stop:.2f}"
+                          f"{trig} {float(live[trig]):.2f} <= stop {pos.stop:.2f}"
                           + (" (breakeven)" if pos.meta.get("trims") else ""),
                           ref_price=px, stop=pos.stop)
         trimmed = bool(pos.meta.get("trims"))

@@ -82,7 +82,8 @@ _DATA = None   # set once per WORKER PROCESS by _init_worker (loaded fresh in ea
                # seconds), then reused for every combo that worker runs - never reloaded per combo.
 
 _RESULT_FIELDS = ["cagr_pct", "max_dd_pct", "closed_trades", "win_rate_pct", "profit_factor",
-                  "avg_holding_days", "total_fees"]
+                  "avg_holding_days", "total_fees",
+                  "final_equity", "net_pnl", "net_pnl_pct", "realized_pnl", "unrealized_pnl"]
 _RANK_KEYS = ["cagr_pct", "max_dd_pct"]  # higher is better for both (max_dd_pct is a negative
                                          # number, e.g. -19.79, so "higher" = less negative = a
                                          # smaller drawdown) - same convention used everywhere
@@ -112,6 +113,12 @@ def _run_one(task: tuple) -> dict:
         cfg["enabled"] = (name == strategy)
     for name, v in zip(filter_names, combo):
         settings.filters[name]["enabled"] = v
+    # A filter being swept must actually be able to reach this strategy: if it is also listed in
+    # the strategy's own exclude_filters, toggling its global `enabled` changes nothing and every
+    # ON/OFF row comes out identical. Drop the swept filters from exclude_filters for the sweep
+    # (in memory only); filters NOT being swept keep whatever exclusion the config gives them.
+    strat_cfg = settings.strategies[strategy]
+    strat_cfg["exclude_filters"] = [f for f in strat_cfg.get("exclude_filters", []) if f not in filter_names]
     # StateStore.load_portfolio()/append_equity() read and append to whatever already sits in
     # work_dir (portfolio.json, daily_equity.csv, journal.jsonl) rather than starting fresh -
     # so if this exact combo label's directory is left over from an earlier invocation (e.g.
@@ -129,7 +136,8 @@ def _run_one(task: tuple) -> dict:
         return {"label": label, "combo": combo, "ok": False, "error": f"{type(e).__name__}: {e}"}
     if eq.empty or len(eq) < 2:
         return {"label": label, "combo": combo, "ok": False, "error": "no equity curve (0 bars?)"}
-    return {"label": label, "combo": combo, "ok": True, "stats": summarize(eq, trades)}
+    return {"label": label, "combo": combo, "ok": True,
+            "stats": summarize(eq, trades, settings.risk["capital"]["base_capital"])}
 
 
 def _fieldnames(filter_names: list[str]) -> list[str]:

@@ -29,7 +29,26 @@ def run_backtest(settings: Settings, data: dict[str, pd.DataFrame], start: date,
     return store.equity_frame(), store.load_portfolio(0.0).trades
 
 
-def summarize(eq: pd.DataFrame, trades: list[dict]) -> dict:
+def pnl_breakdown(eq: pd.DataFrame, trades: list[dict], start_capital: float) -> dict:
+    """Whole-run P&L, all net of fees:
+       net_pnl        = final equity - start_capital (everything: closed, partials, open MTM)
+       realized_pnl   = every closed round trip (SELL pnl already includes its own TRIMs)
+                        + TRIMs on positions still open at the end (banked, not yet in a SELL)
+       unrealized_pnl = net_pnl - realized_pnl (open positions marked to the last close)"""
+    final = float(eq["equity"].iloc[-1])
+    sells = [t for t in trades if t["side"] == "SELL"]
+    closed = {(t["symbol"], t.get("entry_date")) for t in sells}
+    open_trims = [t for t in trades if t["side"] == "TRIM" and (t["symbol"], t.get("entry_date")) not in closed]
+    realized = sum(t["pnl"] for t in sells) + sum(t["pnl"] for t in open_trims)
+    net = final - start_capital
+    return {"final_equity": round(final, 0), "net_pnl": round(net, 0),
+            "net_pnl_pct": round(net / start_capital * 100, 2) if start_capital else None,
+            "realized_pnl": round(realized, 0), "unrealized_pnl": round(net - realized, 0)}
+
+
+def summarize(eq: pd.DataFrame, trades: list[dict], start_capital: float | None = None) -> dict:
+    """start_capital: the run's starting cash (risk_config base_capital). Defaults to the first
+    equity row, which is already one session in (after day-1 fees/marks) - pass it explicitly."""
     e = eq["equity"]
     years = max((e.index[-1] - e.index[0]).days / 365.25, 1e-9)
     sells = [t for t in trades if t["side"] == "SELL"]
@@ -44,6 +63,7 @@ def summarize(eq: pd.DataFrame, trades: list[dict]) -> dict:
         "profit_factor": round(sum(wins) / sum(losses), 2) if losses else None,
         "avg_holding_days": round(sum(holds) / len(holds), 1) if holds else None,
         "total_fees": round(sum(t["fees"] for t in trades), 0),
+        **pnl_breakdown(eq, trades, float(start_capital if start_capital is not None else e.iloc[0])),
     }
 
 

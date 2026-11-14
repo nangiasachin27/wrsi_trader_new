@@ -14,7 +14,7 @@
     }
   },
   "per_trade": {
-    "risk_pct_of_base": 1.0,
+    "risk_pct_of_base": 0.8,
     "max_position_pct_of_base": 20.0,
     "min_notional": 15000,
     "min_stop_distance_pct": 3.0,
@@ -26,6 +26,6 @@
   },
   "pyramiding": {
     "max_adds": 3,
-    "max_position_risk_pct_of_base": 1.0
+    "max_position_risk_pct_of_base": 0.8
   }
 }

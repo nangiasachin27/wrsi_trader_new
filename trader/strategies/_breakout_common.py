@@ -42,6 +42,15 @@ def triggered(live: pd.Series, pivot: float, trigger_on: str) -> bool:
     return px + EPS >= pivot if trigger_on == "high" else px > pivot + EPS
 
 
+def buy_stop_fill(live: pd.Series, pivot: float, trigger_on: str) -> float:
+    """Intraday-mode fill of a triggered entry on its own session:
+    'high'  -> buy-stop at pivot: max(open, pivot) (a gap above the pivot fills at the open);
+    'close' -> the order is only sent once the close confirms, so it fills at the close."""
+    if trigger_on == "close":
+        return float(live["close"])
+    return max(float(live["open"]), pivot)
+
+
 def bars_held(daily: pd.DataFrame, opened: str) -> int:
     """Trading bars since (and including) the entry day - 1 on the entry session itself."""
     if not opened:
@@ -64,10 +73,12 @@ def hard_stop_hit(live: pd.Series, stop: float | None, stop_trigger: str) -> boo
 
 def check_open(order: PendingOrder, open_px: float, open_cfg: dict,
                max_risk_pct: float | None) -> tuple[bool, str]:
-    """Shared open-time validation. Mutates order.stop when the actual fill makes the stop wider
-    than max_risk_pct (the spec's caps are defined against the real Entry, which an EOD engine
-    only knows at the open). The engine sizes and records the position from order.stop AFTER this
-    call, so the cap is what the trade is actually sized and stopped against."""
+    """Shared fill-time validation (open_px is the actual fill price: the open in next_open mode,
+    the buy-stop fill in intraday mode). Mutates order.stop when the actual fill makes the stop
+    wider than max_risk_pct (the spec's cap is defined against the real Entry). The engine sizes
+    and records the position from order.stop AFTER this call, so the cap is what the trade is
+    actually sized and stopped against. max_chase_pct is NOT part of either spec and defaults to
+    off (absent/null)."""
     if order.action != "ENTRY":
         return True, "ok"
     if order.stop is not None and open_px <= order.stop:
