@@ -1,0 +1,4 @@
+{
+  "_note": "Which support/resistance engine the strategies and filters use. 'legacy' = trader/core/levels.py + config/levels.json (behaviour before 2026-11-14, byte-for-byte). 'fractal' = trader/core/fractal_levels.py + config/fractal_sr.json (5-candle fractal + window shifting, calendar-month lookback, a zone price sits inside is classified by approach side, same engine as scripts/fractal_sr.py). Consumers: breakout_trend + sr_reversal (strategy key 'levels_engine'), resistance + room_to_resistance filters (filter key 'engine'). A consumer's own key overrides this default; null/absent = use this. To roll back everything: set this to 'legacy' and leave the consumer keys null.",
+  "engine": "legacy"
+}

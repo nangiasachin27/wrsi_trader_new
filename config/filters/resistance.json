@@ -4,5 +4,9 @@
   "timeframe": "weekly",
   "levels_config_path": "config/levels.json",
   "proximity_pct": 3.0,
-  "fail_mode": "allow"
+  "fail_mode": "allow",
+  "engine": null,
+  "proximity_atr": null,
+  "block_inside_zone": true,
+  "_engine": "null = global default (config/sr_engine.json); 'legacy' or 'fractal' overrides it for this filter only. proximity_atr and block_inside_zone are read ONLY by the fractal engine: proximity_atr (e.g. 0.5) measures 'too close' in ATRs of `timeframe` instead of proximity_pct; block_inside_zone blocks an entry when price is already inside the nearest resistance zone (legacy skips such a zone and checks the next one up)."
 }

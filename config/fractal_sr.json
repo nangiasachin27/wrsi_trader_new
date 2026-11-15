@@ -1,0 +1,86 @@
+{
+  "_note": "Params for scripts/fractal_sr.py (standalone Fractal + Window-Shifting S/R zones; independent of config/levels.json and trader/core/levels.py). lookback_months: only swings dated within this many calendar months of the as-of date form levels (0 = all history). Daily 6 / weekly 12 / monthly 36 - monthly was all history until 2026-11-14, which made 360ONE's 'major' monthly support a 2020 low 71% below price. All other bar counts are in bars OF THAT TIMEFRAME (fractal_n=3 on weekly = 3 weeks). Percentages are plain percent (1.5 = 1.5%).",
+
+  "data": {
+    "universe_list": "default",
+    "weekly_rule": "W-FRI",
+    "monthly_rule": "ME",
+    "completed_bars_only": true,
+    "_completed_bars_only": "true = the still-forming week/month is dropped before detection (same 'completed weekly candles only' principle as the strategies). Reference price is always the latest DAILY close.",
+    "corporate_action_truncate_types": ["demerger", "spinoff"],
+    "_corporate_action_truncate_types": "events of these types in config/corporate_actions.json cut the symbol's history at the ex-date - pre-demerger prices belong to a different business and would create fake levels. Splits/bonuses are already back-adjusted by Upstox, so they are not listed."
+  },
+
+  "output": {
+    "dir": "state",
+    "prefix": "sr_levels",
+    "levels_per_side": 1,
+    "_levels_per_side": "1 = nearest support + nearest resistance per timeframe (S1/R1). 2 adds S2/R2 columns, etc.",
+    "major_level": true,
+    "_major_level": "adds {tf}_smaj_* / {tf}_rmaj_* columns: the strongest (highest score) support/resistance zone in the window - often the level you would draw by eye even when a nearer, minor zone is S1/R1."
+  },
+
+  "weights": {
+    "fractal_only": 1.0,
+    "window_only": 0.75,
+    "both": 1.5,
+    "polarity_bonus": 1.25,
+    "_note": "Per-pivot weight by which detector(s) found it; zone score = sum(weight * 0.5^(age/half_life)), x polarity_bonus if the zone holds both swing highs and swing lows (role reversal)."
+  },
+
+  "_detectors": "fractal_n=2 is the canonical 5-candle Williams fractal; window=5/persist=3 = extreme of an 7-bar span with >=2 bars each side. Validated 2026-11-14 on 360ONE against hand-drawn levels: coarser settings (n=5, 0.5 ATR) found only 16 swings in 6 months and split real bands into slivers.",
+  "_timeframes": "Zone valid if touches >= min_touches, OR (accept_confirmed_single and it is ONE pivot found by both detectors with score >= single_pivot_min_score - i.e. lone swings only count while fresh. All three use 0.75 = 1.5 * 0.5^1, i.e. with half_life ~= the lookback window every confirmed lone swing INSIDE the window counts - the window itself is the age cap). edge_fallback: if no valid zone exists on a side, use the lookback's extreme high/low as an UNCONFIRMED zone (score 0, note r1_edge/s1_edge) provided price has pulled back from it by >= the cluster tolerance (so >= tol_min_pct) - catches a recent top/bottom that fractals cannot confirm yet.",
+  "timeframes": {
+    "daily": {
+      "lookback_months": 6,
+      "min_bars": 60,
+      "fractal_n": 2,
+      "window": 5,
+      "persist": 3,
+      "atr_period": 14,
+      "cluster_atr_mult": 0.75,
+      "tol_min_pct": 0.6,
+      "tol_max_pct": 4.0,
+      "min_width_atr_mult": 0.25,
+      "recency_half_life_bars": 126,
+      "min_touches": 2,
+      "accept_confirmed_single": true,
+      "single_pivot_min_score": 0.75,
+      "edge_fallback": true
+    },
+    "weekly": {
+      "lookback_months": 12,
+      "min_bars": 30,
+      "fractal_n": 2,
+      "window": 5,
+      "persist": 3,
+      "atr_period": 14,
+      "cluster_atr_mult": 0.75,
+      "tol_min_pct": 1.0,
+      "tol_max_pct": 6.0,
+      "min_width_atr_mult": 0.25,
+      "recency_half_life_bars": 52,
+      "min_touches": 2,
+      "accept_confirmed_single": true,
+      "single_pivot_min_score": 0.75,
+      "edge_fallback": true
+    },
+    "monthly": {
+      "lookback_months": 36,
+      "min_bars": 18,
+      "fractal_n": 2,
+      "window": 6,
+      "persist": 3,
+      "atr_period": 14,
+      "cluster_atr_mult": 0.35,
+      "tol_min_pct": 2.0,
+      "tol_max_pct": 8.0,
+      "min_width_atr_mult": 0.25,
+      "recency_half_life_bars": 36,
+      "min_touches": 2,
+      "accept_confirmed_single": true,
+      "single_pivot_min_score": 0.75,
+      "edge_fallback": true
+    }
+  }
+}

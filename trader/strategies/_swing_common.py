@@ -4,6 +4,7 @@ import json
 
 from trader.core.config import ROOT
 from trader.core.indicators import atr, sma
+from trader.core.fractal_levels import fractal_nearest, resolve_engine
 from trader.core.levels import nearest_levels, support_resistance
 
 
@@ -62,6 +63,17 @@ def chandelier_trail(daily, opened: str | None, period: int, atr_mult: float) ->
     return highest_close - float(a) * atr_mult
 
 
-def nearest_zones(daily, timeframe: str, cfg: dict, price: float) -> dict:
+def nearest_zones(daily, timeframe: str, cfg: dict, price: float,
+                  engine: str | None = None, asof=None) -> dict:
+    """Nearest support below / resistance above `price` as trader.core.levels.Level objects.
+
+    engine: the consumer's own override ("legacy" | "fractal" | None = global default from
+    config/sr_engine.json). "legacy" is the original code path, byte-for-byte: trader/core/levels.py
+    zones with `cfg` (config/levels.json). "fractal" uses trader/core/fractal_levels.py with
+    config/fractal_sr.json's params for `timeframe` (`cfg` is then unused) - see that module's
+    docstring for the semantic differences (a zone price sits inside is classified by approach
+    side instead of being ignored; 5-candle fractal; calendar-month lookback)."""
+    if resolve_engine(engine) == "fractal":
+        return fractal_nearest(daily, timeframe, price, asof)
     zones = support_resistance(daily, timeframe, cfg)
     return nearest_levels(zones, price)

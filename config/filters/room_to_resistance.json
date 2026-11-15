@@ -1,0 +1,11 @@
+{
+  "_note": "Blocks an ENTRY whose reward:risk to the nearest overhead resistance is below min_reward_risk: (resistance near edge - signal price) / (signal price - signal stop). Uses each strategy's own stop, unlike the flat-% resistance filter. Breakout strategies (breakout_trend, inside_bar_breakout, vcp_breakout, high_tight_flag) exclude it in their own configs - they buy THROUGH resistance. Added 2026-11-14, ships disabled: sweep it per strategy (scripts/tune_strategy.py) before enabling.",
+  "enabled": false,
+  "engine": null,
+  "_engine": "null = global default (config/sr_engine.json); 'legacy' or 'fractal' overrides it for this filter only.",
+  "timeframe": "daily",
+  "levels_config_path": "config/levels.json",
+  "min_reward_risk": 1.5,
+  "fail_mode": "allow",
+  "_fail_mode": "what to do when there is NO resistance zone above price: 'allow' (open upside) or 'block'."
+}

@@ -12,7 +12,7 @@
     "sentiment",
     "trend_strength",
     "repeat_loser_cooldown"
-  ],
+  , "room_to_resistance"],
   "rs_rank_min_percentile": 0.7,
   "universe": "default",
   "execution": {

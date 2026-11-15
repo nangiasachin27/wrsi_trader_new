@@ -58,14 +58,19 @@ class BreakoutTrend(Strategy):
         # construction it's always above today's close), so the zone has to be anchored to
         # where price stood BEFORE today's candle for a breakout above it to even be possible.
         prev_px = float(ctx.daily["close"].iloc[-2])
-        zones = nearest_zones(ctx.daily, self.cfg.get("levels_timeframe", "daily"), self._zones_cfg, prev_px)
+        zones = nearest_zones(ctx.daily, self.cfg.get("levels_timeframe", "daily"), self._zones_cfg, prev_px,
+                              engine=self.cfg.get("levels_engine"), asof=ctx.asof)
         res = zones["resistance"]
         if res is None:
             return None
         # Near (lower) edge, same convention the resistance filter itself uses - the first
         # price the stock actually has to clear, not the zone's far edge (which can sit well
         # above the near edge once several loosely-clustered touches widen the band).
-        if px <= res.price_low * (1 + c["breakout_buffer_pct"] / 100.0):
+        # Exception (fractal engine only - legacy never returns a zone containing prev_px): if
+        # yesterday's close was already INSIDE the resistance zone, clearing its near edge proves
+        # nothing; the breakout has to close above the zone's FAR edge.
+        level = res.price_low if prev_px < res.price_low else res.price_high
+        if px <= level * (1 + c["breakout_buffer_pct"] / 100.0):
             return None
 
         if c.get("require_volume_confirmation", True):

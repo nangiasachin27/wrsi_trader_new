@@ -12,7 +12,7 @@
     "sentiment",
     "trend_strength",
     "repeat_loser_cooldown"
-  ],
+  , "room_to_resistance"],
   "universe": "default",
   "execution": {
     "_note": "intraday = the spec's orders simulated on daily OHLC: buy-stop entry filled on the trigger session at max(open, pivot); resting hard stop filled at min(open, stop) when the low reaches it. Close-conditioned rules fill at the next open (a market order placed after the close). same_bar_stop 'assume_hit': a session that reaches both entry and stop is booked as stopped out, because daily bars cannot show the order. 'next_open' = old EOD model (not spec).",

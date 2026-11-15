@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 
 from trader.core.config import ROOT
+from trader.core.fractal_levels import fractal_result, resolve_engine
 from trader.core.levels import nearest_levels, support_resistance
 from trader.core.models import Signal
 from trader.filters.base import Filter, FilterResult, register
@@ -64,14 +65,19 @@ class ResistanceFilter(Filter):
 
     def describe(self) -> str:
         c = self.cfg
-        return (f"timeframe={c.get('timeframe', 'weekly')}, proximity_pct={c.get('proximity_pct')}, "
-               f"fail_mode={c.get('fail_mode', 'block')}")
+        eng = resolve_engine(c.get("engine"))
+        extra = (f", proximity_atr={c.get('proximity_atr')}, block_inside_zone={c.get('block_inside_zone', True)}"
+                 if eng == "fractal" else "")
+        return (f"engine={eng}, timeframe={c.get('timeframe', 'weekly')}, proximity_pct={c.get('proximity_pct')}, "
+               f"fail_mode={c.get('fail_mode', 'block')}{extra}")
 
     def evaluate(self, signal: Signal, ctx: SymbolContext) -> FilterResult:
         if not self.enabled:
             return FilterResult(True, "disabled")
         c = self.cfg
         timeframe = c.get("timeframe", "weekly")
+        if resolve_engine(c.get("engine")) == "fractal":
+            return self._evaluate_fractal(ctx, timeframe)
         levels_cfg = self._levels_cfg()
 
         zones = support_resistance(ctx.daily, timeframe, levels_cfg)
@@ -94,3 +100,32 @@ class ResistanceFilter(Filter):
                                   "resistance_high": resistance.price_high,
                                   "strength": resistance.strength,
                                   "dist_pct": round(dist_pct, 1)})
+
+    def _evaluate_fractal(self, ctx: SymbolContext, timeframe: str) -> FilterResult:
+        """Fractal-engine version (config/sr_engine.json or this filter's "engine": "fractal").
+        Differences from legacy, both deliberate:
+          - a resistance zone price is already INSIDE (rallied into it from below) is the nearest
+            resistance, not skipped - blocked when block_inside_zone (default true);
+          - proximity can be set in ATRs of `timeframe` (proximity_atr) instead of a flat %
+            (proximity_pct, used when proximity_atr is null)."""
+        c = self.cfg
+        px = ctx.last_close
+        r = fractal_result(ctx.daily, timeframe, px, ctx.asof)
+        res = r.res[0] if r.res else None
+        if res is None:
+            fail_open = c.get("fail_mode", "block") == "allow"
+            why = r.note or f"no {timeframe} resistance zone found above price {px:.2f}"
+            return FilterResult(fail_open, f"[fractal] {why}")
+        dist_pct = (res.low - px) / px * 100.0
+        if dist_pct <= 0:
+            near = bool(c.get("block_inside_zone", True))
+            how = "inside"
+        else:
+            limit = c["proximity_pct"] if c.get("proximity_atr") is None else c["proximity_atr"] * r.atr_pct
+            near = dist_pct <= limit
+            how = f"{dist_pct:+.1f}% below (limit {limit:.1f}%)"
+        reason = (f"[fractal] price {px:.2f} vs nearest {timeframe} resistance zone {res.low:.2f}-{res.high:.2f} "
+                  f"({res.touches} touches{', unconfirmed edge' if res.edge else ''}): {how}")
+        return FilterResult(not near, reason,
+                            meta={"resistance_low": res.low, "resistance_high": res.high,
+                                  "strength": res.touches, "dist_pct": round(dist_pct, 1), "engine": "fractal"})
