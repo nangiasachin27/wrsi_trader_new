@@ -1,5 +1,286 @@
 {
-  "cash": 1000000.0,
-  "trades": [],
-  "positions": {}
+  "cash": 502.73,
+  "trades": [
+    {
+      "date": "2026-11-16",
+      "symbol": "MCX",
+      "strategy": "new_high_momentum",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 26,
+      "price": 3776.37,
+      "fees": 140.07,
+      "stop": 3471.75,
+      "reason": "close 3720.00 is a 50-bar high, above trend SMA50 3298.19, on confirming volume"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "ANGELONE",
+      "strategy": "new_high_momentum",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 342,
+      "price": 350.0,
+      "fees": 165.59,
+      "stop": 326.65,
+      "reason": "close 349.00 is a 50-bar high, above trend SMA50 300.05, on confirming volume"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "NAVINFLUOR",
+      "strategy": "new_high_momentum",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 11,
+      "price": 10060.05,
+      "fees": 154.87,
+      "stop": 9383.61,
+      "reason": "close 10002.00 is a 50-bar high, above trend SMA50 8526.39, on confirming volume"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "PNB",
+      "strategy": "new_high_momentum",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 911,
+      "price": 144.1,
+      "fees": 179.33,
+      "stop": 135.33,
+      "reason": "close 142.81 is a 50-bar high, above trend SMA50 119.61, on confirming volume"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "PAYTM",
+      "strategy": "new_high_momentum",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 57,
+      "price": 1951.95,
+      "fees": 155.58,
+      "stop": 1813.47,
+      "reason": "close 1939.90 is a 50-bar high, above trend SMA50 1716.42, on confirming volume"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "INDGN",
+      "strategy": "new_high_momentum",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 166,
+      "price": 670.52,
+      "fees": 155.63,
+      "stop": 622.53,
+      "reason": "close 666.20 is a 50-bar high, above trend SMA50 598.99, on confirming volume"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "GESHIP",
+      "strategy": "breakout_trend",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 95,
+      "price": 1527.63,
+      "fees": 195.75,
+      "stop": 1443.65,
+      "reason": "close 1518.00 broke daily resistance zone 1502.20-1509.00 (strength 2), above trend SMA50 1486.97"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "FEDERALBNK",
+      "strategy": "weekly_rsi_sma20",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 395,
+      "price": 362.36,
+      "fees": 193.39,
+      "stop": 342.12,
+      "reason": "wRSI 66.8 crossed 60, mRSI 70.4"
+    },
+    {
+      "date": "2026-11-16",
+      "symbol": "INDUSTOWER",
+      "strategy": "pullback_ma",
+      "side": "BUY",
+      "action": "ENTRY",
+      "qty": 69,
+      "price": 397.9,
+      "fees": 56.17,
+      "stop": 374.1,
+      "reason": "pullback to SMA20 384.42 rejected by piercing_line, close 396.00 back above it, trend SMA50 intact"
+    }
+  ],
+  "positions": {
+    "MCX": {
+      "symbol": "MCX",
+      "strategy": "new_high_momentum",
+      "lots": [
+        {
+          "qty": 26,
+          "price": 3776.37,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 3471.7487450230306,
+      "last_price": 3776.37,
+      "fees_paid": 140.07,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 3471.7487450230306
+      }
+    },
+    "ANGELONE": {
+      "symbol": "ANGELONE",
+      "strategy": "new_high_momentum",
+      "lots": [
+        {
+          "qty": 342,
+          "price": 350.0,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 326.64543832965524,
+      "last_price": 350.0,
+      "fees_paid": 165.59,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 326.64543832965524
+      }
+    },
+    "NAVINFLUOR": {
+      "symbol": "NAVINFLUOR",
+      "strategy": "new_high_momentum",
+      "lots": [
+        {
+          "qty": 11,
+          "price": 10060.05,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 9383.606694791066,
+      "last_price": 10060.05,
+      "fees_paid": 154.87,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 9383.606694791066
+      }
+    },
+    "PNB": {
+      "symbol": "PNB",
+      "strategy": "new_high_momentum",
+      "lots": [
+        {
+          "qty": 911,
+          "price": 144.1,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 135.33033380323735,
+      "last_price": 144.1,
+      "fees_paid": 179.33,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 135.33033380323735
+      }
+    },
+    "PAYTM": {
+      "symbol": "PAYTM",
+      "strategy": "new_high_momentum",
+      "lots": [
+        {
+          "qty": 57,
+          "price": 1951.95,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 1813.471366842504,
+      "last_price": 1951.95,
+      "fees_paid": 155.58,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 1813.471366842504
+      }
+    },
+    "INDGN": {
+      "symbol": "INDGN",
+      "strategy": "new_high_momentum",
+      "lots": [
+        {
+          "qty": 166,
+          "price": 670.52,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 622.5278371338919,
+      "last_price": 670.52,
+      "fees_paid": 155.63,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 622.5278371338919
+      }
+    },
+    "GESHIP": {
+      "symbol": "GESHIP",
+      "strategy": "breakout_trend",
+      "lots": [
+        {
+          "qty": 95,
+          "price": 1527.63,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 1443.6485029782777,
+      "last_price": 1527.63,
+      "fees_paid": 195.75,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 1443.6485029782777
+      }
+    },
+    "FEDERALBNK": {
+      "symbol": "FEDERALBNK",
+      "strategy": "weekly_rsi_sma20",
+      "lots": [
+        {
+          "qty": 395,
+          "price": 362.36,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 342.115,
+      "last_price": 362.36,
+      "fees_paid": 193.39,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 342.115
+      }
+    },
+    "INDUSTOWER": {
+      "symbol": "INDUSTOWER",
+      "strategy": "pullback_ma",
+      "lots": [
+        {
+          "qty": 69,
+          "price": 397.9,
+          "date": "2026-11-16"
+        }
+      ],
+      "stop": 374.09632161761976,
+      "last_price": 397.9,
+      "fees_paid": 56.17,
+      "adds": 0,
+      "opened": "2026-11-16",
+      "meta": {
+        "initial_stop": 374.09632161761976
+      }
+    }
+  }
 }
