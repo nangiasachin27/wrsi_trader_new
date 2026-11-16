@@ -15,9 +15,7 @@
     "momentum_lookback": 3,
     "atr_period": 14,
     "atr_mult": 1.0
-  , "min_reward_risk": null, "min_support_touches": null,
-    "_min_reward_risk": "null = off. e.g. 1.5: skip an entry whose (next resistance near edge - close) / (close - stop) is below 1.5 - this trade's target IS that resistance (exit_signal). No resistance above = allowed.",
-    "_min_support_touches": "null = off. e.g. 3: only fade a support zone with at least this many touches (Level.strength: pivots in the zone, either engine)."},
+  },
   "exit": {
     "target_tolerance_pct": 1.0
   }

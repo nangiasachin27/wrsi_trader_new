@@ -165,15 +165,7 @@ class RelativeStrengthFilter(Filter):
         fail_open = self.cfg.get("fail_mode", "allow") == "allow"
         pct = self._percentile_by_symbol.get(signal.symbol)
 
-        # Per-strategy hard gate (2026-11-12, for vcp_breakout's Trend Template condition 8,
-        # "RS rating >= 70"): a strategy config may set `rs_rank_min_percentile` to make this
-        # filter a hard gate for ITS candidates only, at its own threshold, without flipping the
-        # global mode (which every other strategy shares, in rank mode). Scoring is unchanged.
-        strat_min = self._strategy_cfgs.get(signal.strategy, {}).get("rs_rank_min_percentile")
-        if strat_min is not None:
-            mode, min_pct = "filter", float(strat_min)
-        else:
-            min_pct = float(self.cfg.get("min_percentile", 0.0))
+        min_pct = float(self.cfg.get("min_percentile", 0.0))
 
         if pct is None:
             passed = True if mode == "rank" else fail_open

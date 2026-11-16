@@ -30,13 +30,12 @@ from trader.core.config import ROOT, load_settings  # noqa: E402
 from trader.data.historical import load_csv_dir  # noqa: E402
 
 REFERENCE = ["candlestick.enabled=true", "sentiment.enabled=false"]
-NEW = {"vcp_breakout", "high_tight_flag"}
 
 
 def apply(settings, spec: str) -> None:
     """filter_or_strategy.key=value, value parsed as JSON (true/false/numbers/"strings").
     Dotted keys reach into nested config dicts (2026-11-15), e.g.
-    --set sr_reversal.entry.min_reward_risk=1.5 sets strategies["sr_reversal"]["entry"]["min_reward_risk"]."""
+    --set sr_reversal.entry.proximity_pct=1.5 sets strategies["sr_reversal"]["entry"]["proximity_pct"]."""
     path, raw = spec.split("=", 1)
     name, key = path.split(".", 1)
     target = settings.filters.get(name) or settings.strategies.get(name)
@@ -131,8 +130,6 @@ def main() -> None:
     s = load_settings()
     for spec in ([] if a.as_is else REFERENCE) + a.set:
         apply(s, spec)
-    for n in NEW:                                   # never part of the old-strategy baseline
-        s.strategies[n]["enabled"] = False
     enabled = sorted(n for n, c in s.strategies.items() if c["enabled"])
     filters = sorted(n for n, c in s.filters.items() if c.get("enabled"))
 

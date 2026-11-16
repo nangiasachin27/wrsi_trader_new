@@ -100,20 +100,6 @@ class Engine:
         slots = self.s.risk["portfolio"]["max_positions"] - (len(pf.positions) - len(exiting))
         for filt in self.filters.values():
             filt.prepare(asof, self.provider)
-        # Portfolio-level regime throttle (config/filters/regime_exposure.json, disabled by
-        # default): in a bear regime, cap the slots granted to NEW entries and scale their
-        # per-trade risk (meta.risk_scale, consumed by _buy). Never touches exits/management.
-        regime = self.filters.get("regime_exposure")
-        risk_scale = 1.0
-        if regime is not None and getattr(regime, "throttled", None) and regime.throttled():
-            max_pos = self.s.risk["portfolio"]["max_positions"]
-            eff_max = regime.max_positions_cap(max_pos)
-            slots = min(slots, eff_max - (len(pf.positions) - len(exiting)))
-            risk_scale = regime.risk_scale()
-            log.info("REGIME THROTTLE %s: max_positions %d -> %d for new entries, entry risk x%.2f | %s",
-                     asof, max_pos, eff_max, risk_scale, regime.reason())
-            self.store.journal(date=asof, event="REGIME_THROTTLE", max_positions=eff_max,
-                               risk_scale=risk_scale, reason=regime.reason())
 
         cands: list[Signal] = []
         for name, strat in self.strategies.items():
@@ -167,18 +153,6 @@ class Engine:
                     if not res.passed and blocked_by is None:
                         blocked_by = fname
                 sig.score = sum(score_fracs) / len(score_fracs) if score_fracs else 0.0
-                # Per-strategy slot-ranking weight (2026-11-15, config key `rank_weight`, default
-                # 1.0): multiplies the normalized score used for slot ranking AND fill order.
-                # Added for the weekly-cadence starvation problem (weekly_rsi_sma20 sees ~2,200
-                # candidate auctions vs 10-18k for daily strategies, so even a fair per-candidate
-                # score rarely wins a slot) - the 2026-10-31 x1.5 manual test, now reproducible
-                # via --set weekly_rsi_sma20.rank_weight=1.5. NOTE: multiplicative, so it cannot
-                # help a candidate whose score is exactly 0 (no scoring filters).
-                weight = float(strat.cfg.get("rank_weight", 1.0))
-                if weight != 1.0:
-                    sig.meta["base_score"] = round(sig.score, 4)
-                    sig.meta["rank_weight"] = weight
-                    sig.score *= weight
                 sig.meta["filters"] = {k: {"passed": r.passed, "reason": r.reason, "score": r.score, **r.meta}
                                        for k, r in results.items()}
                 if blocked_by:
@@ -214,8 +188,6 @@ class Engine:
                          i, sig.symbol, sig.score, sig.meta.get("rsi_w", 0), sig.meta.get("rsi_m", 0),
                          ath, cup, taken)
         for sig in cands[:max(slots, 0)]:
-            if risk_scale != 1.0:
-                sig.meta["risk_scale"] = risk_scale
             strat = self.strategies[sig.strategy]
             if strat.intraday:
                 self._enter_intraday(pf, sig, strat, asof, nxt, orders, exiting, max_adds)
@@ -408,11 +380,6 @@ class Engine:
         eq = pf.equity()
         base = self.capital.strategy_base(o.strategy, eq, cap_mode)
         amt = self.capital.risk_amount(o.strategy, eq, cap_mode, risk["per_trade"]["risk_pct_of_base"])
-        # regime_exposure throttle (stamped at EOD when the order was granted its slot): scale
-        # the ENTRY risk amount. ADDs are untouched - pyramiding is already capped per position.
-        scale = float(o.meta.get("risk_scale") or 1.0)
-        if o.action == "ENTRY" and scale != 1.0:
-            amt *= scale
         if o.action == "ENTRY":
             if o.symbol in pf.positions or len(pf.positions) >= risk["portfolio"]["max_positions"]:
                 return skip("held or max positions")
@@ -443,13 +410,9 @@ class Engine:
             # initial_stop is the stop the trade was SIZED against (after any validate_open
             # adjustment) - strategies that scale out at a multiple of initial risk (R) need it,
             # because pos.stop itself moves (breakeven, trails) during the trade.
-            # entry_target: a fixed price target decided at entry (signal meta) - frozen into the
-            # position so exits don't re-derive it from levels that move (range_bounce, 2026-11-16).
             pf.positions[o.symbol] = Position(o.symbol, o.strategy, [lot], o.stop, fill.price,
                                               fees_paid=fill.fees, opened=fill.date,
-                                              meta={"initial_stop": o.stop,
-                                                    **({"entry_target": o.meta["entry_target"]}
-                                                       if o.meta.get("entry_target") is not None else {})})
+                                              meta={"initial_stop": o.stop})
         else:
             p = pf.positions[o.symbol]
             p.lots.append(lot)

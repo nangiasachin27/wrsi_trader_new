@@ -11,7 +11,7 @@ _SIZING_KEYS = {"risk_pct": "risk_pct_of_base", "max_position_pct": "max_positio
 
 
 def effective_risk(risk_cfg: dict, strategy_cfg: dict) -> tuple[dict, str | None, bool]:
-    """Per-strategy sizing override (added 2026-11-12 so vcp_breakout/high_tight_flag can size
+    """Per-strategy sizing override (added 2026-11-12 for the since-removed vcp_breakout/high_tight_flag, to size
     exactly per their spec's Part 3 without changing the shared risk_config.json the other
     strategies use). A strategy config with a `sizing` block overrides the listed per_trade keys,
     capital.mode (`capital_mode`), and whether the portfolio open-risk cap applies

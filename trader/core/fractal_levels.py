@@ -3,7 +3,7 @@ Fractal (local extrema) + Window-Shifting support/resistance ZONES - the "fracta
 
 Shared by scripts/fractal_sr.py (daily CSV of S/R per ticker) and, when switched on, by the
 strategies/filters that previously called trader/core/levels.py (the "legacy" engine):
-breakout_trend, sr_reversal, the resistance filter and the room_to_resistance filter.
+breakout_trend, sr_reversal and the resistance filter.
 
 Engine switch (added 2026-11-14 so the old behaviour is always one setting away):
   config/sr_engine.json          {"engine": "legacy" | "fractal"}   global default ("legacy")

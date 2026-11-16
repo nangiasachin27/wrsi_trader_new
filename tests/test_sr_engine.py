@@ -64,15 +64,10 @@ def test_shipped_default_is_legacy_and_overrides_resolve():
         FL.resolve_engine("fractals")
 
 
-def test_shipped_consumer_overrides_are_null_and_new_gates_off():
+def test_shipped_consumer_overrides_are_null():
     for name in ("breakout_trend", "sr_reversal"):
         assert S.strategies[name]["levels_engine"] is None
-    assert S.strategies["sr_reversal"]["entry"]["min_reward_risk"] is None
-    assert S.strategies["sr_reversal"]["entry"]["min_support_touches"] is None
     assert S.filters["resistance"]["engine"] is None
-    assert S.filters["room_to_resistance"]["enabled"] is False
-    for name in ("breakout_trend", "inside_bar_breakout", "vcp_breakout", "high_tight_flag"):
-        assert "room_to_resistance" in S.strategies[name]["exclude_filters"]
 
 
 # ---- nearest_zones ----------------------------------------------------------------------------
@@ -147,52 +142,6 @@ def test_breakout_needs_far_edge_when_prev_close_was_inside_zone(monkeypatch):
     assert strat.entry_signal(below_then_mid) is not None
 
 
-# ---- sr_reversal gates ------------------------------------------------------------------------
-class _Bull:
-    name, direction = "hammer", "bullish"
-
-
-def _sr_setup(monkeypatch, entry_over=None, res=None, sup_strength=3):
-    cfg = copy.deepcopy(S.strategies["sr_reversal"])
-    cfg["entry"].update(entry_over or {})
-    strat = build_strategy("sr_reversal", cfg)
-    closes = np.r_[np.full(290, 110.0), [108, 106, 104, 101.5]]
-    df = pd.DataFrame({"open": closes, "high": closes * 1.005, "low": closes * 0.995, "close": closes,
-                       "volume": 1e6}, index=pd.bdate_range("2025-01-01", periods=len(closes)))
-    df.iloc[-1, df.columns.get_loc("low")] = 100.2
-    sup = Level(price_low=99.5, price_high=100.5, strength=sup_strength)
-    monkeypatch.setattr("trader.strategies.sr_reversal.nearest_zones",
-                        lambda *a, **k: {"support": sup, "resistance": res})
-    monkeypatch.setattr("trader.strategies.sr_reversal.detect_patterns", lambda *a, **k: [_Bull()])
-    monkeypatch.setattr("trader.strategies.sr_reversal.net_sentiment", lambda m: 1.0)
-    return strat, ctx(df)
-
-
-def test_sr_reversal_gates_are_noops_by_default(monkeypatch):
-    strat, c = _sr_setup(monkeypatch, res=Level(price_low=102.0, price_high=103.0, strength=2), sup_strength=1)
-    sig = strat.entry_signal(c)
-    assert sig is not None and "reward_risk" not in sig.meta      # journal output unchanged when off
-
-
-def test_sr_reversal_min_reward_risk(monkeypatch):
-    near = Level(price_low=102.0, price_high=103.0, strength=2)    # ~0.1 R
-    far = Level(price_low=115.0, price_high=116.0, strength=2)     # several R
-    strat, c = _sr_setup(monkeypatch, {"min_reward_risk": 1.5}, res=near)
-    assert strat.entry_signal(c) is None
-    strat, c = _sr_setup(monkeypatch, {"min_reward_risk": 1.5}, res=far)
-    sig = strat.entry_signal(c)
-    assert sig is not None and sig.meta["reward_risk"] >= 1.5
-    strat, c = _sr_setup(monkeypatch, {"min_reward_risk": 1.5}, res=None)   # open upside
-    assert strat.entry_signal(c) is not None
-
-
-def test_sr_reversal_min_support_touches(monkeypatch):
-    strat, c = _sr_setup(monkeypatch, {"min_support_touches": 3}, sup_strength=2)
-    assert strat.entry_signal(c) is None
-    strat, c = _sr_setup(monkeypatch, {"min_support_touches": 3}, sup_strength=3)
-    assert strat.entry_signal(c) is not None
-
-
 # ---- resistance filter --------------------------------------------------------------------------
 def _sig(px, stop=None, strat="weekly_rsi_sma20"):
     return Signal("X", strat, "ENTRY", "2026-01-01", "t", stop=stop, ref_price=px)
@@ -225,38 +174,3 @@ def test_resistance_filter_fractal_proximity_in_atr():
     r_far = build_filter("resistance", dict(base, proximity_atr=0.1)).evaluate(_sig(px), ctx(df))
     r_wide = build_filter("resistance", dict(base, proximity_atr=50)).evaluate(_sig(px), ctx(df))
     assert r_far.passed and not r_wide.passed and "limit" in r_wide.reason
-
-
-# ---- room_to_resistance -----------------------------------------------------------------------------
-def test_room_to_resistance_disabled_by_default_and_registered():
-    f = build_filter("room_to_resistance", S.filters["room_to_resistance"])
-    assert f.evaluate(_sig(100, 95), None).passed and f.max_score() == 0.0
-
-
-@pytest.mark.parametrize("engine", ["legacy", "fractal"])
-def test_room_to_resistance_reward_risk(monkeypatch, engine):
-    cfg = dict(S.filters["room_to_resistance"], enabled=True, engine=engine, min_reward_risk=1.5)
-    f = build_filter("room_to_resistance", cfg)
-    if engine == "legacy":
-        monkeypatch.setattr("trader.filters.room_to_resistance.support_resistance", lambda *a: ["z"])
-        monkeypatch.setattr("trader.filters.room_to_resistance.nearest_levels",
-                            lambda zs, px: {"resistance": Level(price_low=110.0, price_high=112.0, strength=2)})
-    else:
-        z = FL.Zone(110.0, 112.0, 2, 2.0, True, False, 0, valid=True, role="R")
-        monkeypatch.setattr("trader.filters.room_to_resistance.fractal_result",
-                            lambda *a, **k: FL.TFResult(3.0, [], [z], None, z, None, [z]))
-    dummy = ctx(ranged(n=60))
-    assert f.evaluate(_sig(100, 95), dummy).passed            # reward 10 / risk 5 = 2.0
-    r = f.evaluate(_sig(100, 90), dummy)                      # 10 / 10 = 1.0
-    assert not r.passed and r.meta["reward_risk"] == 1.0 and f"[{engine}]" in r.reason
-    assert f.evaluate(_sig(100, None), dummy).passed          # no stop -> not judged
-    assert f.evaluate(_sig(100, 101), dummy).passed           # stop above price -> not judged
-
-
-def test_room_to_resistance_no_resistance_uses_fail_mode(monkeypatch):
-    monkeypatch.setattr("trader.filters.room_to_resistance.fractal_result",
-                        lambda *a, **k: FL.TFResult(3.0, [], [], None, None, None, []))
-    base = dict(S.filters["room_to_resistance"], enabled=True, engine="fractal")
-    dummy = ctx(ranged(n=60))
-    assert build_filter("room_to_resistance", base).evaluate(_sig(100, 95), dummy).passed
-    assert not build_filter("room_to_resistance", dict(base, fail_mode="block")).evaluate(_sig(100, 95), dummy).passed

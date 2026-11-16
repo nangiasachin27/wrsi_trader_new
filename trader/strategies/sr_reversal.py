@@ -41,9 +41,6 @@ class SrReversal(Strategy):
         sup = zones["support"]
         if sup is None:
             return None
-        min_touches = c.get("min_support_touches")
-        if min_touches and sup.strength < min_touches:
-            return None   # off by default (null): only fade a zone tested at least this many times
 
         low_today = float(ctx.daily["low"].iloc[-1])
         pierced = low_today <= sup.price_high * (1 + c["proximity_pct"] / 100.0)
@@ -68,24 +65,12 @@ class SrReversal(Strategy):
         if stop >= px:
             return None
 
-        # Reward:risk gate (off by default: min_reward_risk null). This trade's profit target IS
-        # the next resistance zone (see exit_signal), so the R:R is known at entry: reward = that
-        # zone's near edge - close, risk = close - stop. No resistance above = open upside, allowed.
-        rr = None
-        res = zones["resistance"]
-        if res is not None:
-            rr = (res.price_low - px) / (px - stop)
-        min_rr = c.get("min_reward_risk")
-        if min_rr and rr is not None and rr < min_rr:
-            return None
-
         names = ", ".join(m.name for m in bullish)
         return Signal(ctx.symbol, self.name, "ENTRY", ctx.asof.isoformat(),
                       f"rejection of daily support zone {sup.price_low:.2f}-{sup.price_high:.2f} "
                       f"(strength {sup.strength}) by {names} after a fall into the level",
                       score=0, stop=stop, ref_price=px,
-                      meta={"zone_low": sup.price_low, "zone_high": sup.price_high, "patterns": names,
-                            **({"reward_risk": None if rr is None else round(rr, 2)} if min_rr else {})})
+                      meta={"zone_low": sup.price_low, "zone_high": sup.price_high, "patterns": names})
 
     def stop_level(self, ctx: SymbolContext, pos: Position) -> float | None:
         return None  # static target trade - keep whatever stop was set at entry, no trailing

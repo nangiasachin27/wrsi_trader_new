@@ -20,7 +20,7 @@ class Position:
     fees_paid: float = 0.0
     adds: int = 0
     opened: str = ""
-    # Per-position strategy state (added 2026-11-12 for vcp_breakout / high_tight_flag partial
+    # Per-position strategy state (added 2026-11-12 for the since-removed vcp_breakout / high_tight_flag partial
     # profit-taking). The engine writes "initial_stop" at entry; a TRIM fill writes
     # "trimmed_qty"/"realized_pnl"/"trims". Defaults to {} so portfolio.json files written
     # before this field existed still load unchanged.
