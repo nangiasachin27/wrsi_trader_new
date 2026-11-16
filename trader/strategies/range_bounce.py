@@ -30,10 +30,20 @@ class RangeBounce(Strategy):
         sr_reversal's optional gate - a range trade's target is known by definition);
       - no momentum-thrust or candlestick-pattern requirement: ranges drift to the floor, they
         don't thrust (the candlestick filter stays available as a rank overlay).
-    Exits: ceiling reached (target), range resolved upward (no resistance left above - take the
-    profit, this is not a trend ride), engine stop below the floor zone, or a time stop -
+    Exits: ceiling reached (target FROZEN at entry - see exit_signal), engine stop below the
+    rejection wick, or a time stop -
     a range trade that goes nowhere for max_holding_days is dead capital, not a winner-in-waiting.
     Static stop (no trailing): the floor invalidates the trade, nothing else does."""
+
+    # ---- walls -------------------------------------------------------------------------------
+    def _walls(self, r):
+        """The range's two walls. Default 'major' = the strongest (highest-score) support and
+        resistance zones: real data showed (360ONE funnel, 2026-11-16) that NEAREST zones are
+        ladder rungs ~1 ATR apart - the gap between adjacent rungs clears min_range_width_atr
+        on ~0.5% of sessions, so the strategy never fires on them. 'nearest' kept for sweeps."""
+        if self.cfg.get("wall_zones", "major") == "nearest":
+            return (r.sup[0] if r.sup else None), (r.res[0] if r.res else None)
+        return r.sup_major, r.res_major
 
     # ---- entry -------------------------------------------------------------------------------
     def entry_signal(self, ctx: SymbolContext) -> Signal | None:
@@ -42,9 +52,9 @@ class RangeBounce(Strategy):
             return None
         px = ctx.last_close
         r = fractal_result(ctx.daily, self.cfg.get("levels_timeframe", "daily"), px, ctx.asof)
-        if not r.sup or not r.res:
+        sup, res = self._walls(r)
+        if sup is None or res is None:
             return None
-        sup, res = r.sup[0], r.res[0]
 
         # -- range qualification --
         if sup.edge or res.edge:
@@ -67,8 +77,14 @@ class RangeBounce(Strategy):
         if not (touched and back_above and bullish):
             return None
 
-        # -- stop below the floor zone, mandatory reward:risk to the ceiling --
-        stop = sup.low - atr_buffer(d, c["atr_period"], c["atr_mult"])
+        # -- stop below the rejection wick (default) or the floor zone, mandatory R:R ----------
+        # touch_low (default): stop = today's low - buffer. The zone-low anchor made the trade
+        # unpayable by construction (zones are ~1.2 ATR tall, so risk ~ reward and R:R never
+        # reached 1.5 on real data - 0 signals in 590 sessions). The wick stop is the standard
+        # range-trade stop and the honest cost of a capped-target trade: it can be probed out
+        # while the range stays intact. zone_low kept for sweeps.
+        anchor = low_today if c.get("stop_anchor", "touch_low") == "touch_low" else sup.low
+        stop = anchor - atr_buffer(d, c["atr_period"], c["atr_mult"])
         if stop >= px:
             return None
         rr = (res.low - px) / (px - stop)
@@ -80,7 +96,8 @@ class RangeBounce(Strategy):
                       f"ceiling {res.low:.2f}-{res.high:.2f} ({res.touches} touches), "
                       f"ADX {float(a):.1f}, R:R {rr:.2f}",
                       score=0, stop=stop, ref_price=px,
-                      meta={"floor_low": round(sup.low, 2), "floor_high": round(sup.high, 2),
+                      meta={"entry_target": round(res.low, 4),   # frozen into Position.meta
+                            "floor_low": round(sup.low, 2), "floor_high": round(sup.high, 2),
                             "ceiling_low": round(res.low, 2), "ceiling_high": round(res.high, 2),
                             "reward_risk": round(rr, 2), "adx": round(float(a), 1),
                             "range_width_pct": round(width_pct, 2)})
@@ -102,13 +119,26 @@ class RangeBounce(Strategy):
             return Signal(ctx.symbol, self.name, "EXIT", ctx.asof.isoformat(),
                           f"time stop: {x['max_holding_days']} days without reaching the ceiling",
                           ref_price=px, stop=pos.stop)
+        # Target = the ceiling FROZEN at entry (Position.meta.entry_target). Re-deriving it daily
+        # was the v2 bug (rb_solo_weak, 2026-11-16): zones re-rank and flip role as price moves,
+        # so 73% of "ceiling" exits used a level >2% below the entry ceiling (median -5.9%; often
+        # an interior rung, or the broken floor itself re-labelled resistance) - planned reward
+        # 8.6% realized as 1.4%, 75 of 225 "ceiling" exits were losses. The recomputed path is
+        # kept only as a fallback for positions opened before entry_target existed.
+        target = pos.meta.get("entry_target") if pos.meta else None
+        if target is not None:
+            if px >= float(target) * (1 - x["target_tolerance_pct"] / 100.0):
+                return Signal(ctx.symbol, self.name, "EXIT", ctx.asof.isoformat(),
+                              f"close {px:.2f} reached range ceiling {float(target):.2f} (set at entry)",
+                              ref_price=px, stop=pos.stop)
+            return None
         r = fractal_result(ctx.daily, self.cfg.get("levels_timeframe", "daily"), px, ctx.asof)
-        res = r.res[0] if r.res else None
+        res = self._walls(r)[1]
         if res is None:
             return Signal(ctx.symbol, self.name, "EXIT", ctx.asof.isoformat(),
                           f"range resolved upward (no resistance left above {px:.2f}) - taking profit",
                           ref_price=px, stop=pos.stop)
-        if px >= res.low * (1 - x["target_tolerance_pct"] / 100.0):
+        if (not pos.qty or res.low > pos.avg_cost) and px >= res.low * (1 - x["target_tolerance_pct"] / 100.0):
             return Signal(ctx.symbol, self.name, "EXIT", ctx.asof.isoformat(),
                           f"close {px:.2f} reached range ceiling {res.low:.2f}-{res.high:.2f}",
                           ref_price=px, stop=pos.stop)

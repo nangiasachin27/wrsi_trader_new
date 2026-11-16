@@ -443,9 +443,13 @@ class Engine:
             # initial_stop is the stop the trade was SIZED against (after any validate_open
             # adjustment) - strategies that scale out at a multiple of initial risk (R) need it,
             # because pos.stop itself moves (breakeven, trails) during the trade.
+            # entry_target: a fixed price target decided at entry (signal meta) - frozen into the
+            # position so exits don't re-derive it from levels that move (range_bounce, 2026-11-16).
             pf.positions[o.symbol] = Position(o.symbol, o.strategy, [lot], o.stop, fill.price,
                                               fees_paid=fill.fees, opened=fill.date,
-                                              meta={"initial_stop": o.stop})
+                                              meta={"initial_stop": o.stop,
+                                                    **({"entry_target": o.meta["entry_target"]}
+                                                       if o.meta.get("entry_target") is not None else {})})
         else:
             p = pf.positions[o.symbol]
             p.lots.append(lot)

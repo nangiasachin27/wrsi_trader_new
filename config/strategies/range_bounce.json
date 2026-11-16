@@ -5,6 +5,8 @@
   "market_regime_tag": "SIDEWAYS",
   "exclude_filters": ["trend_strength", "quality", "market_efficiency", "resistance", "room_to_resistance", "market_regime"],
   "levels_timeframe": "daily",
+  "wall_zones": "major",
+  "_wall_zones": "'major' (default) = range walls are the STRONGEST support/resistance zones (SMAJ/RMAJ). 'nearest' = original design, kept for sweeps - real-data funnel (360ONE, 590 sessions, 2026-11-16) showed nearest zones are ladder rungs ~1 ATR apart: the width gate passed on 3 of 324 candidate days and the strategy never fired.",
   "entry": {
     "min_bars": 80,
     "min_support_touches": 3,
@@ -20,7 +22,9 @@
     "_require_bullish_close": "close > open on the touch day - the rejection, not a knife-catch. No candlestick pattern required (unlike sr_reversal); the candlestick filter can still rank candidates.",
     "atr_period": 14,
     "atr_mult": 0.5,
-    "_atr_mult": "stop = floor zone low - atr_mult x ATR (zone-not-line stop placement).",
+    "stop_anchor": "touch_low",
+    "_stop_anchor": "'touch_low' (default): stop = touch-day low - atr_mult x ATR (the rejection wick - standard range-trade stop; tighter, can be probed out while the range holds). 'zone_low': stop = floor zone low - buffer - structurally sound but unpayable: zones are ~1.2 ATR tall so risk ~ reward and min_reward_risk 1.5 was NEVER reached on real data (0 signals / 590 sessions, 360ONE funnel 2026-11-16).",
+    "_atr_mult": "stop = stop_anchor - atr_mult x ATR.",
     "min_reward_risk": 1.5,
     "_min_reward_risk": "MANDATORY (not nullable like sr_reversal's): (ceiling.low - close) / (close - stop) must reach this. A range trade's target is known at entry by definition."
   },

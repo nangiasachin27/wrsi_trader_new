@@ -69,6 +69,7 @@ def test_entry_fires_on_floor_rejection_in_qualified_range():
     sig = strat().entry_signal(ctx(df))
     assert sig is not None
     assert sig.stop < float(df.close.iloc[-1])
+    assert sig.stop < float(df.low.iloc[-1])  # touch_low anchor: stop below the rejection wick
     assert sig.meta["reward_risk"] >= 1.5
     assert sig.meta["ceiling_low"] > sig.meta["floor_high"]
     assert "touches" in sig.reason
@@ -108,9 +109,9 @@ def test_gates_adx_width_rr_and_bearish_close():
     assert strat(require_bullish_close=False).entry_signal(ctx(bear)) is not None
 
 
-def _pos(stop, asof, days_held):
+def _pos(stop, asof, days_held, meta=None):
     opened = asof - timedelta(days=days_held)
-    return Position("X", "range_bounce", [], stop, 0.0, opened=opened.isoformat())
+    return Position("X", "range_bounce", [], stop, 0.0, opened=opened.isoformat(), meta=meta or {})
 
 
 def test_exits():
@@ -150,6 +151,40 @@ def test_backtest_round_trips_on_ranging_symbols(tmp_path):
     assert all(t["strategy"] == "range_bounce" for t in trades)
     reasons = " | ".join(t.get("reason", "") for t in sells)
     assert "ceiling" in reasons or "time stop" in reasons
+    # the engine froze the entry ceiling into Position.meta, so target exits use it
+    assert "set at entry" in reasons
+
+
+def test_exit_target_is_frozen_at_entry():
+    st = strat()
+    base = ranged()
+    asof = (base.index[-1] + pd.offsets.BDay(1)).date()
+    mid = with_last_bar(base, 109.0, 111.0, 108.5, 110.0)
+    # frozen target far above: a recomputed ceiling near 110 must NOT trigger the exit
+    assert st.exit_signal(ctx(mid), _pos(97.0, asof, 5, {"entry_target": 119.0})) is None
+    # frozen target reached (within tolerance) -> exit, reason says it was set at entry
+    sig = st.exit_signal(ctx(mid), _pos(97.0, asof, 5, {"entry_target": 110.5}))
+    assert sig is not None and "set at entry" in sig.reason
+    # stop and time stop still take precedence over the target
+    assert "stop" in st.exit_signal(ctx(mid), _pos(115.0, asof, 5, {"entry_target": 119.0})).reason
+    assert "time stop" in st.exit_signal(ctx(mid), _pos(97.0, asof, 60, {"entry_target": 119.0})).reason
+
+
+def test_entry_signal_carries_target_and_engine_freezes_it():
+    sig = strat().entry_signal(ctx(floor_touch_df()))
+    assert sig.meta["entry_target"] == pytest.approx(sig.meta["ceiling_low"], abs=0.01)
+
+
+def test_stop_anchor_and_wall_config():
+    df = floor_touch_df()
+    tight = strat().entry_signal(ctx(df))
+    loose = strat(stop_anchor="zone_low").entry_signal(ctx(df))
+    assert tight is not None
+    # zone_low stop is deeper than touch_low whenever it also fires
+    if loose is not None:
+        assert loose.stop < tight.stop
+    assert S.strategies["range_bounce"]["wall_zones"] == "major"
+    assert S.strategies["range_bounce"]["entry"]["stop_anchor"] == "touch_low"
 
 
 def test_shipped_disabled_and_wired():
