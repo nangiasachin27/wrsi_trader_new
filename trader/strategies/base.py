@@ -109,6 +109,7 @@ def build_strategy(name: str, cfg: dict) -> Strategy:
     import trader.strategies.new_high_momentum   # noqa: F401
     import trader.strategies.vcp_breakout        # noqa: F401
     import trader.strategies.high_tight_flag     # noqa: F401
+    import trader.strategies.range_bounce        # noqa: F401
     if name not in REGISTRY:
         raise KeyError(f"No strategy class registered for config '{name}'. Known: {list(REGISTRY)}")
     return REGISTRY[name](cfg)

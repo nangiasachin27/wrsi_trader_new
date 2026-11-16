@@ -1,0 +1,13 @@
+{
+  "_note": "Portfolio-level exposure throttle (NOT a per-candidate gate - evaluate() always passes). While the benchmark's weekly close is below its weekly SMA, new ENTRY slots are capped at floor(max_positions * bear_max_positions_pct/100) and each granted entry's risk amount is multiplied by bear_risk_scale (stamped as meta.risk_scale on the pending order). Exits, stops, pyramiding and held positions are never touched. Complements market_regime: that one hard-blocks entries for the strategies whose sweep adopted it; this one degrades exposure gradually for ALL strategies. Added 2026-11-15 to attack the 2025-2026 flat/negative years; ships DISABLED - A/B with --set regime_exposure.enabled=true (e.g. a 2024-07 to 2026-11 window that contains the weak regime) before adopting. bear_max_positions_pct=100 throttles risk only; bear_risk_scale=1.0 throttles slots only.",
+  "enabled": false,
+  "benchmark_symbol": "NIFTY500",
+  "timeframe_rule": "W-FRI",
+  "sma_period": 20,
+  "buffer_pct": 0.0,
+  "min_bars": 30,
+  "fail_mode": "allow",
+  "_fail_mode": "'allow' = no/short benchmark data means NO throttle (fail open). 'block' would treat missing data as bearish.",
+  "bear_max_positions_pct": 50,
+  "bear_risk_scale": 0.5
+}

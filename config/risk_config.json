@@ -10,7 +10,8 @@
       "inside_bar_breakout": 100,
       "new_high_momentum": 100,
       "vcp_breakout": 100,
-      "high_tight_flag": 100
+      "high_tight_flag": 100,
+    "range_bounce": 100
     }
   },
   "per_trade": {
