@@ -100,6 +100,21 @@ class Engine:
         slots = self.s.risk["portfolio"]["max_positions"] - (len(pf.positions) - len(exiting))
         for filt in self.filters.values():
             filt.prepare(asof, self.provider)
+        # Portfolio-level regime throttle (config/filters/regime_exposure.json, disabled by
+        # default): while NIFTY500 is not bullish, cap the slots granted to NEW entries (and
+        # optionally scale their risk via meta.risk_scale, consumed by _buy). Held positions above
+        # the cap are never sold - they just block new entries until exits bring the count down.
+        regime = self.filters.get("regime_exposure")
+        risk_scale = 1.0
+        if regime is not None and getattr(regime, "throttled", None) and regime.throttled():
+            max_pos = self.s.risk["portfolio"]["max_positions"]
+            eff_max = regime.max_positions_cap(max_pos)
+            slots = min(slots, eff_max - (len(pf.positions) - len(exiting)))
+            risk_scale = regime.risk_scale()
+            log.info("REGIME THROTTLE %s: max_positions %d -> %d for new entries, entry risk x%.2f | %s",
+                     asof, max_pos, eff_max, risk_scale, regime.reason())
+            self.store.journal(date=asof, event="REGIME_THROTTLE", max_positions=eff_max,
+                               risk_scale=risk_scale, reason=regime.reason())
 
         cands: list[Signal] = []
         for name, strat in self.strategies.items():
@@ -188,6 +203,8 @@ class Engine:
                          i, sig.symbol, sig.score, sig.meta.get("rsi_w", 0), sig.meta.get("rsi_m", 0),
                          ath, cup, taken)
         for sig in cands[:max(slots, 0)]:
+            if risk_scale != 1.0:
+                sig.meta["risk_scale"] = risk_scale
             strat = self.strategies[sig.strategy]
             if strat.intraday:
                 self._enter_intraday(pf, sig, strat, asof, nxt, orders, exiting, max_adds)
@@ -380,6 +397,11 @@ class Engine:
         eq = pf.equity()
         base = self.capital.strategy_base(o.strategy, eq, cap_mode)
         amt = self.capital.risk_amount(o.strategy, eq, cap_mode, risk["per_trade"]["risk_pct_of_base"])
+        # regime_exposure throttle (stamped at EOD when the order was granted its slot): scale
+        # the ENTRY risk amount. ADDs are untouched - pyramiding is already capped per position.
+        scale = float(o.meta.get("risk_scale") or 1.0)
+        if o.action == "ENTRY" and scale != 1.0:
+            amt *= scale
         if o.action == "ENTRY":
             if o.symbol in pf.positions or len(pf.positions) >= risk["portfolio"]["max_positions"]:
                 return skip("held or max positions")

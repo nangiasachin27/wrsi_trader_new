@@ -1,0 +1,13 @@
+{
+  "_note": "Regime-aware max_positions (restored 2026-11-19 from the 2026-11-15 throttle, removed in the 11-17 cleanup). Not a per-candidate gate - evaluate() always passes. While NIFTY500's weekly close is below its weekly SMA (same RegimeFilter as market_regime), NEW entries only get slots up to floor(max_positions * bear_max_positions_pct/100); in a bull regime max_positions applies unchanged. Held positions above the cap are never sold - they block new entries until exits bring the count down. bear_risk_scale multiplies each throttled entry's risk (1.0 = slots only). VERDICT #6 (2026-11-16) rejected 50%-slots on the fresh-start 2024-07 window, but there the book was cash-bound at ~10 positions so a 10-slot cap barely bound; re-test on the full window against static max_positions=8. Ships DISABLED.",
+  "enabled": false,
+  "benchmark_symbol": "NIFTY500",
+  "timeframe_rule": "W-FRI",
+  "sma_period": 20,
+  "buffer_pct": 0.0,
+  "min_bars": 30,
+  "fail_mode": "allow",
+  "_fail_mode": "'allow' = no/short benchmark data means NO throttle (fail open). 'block' would treat missing data as bearish.",
+  "bear_max_positions_pct": 40,
+  "bear_risk_scale": 1.0
+}

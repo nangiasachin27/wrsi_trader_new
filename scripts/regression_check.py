@@ -9,6 +9,7 @@ candlestick filter ON (rank mode), sentiment filter OFF - the config as it stood
   python scripts/regression_check.py                       # 31-Oct reference config
   python scripts/regression_check.py --as-is               # today's config files, untouched
   python scripts/regression_check.py --set sentiment.enabled=false --set candlestick.enabled=true
+  python scripts/regression_check.py --as-is --set risk.per_trade.risk_pct_of_base=1.0
 
 Each run also saves equity_vs_<benchmark>.png in its output folder: the run's equity curve vs the
 benchmark index scaled to the same starting capital, on one axis (--benchmark NIFTY50 by default,
@@ -38,9 +39,12 @@ def apply(settings, spec: str) -> None:
     --set sr_reversal.entry.proximity_pct=1.5 sets strategies["sr_reversal"]["entry"]["proximity_pct"]."""
     path, raw = spec.split("=", 1)
     name, key = path.split(".", 1)
-    target = settings.filters.get(name) or settings.strategies.get(name)
+    if name == "risk":                      # config/risk_config.json, e.g. risk.per_trade.risk_pct_of_base=1.0
+        target = settings.risk
+    else:
+        target = settings.filters.get(name) or settings.strategies.get(name)
     if target is None:
-        raise SystemExit(f"--set {spec}: no filter or strategy called {name!r}")
+        raise SystemExit(f"--set {spec}: no filter or strategy called {name!r} (or use risk.<key>)")
     try:
         val = json.loads(raw)
     except json.JSONDecodeError:
