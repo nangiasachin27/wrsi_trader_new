@@ -20,7 +20,17 @@
   },
   "portfolio": {
     "max_positions": 20,
-    "max_total_open_risk_pct_of_base": 8.0
+    "max_total_open_risk_pct_of_base": 8.0,
+    "max_gross_exposure_pct": null,
+    "regime_gross_exposure": {
+      "_note": "Trend-aware gross-exposure cap. When enabled it overrides max_gross_exposure_pct: bull_pct while the market-trend signal is bullish, bear_pct otherwise, read as of the session before each fill. signal 'breadth' = % of the strategies' universe closing above its own SMA (smoothed, with hysteresis: bullish from bull_on_pct, not bullish below bull_off_pct); 'index' = benchmark weekly close vs weekly SMA (same test as market_regime). Applies at buy time only - never sells to get under a lower cap. Visualize with scripts/trend_signals.py before enabling.",
+      "enabled": false,
+      "signal": "breadth",
+      "bull_pct": 100,
+      "bear_pct": 70,
+      "breadth": {"sma_period": 50, "smooth_days": 5, "bull_on_pct": 55, "bull_off_pct": 45, "min_symbols": 50},
+      "index": {"benchmark_symbol": "NIFTY500", "timeframe_rule": "W-FRI", "sma_period": 20, "buffer_pct": 0.0, "min_bars": 30}
+    }
   },
   "pyramiding": {
     "max_adds": 3,
