@@ -402,10 +402,24 @@ class Engine:
         scale = float(o.meta.get("risk_scale") or 1.0)
         if o.action == "ENTRY" and scale != 1.0:
             amt *= scale
+        # Gross-exposure cap (risk_config portfolio.max_gross_exposure_pct; absent/null = off):
+        # open positions (marked at their latest prices) plus this buy may not exceed that % of
+        # current equity. The headroom stands in for cash when sizing, so the order shrinks to
+        # fit and the rest of equity stays in cash. Applies to ENTRY and ADD alike.
+        sizing_cash = pf.cash
+        gross_pct = risk["portfolio"].get("max_gross_exposure_pct")
+        if (self.s.risk["portfolio"].get("regime_gross_exposure") or {}).get("enabled"):
+            gross_pct = self._regime_gross_pct(prev_day)   # overrides the static cap
+        if gross_pct is not None:
+            headroom = eq * float(gross_pct) / 100.0 - (eq - pf.cash)
+            if headroom < risk["per_trade"]["min_notional"]:
+                return skip(f"gross exposure cap {float(gross_pct):g}% of equity "
+                            f"(invested {(eq - pf.cash) / eq * 100:.1f}%)")
+            sizing_cash = min(pf.cash, headroom)
         if o.action == "ENTRY":
             if o.symbol in pf.positions or len(pf.positions) >= risk["portfolio"]["max_positions"]:
                 return skip("held or max positions")
-            qty, why = size_entry(amt, est, o.stop, base, pf.cash, risk)
+            qty, why = size_entry(amt, est, o.stop, base, sizing_cash, risk)
             new_risk = qty * max(est - o.stop, 0.0)
             cap = base * risk["portfolio"]["max_total_open_risk_pct_of_base"] / 100.0
             if qty and use_open_risk_cap and total_open_risk(pf.positions) + new_risk > cap:
@@ -414,7 +428,7 @@ class Engine:
             pos = pf.positions.get(o.symbol)
             if pos is None:
                 return skip("no position to add to")
-            qty, why = size_add(pos, est, o.stop, base, pf.cash, risk)
+            qty, why = size_add(pos, est, o.stop, base, sizing_cash, risk)
         # Fees must fit in cash too. Only binds when a strategy sizes with no cash buffer (the
         # spec-sized strategies); with risk_config's 1% buffer it never triggers, so existing
         # strategies are unaffected. Without it cash could go fractionally negative.
@@ -445,6 +459,47 @@ class Engine:
                           "side": "BUY", "action": o.action, "qty": fill.qty, "price": fill.price,
                           "fees": fill.fees, "stop": round(o.stop, 2), "reason": o.reason})
         return True
+
+    def _regime_gross_pct(self, signal_day: date) -> float:
+        """Trend-aware gross-exposure cap (risk_config portfolio.regime_gross_exposure):
+        bull_pct while the market-trend signal is bullish, bear_pct otherwise. The signal is read
+        as of `signal_day` - the session BEFORE the fill - so a morning order never sees that
+        day's close. signal "breadth" = % of the strategies' universe above its SMA (with
+        hysteresis, trader.risk.market_breadth); "index" = benchmark weekly close vs weekly SMA
+        (trader.risk.regime, same test as market_regime). Computed once per day and journaled
+        as GROSS_REGIME."""
+        cache = getattr(self, "_rg_cache", None)
+        if cache and cache[0] == signal_day:
+            return cache[1]
+        rg = self.s.risk["portfolio"]["regime_gross_exposure"]
+        sig = rg.get("signal", "breadth")
+        if sig == "breadth":
+            if getattr(self, "_breadth", None) is None:
+                from trader.risk.market_breadth import MarketBreadth
+                self._breadth = MarketBreadth(rg.get("breadth"))
+                lists = self.s.universe["lists"]
+                self._breadth_syms = sorted({sym for c in self.s.strategies.values() if c.get("enabled")
+                                             for sym in lists.get(c.get("universe", "default"), [])})
+            st = self._breadth.status(signal_day, self.provider, self._breadth_syms)
+            bull, reason = st.bullish, st.reason
+        elif sig == "index":
+            from trader.risk.regime import RegimeFilter
+            icfg = {"benchmark_symbol": "NIFTY500", "timeframe_rule": "W-FRI", "sma_period": 20,
+                    "buffer_pct": 0.0, "min_bars": 30, "fail_mode": "allow", **(rg.get("index") or {})}
+            try:
+                bench = self.provider.get_daily(icfg["benchmark_symbol"], signal_day)
+            except Exception:  # noqa: BLE001
+                bench = None
+            st = RegimeFilter(icfg).status(bench, signal_day, icfg["benchmark_symbol"])
+            bull, reason = st.bullish, st.reason
+        else:
+            raise ValueError(f"regime_gross_exposure.signal must be 'breadth' or 'index', got {sig!r}")
+        pct = float(rg["bull_pct"] if bull else rg["bear_pct"])
+        self._rg_cache = (signal_day, pct)
+        self.store.journal(date=signal_day, event="GROSS_REGIME", signal=sig, bullish=bull,
+                           max_gross_exposure_pct=pct, reason=reason)
+        log.info("GROSS REGIME %s: %s -> gross cap %g%% | %s", signal_day, sig, pct, reason)
+        return pct
 
     def _trim(self, pf: Portfolio, pos: Position, o: PendingOrder, px: float, asof: date) -> None:
         """Partial sell of meta['fraction'] of the position (FIFO across lots). Never sells the

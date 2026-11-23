@@ -138,3 +138,78 @@ def test_missing_benchmark_fails_open(tmp_path):
 def test_shipped_defaults_are_inert():
     assert S.filters["regime_exposure"]["enabled"] is False
     assert S.filters["regime_exposure"]["bear_risk_scale"] == 1.0   # slots-only by default
+
+
+# ---- portfolio.max_gross_exposure_pct (gross-exposure cap) --------------------------------------
+# Synthetic sizing: equity Rs10L, risk 0.8% = Rs8,000, stop 10% below 100 -> 800 shares ~ Rs80k
+# (8% of equity) per entry. AAA (q 0.6) is ranked, and filled, before BBB.
+def gross(s, pct):
+    s.risk["portfolio"]["max_gross_exposure_pct"] = pct
+    return s
+
+
+def test_gross_cap_shrinks_the_order_that_would_breach_it(tmp_path):
+    base, _ = run(make_settings(), make_data("rising"), tmp_path / "a")
+    q0 = {b["symbol"]: b["qty"] for b in base}
+    buys, _ = run(gross(make_settings(), 10), make_data("rising"), tmp_path / "b")
+    q1 = {b["symbol"]: b for b in buys}
+    assert q1["AAA"]["qty"] == q0["AAA"]                    # 8% fits under 10%: untouched
+    assert 0 < q1["BBB"]["qty"] < q0["BBB"]                 # shrunk to the ~2% headroom
+    invested = sum(b["qty"] * b["price"] for b in buys)
+    assert invested <= 0.10 * 1_000_000 + 1e-6
+
+
+def test_gross_cap_skips_when_headroom_below_min_notional(tmp_path):
+    buys, journal = run(gross(make_settings(), 8), make_data("rising"), tmp_path)
+    assert [b["symbol"] for b in buys] == ["AAA"]           # AAA uses the whole 8%
+    assert any(r.get("event") == "ENTRY_SKIPPED" and "gross exposure cap 8%" in r.get("why", "")
+               for r in journal)
+
+
+def test_gross_cap_null_is_byte_identical_to_absent(tmp_path):
+    a, _ = run(make_settings(), make_data("rising"), tmp_path / "a")
+    b, _ = run(gross(make_settings(), None), make_data("rising"), tmp_path / "b")
+    assert a == b
+
+
+def test_gross_cap_ships_off():
+    assert S.risk["portfolio"].get("max_gross_exposure_pct") is None
+
+
+# ---- portfolio.regime_gross_exposure (trend-aware gross cap) ------------------------------------
+def regime_gross(s, signal, bull=100, bear=8):
+    s.risk["portfolio"]["regime_gross_exposure"] = {
+        "enabled": True, "signal": signal, "bull_pct": bull, "bear_pct": bear,
+        "breadth": {"sma_period": 5, "smooth_days": 1, "bull_on_pct": 55, "bull_off_pct": 45,
+                    "min_symbols": 1},
+        "index": {"benchmark_symbol": "BENCH", "sma_period": 4, "min_bars": 5}}
+    return s
+
+
+def trending_data(direction):
+    p = np.linspace(100, 150, N) if direction == "up" else np.linspace(150, 100, N)
+    return {"AAA": bars(p), "BBB": bars(p * 1.01), "BENCH": bars(p)}
+
+
+def test_regime_gross_breadth_bear_applies_bear_cap(tmp_path):
+    buys, journal = run(regime_gross(make_settings(), "breadth"), trending_data("down"), tmp_path)
+    assert [b["symbol"] for b in buys] == ["AAA"]           # 8% cap: AAA fills it, BBB skipped
+    g = [r for r in journal if r.get("event") == "GROSS_REGIME"]
+    assert g and g[0]["bullish"] is False and g[0]["max_gross_exposure_pct"] == 8
+
+
+def test_regime_gross_breadth_bull_applies_bull_cap(tmp_path):
+    buys, journal = run(regime_gross(make_settings(), "breadth"), trending_data("up"), tmp_path)
+    assert {b["symbol"] for b in buys} == {"AAA", "BBB"}
+    assert any(r.get("event") == "GROSS_REGIME" and r["bullish"] is True for r in journal)
+
+
+def test_regime_gross_index_signal(tmp_path):
+    buys, _ = run(regime_gross(make_settings(), "index"), make_data("falling"), tmp_path / "a")
+    assert [b["symbol"] for b in buys] == ["AAA"]
+    buys, _ = run(regime_gross(make_settings(), "index"), make_data("rising"), tmp_path / "b")
+    assert {b["symbol"] for b in buys} == {"AAA", "BBB"}
+
+
+def test_regime_gross_ships_off():
+    assert S.risk["portfolio"]["regime_gross_exposure"]["enabled"] is False
