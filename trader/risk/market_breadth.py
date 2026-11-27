@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -97,10 +98,20 @@ class MarketBreadth:
             ser = self._series.loc[:ts]
         else:
             keep = int(self.cfg["sma_period"]) + int(self.cfg["smooth_days"]) + 260
+            cache = getattr(provider, "cache", None)
             frames = {}
             for s in symbols:
                 try:
-                    frames[s] = provider.get_daily(s, asof).tail(keep)
+                    if cache is not None:
+                        # live: read the CSV cache that the previous EOD run refreshed - no API
+                        # calls (get_daily would re-fetch every symbol in a fresh `open` process)
+                        f = Path(cache) / f"{s}.csv"
+                        if not f.exists():
+                            continue
+                        df = pd.read_csv(f, parse_dates=["date"], index_col="date", usecols=["date", "close"])
+                        frames[s] = df.loc[:ts].tail(keep)
+                    else:
+                        frames[s] = provider.get_daily(s, asof).tail(keep)
                 except Exception:  # noqa: BLE001 - one missing symbol must not kill the regime
                     continue
             ser = self._compute(frames, symbols).loc[:ts]

@@ -219,6 +219,13 @@ class Engine:
             log.info("SIGNAL ENTRY %-12s skipped: %s", sig.symbol, why)
             self.store.journal(date=asof, symbol=sig.symbol, event="ENTRY_SKIPPED", strategy=sig.strategy, why=why)
 
+        # Trend-aware gross cap: record tonight's market-trend reading (journal GROSS_REGIME + log)
+        # so it is visible in every EOD run; tomorrow's buys read the same session's state.
+        if (self.s.risk["portfolio"].get("regime_gross_exposure") or {}).get("enabled"):
+            try:
+                self._regime_gross_pct(asof)
+            except Exception as e:  # noqa: BLE001 - a reporting step must never block EOD
+                log.warning("GROSS REGIME %s: could not evaluate (%s)", asof, e)
         self.store.save_pending(orders)
         self.store.save_portfolio(pf)
         self.store.append_equity(asof, pf)

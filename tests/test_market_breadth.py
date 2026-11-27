@@ -50,3 +50,19 @@ def test_status_fails_open_without_enough_symbols():
         data = {"A": _f(np.arange(1, 80))}
     st = MarketBreadth({"sma_period": 10}).status(H.data["A"].index[-1].date(), H(), ["A"])
     assert st.bullish is True and "fail open" in st.reason      # 1 symbol < min_symbols 50
+
+
+def test_live_status_reads_the_csv_cache_without_api_calls(tmp_path):
+    rise_then_fall = np.r_[np.linspace(10, 20, 60), np.linspace(20, 10, 40)]
+    for i in range(60):
+        _f(rise_then_fall + i * 0.01).rename_axis("date").to_csv(tmp_path / f"S{i}.csv")
+
+    class Live:  # UpstoxProvider-like: has .cache, and get_daily must NOT be called
+        cache = tmp_path
+        def get_daily(self, s, end):
+            raise AssertionError("live breadth must not hit the API")
+    idx = _f(rise_then_fall).index
+    mb = MarketBreadth({"sma_period": 10, "smooth_days": 1})
+    syms = [f"S{i}" for i in range(60)] + ["NOT_CACHED"]
+    assert mb.status(idx[55].date(), Live(), syms).bullish is True
+    assert MarketBreadth({"sma_period": 10, "smooth_days": 1}).status(idx[-1].date(), Live(), syms).bullish is False
