@@ -11,7 +11,8 @@
     "http_timeout_s": 20,
     "retries": 3,
     "retry_backoff_s": 2.0,
-    "quote_batch_size": 100
+    "quote_batch_size": 100,
+    "min_fresh_pct": 90
   },
   "execution": {"slippage_bps": 10, "stale_order_policy": "drop"},
   "logging": {"level": "INFO"}

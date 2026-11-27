@@ -12,9 +12,11 @@ from trader.brokers.upstox_live import UpstoxLiveBroker
 from trader.core.calendar import TradingCalendar
 from trader.core.config import ROOT, load_settings
 from trader.data.historical import load_csv_dir
-from trader.data.upstox import UpstoxProvider
-from trader.engine.orchestrator import Engine
+from trader.data.upstox import TokenError, UpstoxProvider
+from trader.engine.orchestrator import DataHealthError, Engine
 from trader.portfolio.state import StateStore
+
+log = logging.getLogger("trader")
 
 
 def _engine(s) -> Engine:
@@ -50,6 +52,9 @@ def main() -> None:
                                     "run the same date range more than once (e.g. comparing strategies in "
                                     "isolation) - without it, a second run silently overwrites the first.")
     ap.add_argument("--force", action="store_true", help="run even on a non-trading day")
+    ap.add_argument("--allow-stale", action="store_true",
+                    help="eod/open: skip the token preflight and the data-health check (manual recovery "
+                         "only - a run on stale data marks nothing and checks no stops)")
     ap.add_argument("-v", "--verbose", action="store_true",
                     help="show per-symbol scan/hold detail (DEBUG level), not just fired signals")
     ap.add_argument("--trade-log", help="montecarlo: path to a trade_log.csv from a prior backtest")
@@ -212,20 +217,38 @@ def main() -> None:
             print(f"  {p.symbol:12s} qty {p.qty:6d} avg {p.avg_cost:9.2f} stop {p.stop:9.2f} adds {p.adds}")
         return
 
-    eng = _engine(s)
+    try:
+        eng = _engine(s)
+    except TokenError as e:
+        log.error("UPSTOX TOKEN: %s", e)
+        raise SystemExit(2)
     if not a.force and not eng.cal.is_trading_day(d):
         print(f"{d} is not a trading day - nothing to do")
         return
 
-    if a.cmd == "eod":
-        orders = eng.run_eod(d)
-        if orders:
-            print(f"\n{len(orders):d} pending order(s) for next session:")
-            for o in orders:
-                print(f"  {o.action:5s} {o.symbol:12s} exec {o.exec_date}  "
-                      f"stop {o.stop or 0:8.2f}  {o.reason}")
-    else:
-        eng.run_open(d)
+    # Fail loud (exit != 0 -> the GitHub Actions run fails and emails you; its commit step is
+    # skipped, so no stale state lands in the repo): token preflight + data-health checks.
+    if not a.allow_stale:
+        eng.strict_data = True
+        try:
+            who = eng.provider.check_token()
+            log.info("UPSTOX TOKEN ok (%s)", who)
+        except TokenError as e:
+            log.error("UPSTOX TOKEN: %s", e)
+            raise SystemExit(2)
+    try:
+        if a.cmd == "eod":
+            orders = eng.run_eod(d)
+            if orders:
+                print(f"\n{len(orders):d} pending order(s) for next session:")
+                for o in orders:
+                    print(f"  {o.action:5s} {o.symbol:12s} exec {o.exec_date}  "
+                          f"stop {o.stop or 0:8.2f}  {o.reason}")
+        else:
+            eng.run_open(d)
+    except DataHealthError as e:
+        log.error("DATA HEALTH: %s", e)
+        raise SystemExit(3)
 
 
 if __name__ == "__main__":

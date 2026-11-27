@@ -15,8 +15,18 @@ jobs:
       - run: pip install -r requirements.txt
       - uses: actions/cache@v4
         with: {path: data_cache, key: "bars-${{ github.run_id }}", restore-keys: "bars-"}
+      - name: Upstox token (TOTP, automatic)
+        # Fresh token every run (they expire 03:30 IST). Needs secrets UPSTOX_API_KEY, UPSTOX_PIN,
+        # UPSTOX_TOTP_SECRET; without them (--optional) the UPSTOX_ACCESS_TOKEN secret is used.
+        run: python scripts/upstox_token.py --github-env --check --optional
+        env:
+          UPSTOX_API_KEY: "${{ secrets.UPSTOX_API_KEY }}"
+          UPSTOX_PIN: "${{ secrets.UPSTOX_PIN }}"
+          UPSTOX_TOTP_SECRET: "${{ secrets.UPSTOX_TOTP_SECRET }}"
       - run: python -m trader open
-        env: {UPSTOX_ACCESS_TOKEN: "${{ secrets.UPSTOX_ACCESS_TOKEN }}"}
+        # exits 2 on a rejected token, 3 on stale data -> this run fails (GitHub emails you) and
+        # the commit step below is skipped, so no stale state is pushed
+        env: {UPSTOX_ACCESS_TOKEN: "${{ env.UPSTOX_ACCESS_TOKEN || secrets.UPSTOX_ACCESS_TOKEN }}"}
       - name: Run summary
         if: always()
         run: python scripts/run_summary.py open >> "$GITHUB_STEP_SUMMARY"

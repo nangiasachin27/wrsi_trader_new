@@ -18,6 +18,10 @@ from trader.strategies.base import SymbolContext, build_strategy
 log = logging.getLogger(__name__)
 
 
+class DataHealthError(RuntimeError):
+    """Live EOD/open refused to run on stale or missing market data (strict_data mode)."""
+
+
 class Engine:
     """Two phases per trading day, both idempotent:
        run_eod(d)  : after close - manage positions, scan universe, write pending orders for d+1
@@ -45,9 +49,15 @@ class Engine:
         for filt in self.filters.values():
             filt.bind_strategy_cfgs(strategy_cfgs)
         self._status_logged = False
+        # Live EOD/open set this (trader.cli); backtests leave it off. When on, run_eod refuses
+        # to save state if too few symbols got today's bar, and run_open if quotes are missing.
+        self.strict_data = False
+        self._seen: set[str] = set()
+        self._fresh: set[str] = set()
 
     # ---- helpers ---------------------------------------------------------------------------
     def _ctx(self, sym: str, asof: date) -> SymbolContext | None:
+        self._seen.add(sym)
         try:
             df = self.provider.get_daily(sym, asof)
         except Exception as e:  # one symbol's data problem must not abort the whole EOD
@@ -56,7 +66,32 @@ class Engine:
         if df.empty or df.index[-1].date() != asof:
             log.warning("%s: no bar for %s (last=%s) - skipped", sym, asof, None if df.empty else df.index[-1].date())
             return None
+        self._fresh.add(sym)
         return SymbolContext(sym, df, asof, self.cal)
+
+    def _check_data_health(self, asof: date, pf: Portfolio) -> None:
+        """strict_data only. Fail the run (nothing saved) when fewer than
+        system.data.min_fresh_pct % of the symbols looked at today got a bar dated `asof` - the
+        signature of an expired token or an API outage, where every fetch falls back to cached
+        bars and EOD would otherwise 'succeed' without marking prices or checking stops."""
+        seen, fresh = len(self._seen), len(self._fresh)
+        pct = 100.0 * fresh / seen if seen else 100.0
+        min_pct = float(self.s.system["data"].get("min_fresh_pct", 90))
+        stale_held = sorted(set(pf.positions) - self._fresh)
+        self.store.journal(date=asof, event="DATA_HEALTH", symbols=seen, fresh=fresh,
+                           fresh_pct=round(pct, 1), stale_held=stale_held)
+        if pct < min_pct:
+            sample = ", ".join(sorted(self._seen - self._fresh)[:8])
+            raise DataHealthError(
+                f"only {fresh}/{seen} symbols ({pct:.0f}%) have a bar for {asof} - below "
+                f"min_fresh_pct {min_pct:g}%. Nothing was saved. Likely an expired/invalid Upstox "
+                f"token or an API outage. Stale e.g.: {sample}"
+                + (f". Held positions without fresh data (stops NOT checked): {', '.join(stale_held)}"
+                   if stale_held else ""))
+        if stale_held:
+            log.error("DATA HEALTH %s: held positions without a bar today - stops not checked: %s",
+                      asof, ", ".join(stale_held))
+        log.info("DATA HEALTH %s: %d/%d symbols fresh (%.1f%%)", asof, fresh, seen, pct)
 
     def _order(self, sig: Signal, exec_date: date) -> PendingOrder:
         log.info("SIGNAL %-5s %-12s %s -> exec %s | %s",
@@ -82,6 +117,7 @@ class Engine:
 
     def run_eod(self, asof: date) -> list[PendingOrder]:
         self._log_filter_status()
+        self._seen, self._fresh = set(), set()
         pf = self.store.load_portfolio(self.capital.initial_cash())
         nxt, orders, exiting = self.cal.next_trading_day(asof), [], set()
         max_adds = self.s.risk["pyramiding"]["max_adds"]
@@ -219,6 +255,8 @@ class Engine:
             log.info("SIGNAL ENTRY %-12s skipped: %s", sig.symbol, why)
             self.store.journal(date=asof, symbol=sig.symbol, event="ENTRY_SKIPPED", strategy=sig.strategy, why=why)
 
+        if self.strict_data:
+            self._check_data_health(asof, pf)      # raises before anything is saved
         # Trend-aware gross cap: record tonight's market-trend reading (journal GROSS_REGIME + log)
         # so it is visible in every EOD run; tomorrow's buys read the same session's state.
         if (self.s.risk["portfolio"].get("regime_gross_exposure") or {}).get("enabled"):
@@ -246,7 +284,15 @@ class Engine:
             self.store.save_pending(keep)
             return
 
-        opens = self.provider.get_open_quotes(sorted({o.symbol for o in due}), asof)
+        syms = sorted({o.symbol for o in due})
+        opens = self.provider.get_open_quotes(syms, asof)
+        missing = [x for x in syms if opens.get(x) is None]
+        if missing:
+            log.error("OPEN %s: no opening quote for %s", asof, ", ".join(missing))
+        if self.strict_data and len(missing) * 2 > len(syms):
+            raise DataHealthError(f"no opening quote for {len(missing)}/{len(syms)} symbols with orders "
+                                  f"due ({', '.join(missing[:8])}) - nothing was executed or saved. "
+                                  f"Likely an expired Upstox token, an API outage, or a run before 09:15 IST.")
         prev_day = asof - timedelta(days=1)
 
         for o in (o for o in due if o.action == "EXIT"):

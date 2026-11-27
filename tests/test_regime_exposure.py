@@ -78,6 +78,10 @@ def make_settings(max_positions=2, regime=None):
                                         "min_bars": 5, "fail_mode": "allow", **regime}
     s.risk["portfolio"]["max_positions"] = max_positions
     s.risk["capital"]["allocation_pct"].update({"dummy_a": 100, "dummy_b": 100})
+    # pin the sizing these tests were written for, whatever risk_config.json currently has
+    s.risk["capital"]["mode"] = "fixed"
+    s.risk["portfolio"]["max_gross_exposure_pct"] = None
+    s.risk["portfolio"].setdefault("regime_gross_exposure", {})["enabled"] = False
     return s
 
 
@@ -211,5 +215,8 @@ def test_regime_gross_index_signal(tmp_path):
     assert {b["symbol"] for b in buys} == {"AAA", "BBB"}
 
 
-def test_regime_gross_ships_off():
-    assert S.risk["portfolio"]["regime_gross_exposure"]["enabled"] is False
+def test_regime_gross_config_is_complete():
+    # enabled is the user's choice (on since 2026-11-27); the block must stay well-formed either way
+    rg = S.risk["portfolio"]["regime_gross_exposure"]
+    assert rg["signal"] in ("breadth", "index") and 0 < rg["bear_pct"] <= rg["bull_pct"] <= 100
+    assert {"sma_period", "smooth_days", "bull_on_pct", "bull_off_pct"} <= set(rg["breadth"])

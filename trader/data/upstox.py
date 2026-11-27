@@ -18,6 +18,10 @@ from trader.data.base import DataProvider
 log = logging.getLogger(__name__)
 
 
+class TokenError(RuntimeError):
+    """The Upstox access token is missing, expired or rejected."""
+
+
 class UpstoxClientError(requests.HTTPError):
     """Non-retryable 4xx from Upstox (bad key/range/token). Carries the response body."""
 
@@ -33,10 +37,30 @@ class UpstoxProvider(DataProvider):
         self.by_key = {v: k for k, v in instruments.items()}
         self.cache = Path(cache_dir)
         self.cache.mkdir(parents=True, exist_ok=True)
+        token = os.environ.get("UPSTOX_ACCESS_TOKEN", "").strip()
+        if not token:
+            raise TokenError("UPSTOX_ACCESS_TOKEN is not set - generate one with scripts/upstox_token.py")
         self.session = requests.Session()
-        self.session.headers.update({"Accept": "application/json",
-                                     "Authorization": f"Bearer {os.environ['UPSTOX_ACCESS_TOKEN']}"})
+        self.session.headers.update({"Accept": "application/json", "Authorization": f"Bearer {token}"})
         self._fresh: set[tuple[str, date]] = set()
+
+    def check_token(self) -> str:
+        """Preflight: one cheap authenticated call. Raises TokenError with a clear message when
+        Upstox rejects the token (expired after 03:30 IST, revoked, or wrong), so a run fails at
+        the start instead of quietly falling back to cached bars for every symbol."""
+        url = f"{self.c['base_url']}/v2/user/profile"
+        try:
+            r = self.session.get(url, timeout=self.c["http_timeout_s"])
+        except requests.RequestException as e:
+            raise TokenError(f"Upstox unreachable for the token check: {e}") from e
+        if r.status_code in (401, 403):
+            raise TokenError(f"Upstox rejected the access token ({r.status_code}): it has expired "
+                             f"(tokens end at 03:30 IST) or was revoked - refresh it with "
+                             f"scripts/upstox_token.py. Response: {r.text[:200]}")
+        if r.status_code >= 400:
+            raise TokenError(f"Upstox token check failed ({r.status_code}): {r.text[:200]}")
+        data = (r.json() or {}).get("data") or {}
+        return str(data.get("user_name") or data.get("user_id") or "ok")
 
     # ---- HTTP ---------------------------------------------------------------------------
     def _get(self, url: str, params: dict | None = None) -> dict:

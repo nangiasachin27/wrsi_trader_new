@@ -133,6 +133,7 @@ Note: in a cash-bound book, a smaller `risk_pct` mostly means *more, smaller* po
 | Key | Values | Current | Meaning |
 |---|---|---|---|
 | `mode` | `"paper"` \| `"live"` | `"paper"` | `live` places real orders via Upstox and **also requires** env var `ALLOW_LIVE=1`. |
+| *(env)* `UPSTOX_ACCESS_TOKEN` | token | — | Required by `eod`/`open`; checked at start (exit code 2 if missing or rejected). Expires 03:30 IST daily — generate it with `scripts/upstox_token.py` (env `UPSTOX_API_KEY`, `UPSTOX_PIN`, `UPSTOX_TOTP_SECRET`); the GitHub workflows do this automatically. |
 | `timezone` | IANA zone | `"Asia/Kolkata"` | Used for "today" and Upstox timestamps. |
 | `paths.state_dir` | folder | `"state"` | Portfolio, pending orders, journal, equity, backtest/regression outputs. |
 | `paths.cache_dir` | folder | `"data_cache"` | Daily-bar CSV cache (`<SYMBOL>.csv` + `.meta.json`). |
@@ -145,6 +146,7 @@ Note: in a cash-bound book, a smaller `risk_pct` mostly means *more, smaller* po
 | `data.retries` | integer | `3` | Retries on 429/5xx/network errors. |
 | `data.retry_backoff_s` | seconds | `2.0` | Backoff × attempt number. |
 | `data.quote_batch_size` | integer | `100` | Symbols per market-quote call (open prices). |
+| `data.min_fresh_pct` | number (%) | `90` | **Fail-loud threshold** for live `eod`: if fewer than this % of the symbols scanned got a bar dated today, the run stops with exit code 3 and saves nothing (an expired token otherwise silently falls back to cached bars). `open` fails when more than half the symbols with due orders have no opening quote. Bypass once with `python -m trader eod --allow-stale`. Backtests are not checked. |
 | `data.fetch_today_intraday` | `true`/`false` | *code default `true`* | After 15:35, append today's final daily candle from the intraday endpoint. |
 | `execution.slippage_bps` | number (bps) | `10` | Paper/backtest slippage on every fill (10 = 0.10 %); also used to size on the expected fill price. |
 | `execution.stale_order_policy` | `"drop"` | `"drop"` | **Not read by the code** — stale pending orders are always dropped (journal `STALE_DROPPED`); exits are retried next session. |
