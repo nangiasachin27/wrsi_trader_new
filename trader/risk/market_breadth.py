@@ -28,8 +28,11 @@ DEFAULTS = {"sma_period": 50, "smooth_days": 5, "bull_on_pct": 55.0, "bull_off_p
             "min_symbols": 50}
 
 
-def breadth_frame(frames: dict[str, pd.DataFrame], symbols: list[str], sma_period: int = 50) -> pd.DataFrame:
-    """Per-date pct of symbols above their SMA, and how many symbols had a valid SMA."""
+def breadth_frame(frames: dict[str, pd.DataFrame], symbols: list[str], sma_period: int = 50,
+                  membership=None) -> pd.DataFrame:
+    """Per-date pct of symbols above their SMA, and how many symbols had a valid SMA.
+    `membership(index, symbols) -> bool DataFrame` (optional) restricts each day to the stocks
+    that were index members that day (point-in-time universe)."""
     closes = {s: frames[s]["close"] for s in symbols if s in frames and not frames[s].empty}
     if not closes:
         return pd.DataFrame(columns=["pct_above", "n_valid"])
@@ -38,6 +41,8 @@ def breadth_frame(frames: dict[str, pd.DataFrame], symbols: list[str], sma_perio
     sma = wide.apply(lambda c: c.dropna().rolling(sma_period, min_periods=sma_period).mean()
                      .reindex(c.index))
     valid = sma.notna() & wide.notna()
+    if membership is not None:
+        valid &= membership(wide.index, list(wide.columns)).reindex(columns=wide.columns).fillna(False).astype(bool)
     above = (wide > sma) & valid
     n = valid.sum(axis=1)
     pct = (above.sum(axis=1) / n.replace(0, np.nan)) * 100.0
@@ -81,10 +86,11 @@ class MarketBreadth:
     def __init__(self, cfg: dict | None):
         self.cfg = {**DEFAULTS, **(cfg or {})}
         self._series: pd.DataFrame | None = None
+        self.membership = None        # optional point-in-time mask, set by the engine
 
     def _compute(self, frames: dict[str, pd.DataFrame], symbols: list[str]) -> pd.DataFrame:
         c = self.cfg
-        b = breadth_frame(frames, symbols, int(c["sma_period"]))
+        b = breadth_frame(frames, symbols, int(c["sma_period"]), self.membership)
         b = b[b["n_valid"] >= int(c["min_symbols"])]
         st = classify(b["pct_above"], int(c["smooth_days"]), float(c["bull_on_pct"]), float(c["bull_off_pct"]))
         return b.join(st)

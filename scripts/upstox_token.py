@@ -3,6 +3,11 @@
 PIN and a current TOTP code in the body). Upstox access tokens expire at 03:30 IST every day, so
 run this before each eod/open - the GitHub workflows do.
 
+For PAPER trading you do not need this: the 1-year read-only Analytics Token (Upstox developer apps
+-> Analytics tab) covers market data, cannot trade, and needs no daily refresh - put it in the
+UPSTOX_ACCESS_TOKEN secret and leave the three secrets below unset. This script is for when live
+order placement needs a daily trading token.
+
 One-time setup
   1. Upstox app/web: enable TOTP (Profile -> Security / 2FA -> TOTP) and, while setting it up, copy
      the TOTP SECRET KEY (the base32 text behind the QR code - "can't scan? enter this key").
@@ -42,7 +47,7 @@ import time
 import requests
 
 TOKEN_URL = "https://api.upstox.com/v2/totp-login/authorization/token"
-PROFILE_URL = "https://api.upstox.com/v2/user/profile"
+QUOTE_URL = "https://api.upstox.com/v3/market-quote/ohlc"
 
 
 def totp(secret_b32: str, at: float | None = None, step: int = 30, digits: int = 6) -> str:
@@ -115,14 +120,12 @@ def main() -> int:
         with open(env_file, "a", encoding="utf-8") as f:
             f.write(f"UPSTOX_ACCESS_TOKEN={token}\n")
     if a.check:
-        r = requests.get(PROFILE_URL, timeout=20,
+        r = requests.get(QUOTE_URL, timeout=20, params={"instrument_key": "NSE_INDEX|Nifty 500", "interval": "1d"},
                          headers={"Accept": "application/json", "Authorization": f"Bearer {token}"})
         if r.status_code >= 400:
-            print(f"upstox_token: new token failed the profile check ({r.status_code})", file=sys.stderr)
+            print(f"upstox_token: new token failed the market-data check ({r.status_code})", file=sys.stderr)
             return 2
-        prof = (r.json() or {}).get("data") or {}
-        print(f"upstox_token: token OK for {prof.get('user_name') or prof.get('user_id') or 'user'}",
-              file=sys.stderr)
+        print("upstox_token: token OK (market data reachable)", file=sys.stderr)
     if a.print:
         print(token)
     if not (a.print or a.github_env or a.check):

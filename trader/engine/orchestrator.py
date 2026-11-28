@@ -52,6 +52,28 @@ class Engine:
         # Live EOD/open set this (trader.cli); backtests leave it off. When on, run_eod refuses
         # to save state if too few symbols got today's bar, and run_open if quotes are missing.
         self.strict_data = False
+        # Point-in-time index membership (system_config.universe_history): entries only for
+        # stocks that were in the index on that day; exits/holds are never restricted.
+        uh = settings.system.get("universe_history") or {}
+        self.pit = None
+        if uh.get("enabled"):
+            from trader.core.config import ROOT
+            from trader.core.universe_history import UniverseHistory
+            self.pit = UniverseHistory(ROOT / uh.get("path", "config/universe_history.json"),
+                                       settings.universe["instruments"])
+            scan = settings.universe["lists"].get(uh.get("scan_list") or "", None) or self.pit.all_symbols
+            data = getattr(provider, "data", None)
+            if isinstance(data, dict):        # backtest: members without bars cannot be traded
+                nodata = sorted(x for x in scan if x not in data)
+                scan = [x for x in scan if x in data]
+                if nodata:
+                    log.warning("UNIVERSE HISTORY: %d former/current members have no cached bars and are "
+                                "left out (residual survivorship bias): %s%s", len(nodata),
+                                ", ".join(nodata[:15]), " ..." if len(nodata) > 15 else "")
+            self._pit_scan = scan
+            log.info("UNIVERSE HISTORY on: %d snapshots %s..%s, %d symbols ever in the index, %d tradable",
+                     len(self.pit.dates), self.pit.dates[0], self.pit.dates[-1], len(self.pit.all_symbols),
+                     len(scan))
         self._seen: set[str] = set()
         self._fresh: set[str] = set()
 
@@ -100,6 +122,8 @@ class Engine:
                             sig.reason, sig.score, sig.stop, sig.ref_price, sig.meta)
 
     def _universe(self, name: str) -> list[str]:
+        if self.pit is not None:          # scan everything that was ever a member; filter per day
+            return self._pit_scan
         return self.s.universe["lists"][self.s.strategies[name]["universe"]]
 
     # ---- EOD -------------------------------------------------------------------------------
@@ -122,6 +146,7 @@ class Engine:
         nxt, orders, exiting = self.cal.next_trading_day(asof), [], set()
         max_adds = self.s.risk["pyramiding"]["max_adds"]
 
+        gtt = (self.s.system.get("execution") or {}).get("stop_orders", "close") == "gtt"
         for sym, pos in list(pf.positions.items()):
             ctx = self._ctx(sym, asof)
             if ctx is None:
@@ -130,6 +155,8 @@ class Engine:
             # Resting orders (intraday-mode strategies only) fill DURING today's session, so they
             # are settled before anything that looks at today's close.
             if strat.intraday and self._intraday_fills(pf, pos, ctx, strat, asof) == "EXIT":
+                continue
+            if gtt and not strat.intraday and self._gtt_stop(pf, pos, ctx, asof):
                 continue
             self._manage(pos, ctx, strat, nxt, orders, exiting, max_adds)
 
@@ -154,9 +181,12 @@ class Engine:
 
         cands: list[Signal] = []
         for name, strat in self.strategies.items():
+            members = self.pit.members(asof) if self.pit is not None else None
             for sym in self._universe(name):
                 if sym in pf.positions or any(c.symbol == sym for c in cands):
                     continue
+                if members is not None and sym not in members:
+                    continue                  # not in the index on this day: no new entry
                 ctx = self._ctx(sym, asof)
                 if not ctx:
                     continue
@@ -341,6 +371,27 @@ class Engine:
         else:
             log.debug("HOLD  %-12s qty %d avg %.2f stop %.2f last %.2f",
                      sym, pos.qty, pos.avg_cost, pos.stop, pos.last_price)
+
+    def _gtt_stop(self, pf: Portfolio, pos: Position, ctx: SymbolContext, asof: date) -> bool:
+        """system_config execution.stop_orders = "gtt": a GTT stop-loss rests at pos.stop - the
+        level the previous EOD computed (or the entry stop for a position bought this morning) -
+        and triggers during the session once the price trades at or below it, selling at market:
+        filled at the stop, or at the open when the stock gaps below it; the broker's slippage
+        applies on top. The position's own close-based exit rules still run for whatever
+        survives. Every evening the stop is recomputed as usual - that is the new GTT trigger."""
+        if not pos.stop:
+            return False
+        bar = ctx.daily.iloc[-1]
+        o, lo = float(bar["open"]), float(bar["low"])
+        if lo > pos.stop + 1e-9:
+            return False
+        px = min(o, pos.stop)
+        how = "gapped below - filled at open" if o < pos.stop else "filled at trigger"
+        self.store.journal(date=asof, symbol=pos.symbol, event="GTT_STOP", stop=round(pos.stop, 2),
+                           low=round(lo, 2), open=round(o, 2), price=round(px, 2))
+        self._close_position(pf, pos.symbol, pos.strategy, px, asof,
+                             f"GTT stop {pos.stop:.2f} triggered: low {lo:.2f} ({how})")
+        return True
 
     def _close_position(self, pf: Portfolio, symbol: str, strategy: str, px: float, asof: date,
                         reason: str) -> None:
@@ -531,8 +582,12 @@ class Engine:
                 from trader.risk.market_breadth import MarketBreadth
                 self._breadth = MarketBreadth(rg.get("breadth"))
                 lists = self.s.universe["lists"]
-                self._breadth_syms = sorted({sym for c in self.s.strategies.values() if c.get("enabled")
-                                             for sym in lists.get(c.get("universe", "default"), [])})
+                if self.pit is not None:      # breadth over the members of each day
+                    self._breadth_syms = list(self._pit_scan)
+                    self._breadth.membership = self.pit.membership_frame
+                else:
+                    self._breadth_syms = sorted({sym for c in self.s.strategies.values() if c.get("enabled")
+                                                 for sym in lists.get(c.get("universe", "default"), [])})
             st = self._breadth.status(signal_day, self.provider, self._breadth_syms)
             bull, reason = st.bullish, st.reason
         elif sig == "index":

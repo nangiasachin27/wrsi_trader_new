@@ -14,6 +14,12 @@
     "quote_batch_size": 100,
     "min_fresh_pct": 90
   },
-  "execution": {"slippage_bps": 10, "stale_order_policy": "drop"},
-  "logging": {"level": "INFO"}
+  "execution": {"slippage_bps": 10, "stale_order_policy": "drop", "stop_orders": "close"},
+  "logging": {"level": "INFO"},
+  "universe_history": {
+    "_note": "Point-in-time Nifty 500 membership for backtests (removes survivorship bias): when enabled, every strategy scans scan_list (all stocks ever in the index) but enters a stock only on days it was a member; exits are never restricted; the breadth signal counts members only. Build the file with scripts/build_universe_history.py, then fetch bars with scripts/fetch_history.py --list nifty500_pit. Keep it OFF for live eod/open (today's list is already current).",
+    "enabled": false,
+    "path": "config/universe_history.json",
+    "scan_list": "nifty500_pit"
+  }
 }

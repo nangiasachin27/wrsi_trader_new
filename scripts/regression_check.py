@@ -41,10 +41,12 @@ def apply(settings, spec: str) -> None:
     name, key = path.split(".", 1)
     if name == "risk":                      # config/risk_config.json, e.g. risk.per_trade.risk_pct_of_base=1.0
         target = settings.risk
+    elif name == "system":                  # config/system_config.json, e.g. system.execution.stop_orders=gtt
+        target = settings.system
     else:
         target = settings.filters.get(name) or settings.strategies.get(name)
     if target is None:
-        raise SystemExit(f"--set {spec}: no filter or strategy called {name!r} (or use risk.<key>)")
+        raise SystemExit(f"--set {spec}: no filter or strategy called {name!r} (or use risk.<key> / system.<key>)")
     try:
         val = json.loads(raw)
     except json.JSONDecodeError:

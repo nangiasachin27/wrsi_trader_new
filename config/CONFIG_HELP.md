@@ -40,6 +40,7 @@ that is not valid JSON is used as a plain string.
 | Path form | Points at | Example |
 |---|---|---|
 | `risk.<key>...` | `risk_config.json` | `--set risk.capital.mode=equity` |
+| `system.<key>...` | `system_config.json` | `--set system.execution.stop_orders=gtt` |
 | `<filter>.<key>...` | `filters/<filter>.json` | `--set candlestick.enabled=true` |
 | `<strategy>.<key>...` | `strategies/<strategy>.json` | `--set breakout_trend.exit.atr_mult=2.5` |
 
@@ -149,6 +150,10 @@ Note: in a cash-bound book, a smaller `risk_pct` mostly means *more, smaller* po
 | `data.min_fresh_pct` | number (%) | `90` | **Fail-loud threshold** for live `eod`: if fewer than this % of the symbols scanned got a bar dated today, the run stops with exit code 3 and saves nothing (an expired token otherwise silently falls back to cached bars). `open` fails when more than half the symbols with due orders have no opening quote. Bypass once with `python -m trader eod --allow-stale`. Backtests are not checked. |
 | `data.fetch_today_intraday` | `true`/`false` | *code default `true`* | After 15:35, append today's final daily candle from the intraday endpoint. |
 | `execution.slippage_bps` | number (bps) | `10` | Paper/backtest slippage on every fill (10 = 0.10 %); also used to size on the expected fill price. |
+| `execution.stop_orders` | `"close"` \| `"gtt"` | `"close"` | **close**: stops are checked on the close and sold at the next open (original model). **gtt**: simulates a GTT stop-loss resting at each position's stop (`pos.stop`, recomputed every EOD): sells during the session once the low reaches it, at the stop, or at the open on a gap below; close-based exit rules still apply. Use when you place GTT stop-losses in Upstox after each fill. Journal: `GTT_STOP`. |
+| `universe_history.enabled` | `true`/`false` | `false` | **Point-in-time universe** for backtests: scan every stock ever in the Nifty 500, enter only on days it was a member, never restrict exits; breadth counts members only. Removes survivorship bias. Keep **off** for live `eod`/`open`. |
+| `universe_history.path` | path | `"config/universe_history.json"` | Built by `scripts/build_universe_history.py`. |
+| `universe_history.scan_list` | list name | `"nifty500_pit"` | Universe list of every stock ever a member (written by the builder). |
 | `execution.stale_order_policy` | `"drop"` | `"drop"` | **Not read by the code** — stale pending orders are always dropped (journal `STALE_DROPPED`); exits are retried next session. |
 | `logging.level` | `"DEBUG"`/`"INFO"`/`"WARNING"`/`"ERROR"` | `"INFO"` | `-v` on the CLI forces DEBUG. |
 
@@ -499,6 +504,7 @@ Data, not tuning knobs — edit when the market data changes.
 |---|---|---|---|
 | `universe.json` | `instruments: {SYMBOL: "NSE_EQ\|ISIN"}`, `lists: {name: [SYMBOL, …]}` | `"TCS": "NSE_EQ\|INE467B01029"`; `"lists": {"default": ["360ONE", …]}` | 514 instruments incl. indices (`"NIFTY500": "NSE_INDEX\|Nifty 500"`). A strategy's `universe` names a list. Rebuild with `scripts/build_universe.py`. Breadth uses today's list → survivorship bias in early years. |
 | `sector_map.json` | `symbol_to_industry: {SYMBOL: industry}` | `"ABB": "Capital Goods"` | Industries must match `sector_regime.industry_to_benchmark`. Written by `build_universe.py`. |
+| `universe_history.json` | `snapshots: [{date, isins}]`, `names: {isin: {symbol, company, industry}}` | `{"date": "2021-03-31", "isins": ["INE...", …]}` | Nifty 500 membership over time, from archived NSE lists. Rebuild with `scripts/build_universe_history.py` (also adds former members to `universe.json` as list `nifty500_pit`). |
 | `holidays.json` | `holidays: ["YYYY-MM-DD", …]` | `"2026-01-26"` | NSE trading holidays (weekends are automatic). Currently holds **2026 only** (16 dates). **Add 2027 before 26 Jan 2027** — `eod`/`open` treat a missing holiday as a trading day. `scripts/fetch_holidays.py`. |
 | `corporate_actions.json` | `events: [{symbol, date, type, note}]` | `{"symbol": "VEDL", "date": "2026-04-30", "type": "demerger", "note": "4-way demerger ex-date"}` | `type`: `demerger`, `spinoff`, `split`, … Only types in `fractal_sr.json → corporate_action_truncate_types` cut history. |
 

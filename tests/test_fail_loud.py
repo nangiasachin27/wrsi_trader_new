@@ -119,9 +119,14 @@ def test_check_token_raises_on_401(monkeypatch, tmp_path):
 
     class R:
         status_code, text = 401, '{"status":"error","errors":[{"message":"Invalid token"}]}'
-    monkeypatch.setattr(p.session, "get", lambda *a, **k: R())
+    seen = {}
+    def fake_get(url, *a, **k):
+        seen["url"] = url
+        return R()
+    monkeypatch.setattr(p.session, "get", fake_get)
     with pytest.raises(TokenError, match="expired"):
         p.check_token()
+    assert "/market-quote/" in seen["url"]        # market data: works with the Analytics Token
 
 
 def test_cli_exits_2_without_token():
